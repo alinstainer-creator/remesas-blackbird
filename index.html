@@ -20,6 +20,7 @@
       overflow: hidden;
       position: relative;
       margin: 0;
+      animation: backgroundPulse 10s infinite ease-in-out;
     }
     .container {
       background: rgba(10, 10, 10, 0.98);
@@ -27,8 +28,8 @@
       box-shadow: 0 0 6px rgba(0, 153, 119, 0.3);
       border-radius: 6px;
       padding: 0.75rem;
-      max-width: 95%;
-      width: 95%;
+      max-width: 96%;
+      width: 96%;
       margin: 1rem auto;
       animation: fadeIn 1s ease-out;
     }
@@ -54,8 +55,8 @@
       background: transparent;
       border: 1px solid #009977;
       color: #e6e6e6;
-      padding: 0.875rem;
-      font-size: 0.875rem;
+      padding: 1rem;
+      font-size: 0.9rem;
       font-weight: 600;
       border-radius: 6px;
       transition: all 0.3s ease;
@@ -83,14 +84,14 @@
       transition: width 0.4s ease, height 0.4s ease;
     }
     button:hover::after {
-      width: 100px;
-      height: 100px;
+      width: 120px;
+      height: 120px;
     }
     .telegram-button {
       background: #00cc99;
       color: #0a0a0a;
-      padding: 0.875rem;
-      font-size: 0.875rem;
+      padding: 1rem;
+      font-size: 0.9rem;
       font-weight: 600;
       border-radius: 6px;
       text-align: center;
@@ -110,7 +111,7 @@
       background: rgba(28, 37, 38, 0.9);
       border: 1px solid #009977;
       color: #e6e6e6;
-      font-size: 0.875rem;
+      font-size: 0.9rem;
       padding: 0.5rem;
       border-radius: 4px;
       transition: all 0.3s ease;
@@ -133,7 +134,7 @@
       width: 100%;
       height: 1px;
       background: linear-gradient(to right, transparent, #009977, transparent);
-      animation: scanLine 2.5s infinite;
+      animation: scanLine 2s infinite;
     }
     .clouds-layer1 {
       position: fixed;
@@ -195,7 +196,7 @@
       height: 1px;
       background: #e6e6e6;
       opacity: 0.3;
-      animation: pulseStar calc(2s + var(--delay) * 1s) infinite;
+      animation: pulseStar calc(1s + var(--delay) * 1s) infinite;
     }
     .radar {
       position: fixed;
@@ -209,11 +210,11 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      border: 1px solid rgba(0, 153, 119, 0.05);
+      border: 1px solid rgba(0, 153, 119, 0.08);
       border-radius: 50%;
       transform: translate(-50%, -50%);
-      animation: radarPulse 6s infinite;
-      animation-delay: calc(var(--delay) * 2s);
+      animation: radarPulse 4s infinite;
+      animation-delay: calc(var(--delay) * 1s);
       opacity: 0;
     }
     .social-bar {
@@ -277,8 +278,10 @@
       width: 100%;
       height: 100%;
       background: radial-gradient(circle, transparent 80%, rgba(0, 153, 119, 0.02) 100%);
+      background-image: linear-gradient(rgba(0, 153, 119, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 153, 119, 0.05) 1px, transparent 1px);
+      background-size: 50px 50px;
       z-index: -2;
-      animation: gridFlicker 4s infinite;
+      animation: gridFlicker 3s infinite;
     }
     .particles {
       position: fixed;
@@ -290,13 +293,13 @@
     }
     .particle {
       position: absolute;
-      width: 2px;
-      height: 2px;
-      background: rgba(0, 153, 119, 0.5);
-      animation: flyParticle calc(2s + var(--delay) * 1s) linear infinite;
+      width: 3px;
+      height: 3px;
+      background: rgba(0, 153, 119, 0.6);
+      animation: flyParticle calc(1.5s + var(--delay) * 1s) linear infinite;
     }
     .vibrate-container {
-      animation: vibrate 0.1s linear;
+      animation: vibrate 0.2s linear;
     }
     .hud-text {
       text-shadow: 0 0 5px rgba(0, 204, 153, 0.6);
@@ -352,18 +355,24 @@
     }
     @keyframes vibrate {
       0% { transform: translateX(0); }
-      25% { transform: translateX(2px); }
-      50% { transform: translateX(-2px); }
-      75% { transform: translateX(2px); }
+      25% { transform: translateX(3px); }
+      50% { transform: translateX(-3px); }
+      75% { transform: translateX(3px); }
       100% { transform: translateX(0); }
     }
     @keyframes gridFlicker {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.8; }
+      50% { opacity: 0.7; }
     }
     @keyframes flyParticle {
-      0% { transform: translate(100vw, -100vh); opacity: 0.5; }
+      0% { transform: translate(100vw, -100vh); opacity: 0.6; }
+      50% { opacity: 0.8; }
       100% { transform: translate(-100vw, 100vh); opacity: 0; }
+    }
+    @keyframes backgroundPulse {
+      0% { background-color: #0a0a0a; }
+      50% { background-color: #0f1a1a; }
+      100% { background-color: #0a0a0a; }
     }
   </style>
 </head>
@@ -379,6 +388,8 @@
       <div class="radar-circle" style="width: 300px; height: 300px; --delay: 1;"></div>
       <div class="radar-circle" style="width: 400px; height: 400px; --delay: 2;"></div>
       <div class="radar-circle" style="width: 500px; height: 500px; --delay: 3;"></div>
+      <div class="radar-circle" style="width: 600px; height: 600px; --delay: 4;"></div>
+      <div class="radar-circle" style="width: 700px; height: 700px; --delay: 5;"></div>
     </div>
     <div class="radar-grid"></div>
     <div class="particles" id="particles"></div>
@@ -386,6 +397,7 @@
   <canvas class="starfield" id="starfield"></canvas>
   <canvas class="speedometer" id="speedometer"></canvas>
   <audio id="clickSound" src="https://cdn.pixabay.com/audio/2022/03/10/audio_4e992b54b2.mp3"></audio>
+  <audio id="jetSound" src="https://cdn.pixabay.com/audio/2023/08/07/audio_2b8b8b8b8b.mp3"></audio>
   <div id="root"></div>
   <div class="social-contact">¡Contáctanos en Telegram o nuestras redes sociales!</div>
   <div class="social-bar">
@@ -431,9 +443,9 @@
     };
     // URL del CSV
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Teo-_5ka3LKx7FXL3x3yV3uf4KhoI61ewnVJyJ90XRnksoObf4CDn-lJvrFKiQ/pub?gid=983978085&single=true&output=csv';
-    // Función para formatear números
+    // Función para formatear números con 4 decimales
     const formatNumber = (number) => {
-      return number.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return number.toLocaleString('es-CL', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
     };
     // Función para cargar el CSV
     async function loadFileData() {
@@ -460,7 +472,7 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       const stars = [];
-      const numStars = 60;
+      const numStars = 150;
       let mouseX = canvas.width / 2;
       let mouseY = canvas.height / 2;
       // Crear estrellas
@@ -497,8 +509,8 @@
           const dy = mouseY - star.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           if (distance < 100) {
-            star.vx += dx * 0.0002;
-            star.vy += dy * 0.0002;
+            star.vx += dx * 0.0003;
+            star.vy += dy * 0.0003;
           }
           star.x += star.vx;
           star.y += star.vy;
@@ -512,15 +524,15 @@
           ctx.fill();
         });
         // Dibujar líneas de conexión
-        ctx.strokeStyle = 'rgba(0, 153, 119, 0.2)';
-        ctx.lineWidth = 0.7;
+        ctx.strokeStyle = 'rgba(0, 153, 119, 0.25)';
+        ctx.lineWidth = 0.8;
         for (let i = 0; i < stars.length; i++) {
           for (let j = i + 1; j < stars.length; j++) {
-            if (Math.random() < 0.03) {
+            if (Math.random() < 0.04) {
               const dx = stars[i].x - stars[j].x;
               const dy = stars[i].y - stars[j].y;
               const distance = Math.sqrt(dx * dx + dy * dy);
-              if (distance < 80) {
+              if (distance < 100) {
                 ctx.beginPath();
                 ctx.moveTo(stars[i].x, stars[i].y);
                 ctx.lineTo(stars[j].x, stars[j].y);
@@ -536,12 +548,12 @@
     // Partículas de vuelo
     function initParticles() {
       const particlesContainer = document.getElementById('particles');
-      for (let i = 0; i < 20; i++) {
+      for (let i = 0; i < 30; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
         particle.style.left = `${Math.random() * 100}%`;
         particle.style.top = `${Math.random() * 100}%`;
-        particle.style.setProperty('--delay', Math.random() * 2);
+        particle.style.setProperty('--delay', Math.random() * 1);
         particlesContainer.appendChild(particle);
       }
     }
@@ -664,7 +676,7 @@
       // Generar estrellas, partículas y inicializar canvas
       React.useEffect(() => {
         const starsContainer = document.getElementById('stars');
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 150; i++) {
           const star = document.createElement('div');
           star.className = 'star';
           star.style.left = `${Math.random() * 100}%`;
@@ -678,10 +690,14 @@
         initParticles();
         initSpeedometer();
       }, []);
-      // Reproducir sonido
+      // Reproducir sonidos
       const playClickSound = () => {
         const sound = document.getElementById('clickSound');
-        sound.play().catch(() => console.log('Sound playback failed'));
+        sound.play().catch(() => console.log('Click sound playback failed'));
+      };
+      const playJetSound = () => {
+        const sound = document.getElementById('jetSound');
+        sound.play().catch(() => console.log('Jet sound playback failed'));
       };
       // Manejar cálculo de conversión
       const handleCalculate = () => {
@@ -702,6 +718,7 @@
           return;
         }
         playClickSound();
+        playJetSound();
         if (navigator.vibrate) navigator.vibrate(50);
         containerRef.current.classList.add('vibrate-container');
         setTimeout(() => containerRef.current.classList.remove('vibrate-container'), 200);
@@ -733,7 +750,10 @@
           return;
         }
         playClickSound();
+        playJetSound();
         if (navigator.vibrate) navigator.vibrate(50);
+        containerRef.current.classList.add('vibrate-container');
+        setTimeout(() => containerRef.current.classList.remove('vibrate-container'), 200);
         const pair = `${originCountry}/${destinationCountry}`;
         if (!data || !data[pair]) {
           setError(`No se encontró la tasa de cambio de ${currencyToCountry[originCountry]} a ${currencyToCountry[destinationCountry]}.`);
@@ -803,7 +823,7 @@
                 placeholder="Ingresa el monto"
                 className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
                 min="0"
-                step="0.01"
+                step="0.0001"
               />
             </div>
             <div className="flex justify-center gap-2">
