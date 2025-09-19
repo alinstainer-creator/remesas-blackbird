@@ -3,96 +3,57 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Blackbird SR-71 — Calculadora Ultrapremium</title>
-<meta name="description" content="Blackbird SR-71 - Calculadora de remesas ultrapremium (Venta IMAD - CSV)"/>
+<title>Blackbird SR-71 — Calculadora Ultrapremium (Venta IMAD)</title>
+<meta name="description" content="Calculadora Blackbird SR-71 - Lee CSV de Google Sheets, usa filas 'Venta IMAD' y precios en F/G.">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#000000;
-  --panel:#050608;
-  --glass: rgba(255,255,255,0.03);
+  --panel:#07070a;
   --accent:#00d0ff;
   --accent-deep:#0077cc;
   --muted:#9fbfdc;
-  --success:#7be07b;
-  --danger:#ff7b7b;
-  --shadow: 0 20px 50px rgba(0,0,0,0.8);
+  --glass: rgba(255,255,255,0.025);
+  --success:#4de07a;
+  --danger:#ff6f6f;
 }
-
-/* reset */
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;background:linear-gradient(180deg,#000 0%,#030312 60%);color:#e9fbff;font-family:'Roboto Condensed',sans-serif}
-.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.shell{width:100%;max-width:1200px;border-radius:16px;position:relative;overflow:hidden;border:1px solid rgba(0,180,255,0.04);box-shadow:var(--shadow)}
-/* background canvas */
-canvas#radarBG{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:0.12;filter:blur(0.4px)}
-
-/* header */
-.header{position:relative;z-index:2;padding:28px 34px;display:flex;gap:20px;align-items:center;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
-.logo{width:92px;height:92px;border-radius:50%;border:3px solid var(--accent);box-shadow:0 10px 40px rgba(0,208,255,0.06);object-fit:cover}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,#000 0%,#05050a 60%);color:#e9fbff;font-family:'Roboto Condensed',sans-serif}
+.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+.shell{width:100%;max-width:1200px;border-radius:16px;position:relative;overflow:hidden;border:1px solid rgba(0,208,255,0.04);box-shadow:0 30px 80px rgba(0,0,0,0.85)}
+canvas#radarBG{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:0.12;filter:blur(0.6px)}
+.header{position:relative;z-index:2;padding:22px 28px;display:flex;gap:18px;align-items:center;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+.logo{width:92px;height:92px;border-radius:50%;border:3px solid var(--accent);box-shadow:0 12px 40px rgba(0,208,255,0.06);object-fit:cover}
 .brand{flex:1}
 .title{font-family:'Orbitron',monospace;color:var(--accent);font-size:20px;margin:0}
 .subtitle{color:var(--muted);font-size:13px;margin-top:6px}
-
-/* body grid */
-.body{display:grid;grid-template-columns:1fr 420px;gap:22px;padding:26px;position:relative;z-index:2}
+.body{display:grid;grid-template-columns:1fr 420px;gap:20px;padding:24px;position:relative;z-index:2}
 @media(max-width:980px){ .body{grid-template-columns:1fr} }
-
-/* card / panel style */
 .card{background:linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.006));border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.02)}
 label{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;font-weight:700}
-
-/* inputs */
 .row{display:flex;gap:12px}
 .col{flex:1}
 select,input{width:100%;padding:12px 14px;border-radius:10px;background:rgba(10,10,12,0.6);border:1px solid rgba(255,255,255,0.03);color:#eafcff;font-size:15px}
 select:focus,input:focus{outline:none;box-shadow:0 8px 26px rgba(0,208,255,0.06);border-color:var(--accent)}
 .small{font-size:13px;color:var(--muted);margin-top:8px}
-
-/* buttons */
 .actions{display:flex;gap:12px;margin-top:14px}
 .btn{flex:1;padding:12px 14px;border-radius:12px;border:none;cursor:pointer;font-weight:800;letter-spacing:0.6px}
 .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-deep));color:#02131a;box-shadow:0 10px 30px rgba(0,208,255,0.12), inset 0 1px 0 rgba(255,255,255,0.06)}
 .btn-ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
-.btn-primary:active{transform:translateY(2px)}
-.btn-telegram{background:linear-gradient(90deg,#2bd36b,#1ea64b);color:#02110a;}
-
-/* result box */
-.result{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(0,180,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(0,180,255,0.04)}
+.btn-telegram{background:linear-gradient(90deg,#2bd36b,#1ea64b);color:#02110a}
+.btn:hover{transform:translateY(-3px);box-shadow:0 22px 60px rgba(0,208,255,0.08)}
+.result{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(0,180,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(0,180,255,0.04)}
 .res-left{font-size:14px;color:#eafcff}
 .res-right{font-family:'Orbitron',monospace;color:var(--accent);font-size:22px}
-
-/* right side: table */
 .side-title{font-family:'Orbitron',monospace;color:var(--accent);font-size:15px;margin-bottom:10px}
 .table-wrap{max-height:520px;overflow:auto;margin-top:8px}
 table{width:100%;border-collapse:collapse;color:#eafcff}
 th,td{padding:10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.03)}
 th{background:linear-gradient(90deg,var(--accent),var(--accent-deep));color:#02131a;font-weight:800;font-size:12px}
-tbody tr:hover{background:rgba(0,208,255,0.02);transform:translateZ(0)}
 .td-right{text-align:right}
-
-/* footer */
 .footer{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-top:1px solid rgba(255,255,255,0.02);font-size:13px;color:var(--muted)}
-.footer .links a{color:var(--accent);text-decoration:none;margin-left:8px;font-size:18px}
-
-/* glow animations */
-.glow{box-shadow:0 6px 30px rgba(0,208,255,0.06)}
-.pulse{animation:pulseAnim 1.1s ease-out}
-@keyframes pulseAnim{0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
-
-/* micro UX */
 .note{font-size:12px;color:var(--muted);margin-top:10px}
-
-/* make it extra chula: 3D btn hover */
-.btn-primary:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 22px 60px rgba(0,208,255,0.16)}
-.btn-telegram:hover{transform:translateY(-4px);box-shadow:0 22px 60px rgba(34,200,120,0.12)}
-
-/* mobile tweaks */
-@media(max-width:520px){
-  .header{padding:16px}
-  .body{padding:16px}
-  .res-right{font-size:18px}
-}
+@media(max-width:520px){ .header{padding:16px} .body{padding:16px} .res-right{font-size:18px} }
 </style>
 </head>
 <body>
@@ -104,20 +65,20 @@ tbody tr:hover{background:rgba(0,208,255,0.02);transform:translateZ(0)}
       <img src="logo blackbird.png" alt="logo" class="logo" onerror="this.onerror=null;this.src='https://via.placeholder.com/92/00d0ff/071017?text=SR-71'">
       <div class="brand">
         <div class="title">BLACKBIRD SR-71 — REMESAS</div>
-        <div class="subtitle">Experiencia Mach-3 • Premium • Móvil</div>
+        <div class="subtitle">Ultrapremium • Lectura fiable desde tu Google Sheet</div>
       </div>
-      <div style="text-align:right;color:var(--muted);font-size:12px">v2.0 ULTRA</div>
+      <div style="text-align:right;color:var(--muted);font-size:12px">vFINAL • LAB-GRADE</div>
     </div>
 
     <div class="body">
-      <!-- LEFT: calculator -->
+      <!-- LEFT -->
       <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <div>
             <div style="font-weight:800;color:var(--accent);font-size:13px">Calculadora Blackbird</div>
-            <div class="note">Selecciona país origen y país destino; usa "Calcular" para obtener el monto recibido.</div>
+            <div class="note">Selecciona origen y destino (los países salen desde la columna D de tu sheet). Presiona CALCULAR.</div>
           </div>
-          <div style="font-size:12px;color:var(--muted)">Diseño: Lockheed labs</div>
+          <div style="font-size:12px;color:var(--muted)">Modo: frontend directo</div>
         </div>
 
         <div style="margin-top:8px">
@@ -136,7 +97,7 @@ tbody tr:hover{background:rgba(0,208,255,0.02);transform:translateZ(0)}
         </div>
 
         <div class="actions">
-          <button id="btnCalcular" class="btn btn-primary glow">CALCULAR</button>
+          <button id="btnCalcular" class="btn btn-primary">CALCULAR</button>
           <button id="btnPedido" class="btn btn-telegram">PEDIR POR TELEGRAM</button>
         </div>
 
@@ -145,12 +106,12 @@ tbody tr:hover{background:rgba(0,208,255,0.02);transform:translateZ(0)}
           <div class="res-right">--</div>
         </div>
 
-        <div class="small" style="margin-top:10px">Importante: tu sheet debe estar publicado en la web o con acceso de solo lectura para que la calculadora pueda leer tasas.</div>
+        <div class="note">Asegúrate de que tu sheet esté publicado en la web (o en modo lectura). Si quieres, pégame 5 filas de ejemplo y ajusto el parser en caliente.</div>
       </div>
 
-      <!-- RIGHT: table -->
+      <!-- RIGHT -->
       <aside class="card">
-        <div class="side-title">Tasas — Venta IMAD</div>
+        <div class="side-title">Tasas (Venta IMAD)</div>
         <div class="table-wrap">
           <table id="ratesTable">
             <thead><tr><th>Origen</th><th>Destino</th><th class="td-right">Tasa</th></tr></thead>
@@ -159,15 +120,15 @@ tbody tr:hover{background:rgba(0,208,255,0.02);transform:translateZ(0)}
         </div>
 
         <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
-          <div class="note">Contacto</div>
-          <div class="links"><a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank">✈️</a><a href="https://www.instagram.com/servicios_blackbird" target="_blank">📸</a><a href="https://www.tiktok.com/@remesasblackbird" target="_blank">🎵</a></div>
+          <div class="note">Contacto y redes</div>
+          <div style="display:flex;gap:8px"><a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank">✈️</a><a href="https://www.instagram.com/servicios_blackbird" target="_blank">📸</a><a href="https://www.tiktok.com/@remesasblackbird" target="_blank">🎵</a></div>
         </div>
       </aside>
     </div>
 
     <div class="footer">
-      <div>© 2025 Blackbird SR-71 — Experiencia Mach-3</div>
-      <div style="color:var(--muted);font-size:12px">Hecho para móviles • Interfaz premium</div>
+      <div>© 2025 Blackbird SR-71 — Ultrapremium</div>
+      <div style="color:var(--muted);font-size:12px">Optimizado para móviles • Experiencia Mach-3</div>
     </div>
   </div>
 </div>
@@ -176,102 +137,113 @@ tbody tr:hover{background:rgba(0,208,255,0.02);transform:translateZ(0)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
 <script>
-/* ============ CONFIG ============ */
+/* ========== CONFIG ========== */
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3yMHp1HF-2JS1j0vNcp_snCjtTaWuF6y8AldyFGxbWvQrmhvisnagcBC1pWiskalafvz0EVY8svR6/pub?gid=983978085&single=true&output=csv';
 const TELEGRAM_LINK = 'https://t.me/+i02VPMg23TNiOWJh';
-const RATE_ROW_MARKER = 'Venta IMAD'; // matches column J value in the rows containing the price
-/* ================================ */
+const RATE_MARKER = 'Venta IMAD'; // text in column J that signals the desired row
+/* ============================ */
 
-let rates = {};          // key: "From|||To" -> number
-let countries = new Set(); // unique country names
+let rates = {};   // { "from|||to": price }
+let countriesSet = new Set();
+let allPairsSeen = []; // array of raw pair strings (for debugging)
 
-/* robust price parser */
+/* utility: remove accents and normalize string */
+function normalizeStr(s){
+  if(!s) return '';
+  // strip html / weird whitespace
+  s = String(s).trim();
+  // remove diacritics
+  s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // lower case
+  s = s.toLowerCase();
+  // remove extra symbols from ends
+  s = s.replace(/^[^a-z0-9]+|[^a-z0-9]+$/gi,'');
+  // collapse spaces
+  s = s.replace(/\s+/g,' ');
+  return s;
+}
+
+/* parse price robustly: accepts "$852.75", "852,75", "0.2371", "0,2371" */
 function parsePrice(raw){
-  if(raw === null || raw === undefined) return NaN;
+  if(raw === undefined || raw === null) return NaN;
   let s = String(raw).trim();
   if(s === '') return NaN;
-  // remove currency symbols but keep digits, dots and commas and minus
+  // strip currency symbols except digits, commas, dots, minus
   s = s.replace(/[^\d\.,\-]/g,'').trim();
-  // if both comma and dot => assume dot decimal, commas thousands
+  // if both comma and dot present, treat comma as thousand separator -> remove commas
   if(s.indexOf(',') !== -1 && s.indexOf('.') !== -1){
     s = s.replace(/,/g,'');
   } else if(s.indexOf(',') !== -1 && s.indexOf('.') === -1){
-    // only comma => decimal separator
+    // only comma present -> assume decimal separator
     s = s.replace(/,/g,'.');
   }
-  // remove stray non-numeric
+  // remove stray non numeric
   s = s.replace(/^[^0-9\-]+|[^0-9]+$/g,'');
   const n = parseFloat(s);
   return isNaN(n) ? NaN : n;
 }
 
-/* split various pair formats */
-function splitPair(pairRaw){
-  if(!pairRaw) return null;
-  let p = String(pairRaw).trim();
-  // normalize common separators
+/* split pair into [from,to] for many separators */
+function splitPair(rawPair){
+  if(!rawPair) return null;
+  let p = String(rawPair).trim();
+  // normalize multiple whitespace
   p = p.replace(/\s+/g,' ');
-  // separators: '-', '–', '—', ' a ', ' to ', '/', ' to '
-  const parts = p.split(/\s*(?:[-–—\/]|(?:\sa\s)|(?:\sto\s))\s*/i).map(x=>x.trim()).filter(Boolean);
+  // try splitting by " - " or " -", "-", " – ", "—", " a ", " to ", "/", "\"
+  const parts = p.split(/\s*(?:[-–—\/\\]|(?:\sa\s)|(?:\sto\s))\s*/i).map(x=>x.trim()).filter(Boolean);
   if(parts.length >= 2) return [parts[0], parts[1]];
-  // fallback split by whitespace if two words only (rare)
-  const words = p.split(' ').filter(Boolean);
-  if(words.length===2) return [words[0], words[1]];
+  // fallback: split by space if exactly 2 tokens
+  const tokens = p.split(' ').filter(Boolean);
+  if(tokens.length === 2) return [tokens[0], tokens[1]];
   return null;
 }
 
-/* format number nicely */
-function formatNumber(n){
-  if(isNaN(n)) return '--';
-  return Number(n).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
-}
-
-/* load CSV and parse */
-async function loadSheet(){
+/* load CSV and process */
+async function loadAndProcess(){
   try{
     const res = await fetch(CSV_URL);
     if(!res.ok) throw new Error('CSV fetch failed ' + res.status);
-    const txt = await res.text();
-    Papa.parse(txt, { header:false, skipEmptyLines:true, complete: (resu)=> processRows(resu.data) });
+    const text = await res.text();
+    Papa.parse(text, {header:false, skipEmptyLines:true, complete: (r) => handleRows(r.data) });
   }catch(e){
-    console.error('Error loading sheet:', e);
-    // fallback demo values if sheet fails
-    rates = {
-      'Chile|||USA': 852.75,
-      'Chile|||Mexico': 0.0171,
-      'Chile|||Venezuela': 0.2371,
-      'Spain|||Chile': 0.0012
-    };
-    countries = new Set(['Chile','USA','Mexico','Venezuela','Spain']);
+    console.error('Error loading CSV:', e);
+    // fallback demo
+    rates = {'Chile|||Venezuela': 0.2371, 'Chile|||USA':852.75, 'Argentina|||Chile': 0.005};
+    countriesSet = new Set(['Chile','Venezuela','USA','Argentina']);
     populateSelects();
-    renderTable();
-    showToast('No se pudo leer el sheet; usando valores de ejemplo', true);
+    renderRatesTable();
+    console.warn('Usando fallback demo rates');
   }
 }
 
-/* process rows: collect ALL pairs for country list, and find Venta IMAD rows for rates */
-function processRows(rows){
+/* handle rows: build country list from col D and rates from rows where col J == RATE_MARKER using F or G */
+function handleRows(rows){
   rates = {};
-  countries = new Set();
-  // First pass: collect pairs in column D for countries list (even if used in other rows)
-  rows.forEach(row=>{
+  countriesSet = new Set();
+  allPairsSeen = [];
+  // first gather all pairs seen in column D so selects include all possible countries
+  rows.forEach((row, idx)=>{
     const rawPair = row[3] ? String(row[3]).trim() : '';
-    const parsed = splitPair(rawPair);
-    if(parsed){
-      countries.add(parsed[0]);
-      countries.add(parsed[1]);
+    if(rawPair){
+      allPairsSeen.push(rawPair);
+      const parsed = splitPair(rawPair);
+      if(parsed && parsed.length >= 2){
+        countriesSet.add(parsed[0]);
+        countriesSet.add(parsed[1]);
+      }
     }
   });
-  // Second pass: find rows where column J == 'Venta IMAD' and take price from F or G
-  rows.forEach(row=>{
-    const colJ = row[9] ? String(row[9]).trim() : '';
-    if(colJ && colJ.toLowerCase() === RATE_ROW_MARKER.toLowerCase()){
+
+  // second, find rows where column J equals RATE_MARKER and use price from F or G
+  rows.forEach((row, idx)=>{
+    const marker = row[9] ? String(row[9]).trim() : '';
+    if(marker && marker.toLowerCase() === RATE_MARKER.toLowerCase()){
       const rawPair = row[3] ? String(row[3]).trim() : '';
       const parsed = splitPair(rawPair);
-      if(parsed){
-        const priceF = parsePrice(row[5]);
-        const priceG = parsePrice(row[6]);
-        const price = (!isNaN(priceF) && priceF !== 0) ? priceF : ((!isNaN(priceG) && priceG !== 0) ? priceG : NaN);
+      if(parsed && parsed.length >= 2){
+        const pF = parsePrice(row[5]);
+        const pG = parsePrice(row[6]);
+        const price = (!isNaN(pF) && pF !== 0) ? pF : ((!isNaN(pG) && pG !== 0) ? pG : NaN);
         if(!isNaN(price)){
           const key = `${parsed[0]}|||${parsed[1]}`;
           rates[key] = price;
@@ -280,44 +252,95 @@ function processRows(rows){
     }
   });
 
-  // If countries empty (weird sheet), fallback to sample
-  if(countries.size === 0){
-    countries = new Set(['Chile','USA','Mexico','Venezuela','Spain','Argentina','Colombia','Peru','Ecuador','Brazil','Uruguay','Canada']);
-    showToast('No se detectaron pares en columna D — usando lista ejemplo', true);
+  // If no countries found via pairs, try scanning column D raw for tokens to synthesize list
+  if(countriesSet.size === 0 && allPairsSeen.length > 0){
+    allPairsSeen.forEach(raw => {
+      const parsed = splitPair(raw);
+      if(parsed && parsed.length >= 2){
+        countriesSet.add(parsed[0]); countriesSet.add(parsed[1]);
+      }
+    });
   }
 
-  // If no rates found, warn but still populate countries
-  if(Object.keys(rates).length === 0){
-    showToast('No se detectaron filas "Venta IMAD" con precio válido. Asegúrate que la fila tenga "Venta IMAD" en columna J y precio en F o G.', true);
-  } else {
-    showToast('Tasas cargadas con éxito', false);
+  // If still empty -> fallback sample
+  if(countriesSet.size === 0){
+    countriesSet = new Set(['Chile','Venezuela','USA','Mexico','Argentina','Peru','Colombia','Ecuador','Spain','Canada','Uruguay','Brazil']);
+    console.warn('No pairs detected — usando fallback country list');
   }
 
   populateSelects();
-  renderTable();
+  renderRatesTable();
 }
 
-/* fill selects */
+/* helper: produce normalized matching key */
+function normForMatch(s){
+  // normalize and also remove common words
+  const n = normalizeStr(s);
+  return n.replace(/\b(country|república|de|del|the)\b/g,'').trim();
+}
+
+/* attempt to find rate given origin,dest with tolerant matching */
+function findRateFor(origin, dest){
+  if(!origin || !dest) return undefined;
+  const candidates = Object.keys(rates);
+  const targetFrom = normForMatch(origin);
+  const targetTo = normForMatch(dest);
+
+  // direct exact normalized match
+  for(const k of candidates){
+    const [f,t] = k.split('|||');
+    if(normForMatch(f) === targetFrom && normForMatch(t) === targetTo) return {key:k, price:rates[k]};
+  }
+
+  // try case-insensitive trimmed direct (original strings)
+  for(const k of candidates){
+    const [f,t] = k.split('|||');
+    if(String(f).trim().toLowerCase() === String(origin).trim().toLowerCase()
+       && String(t).trim().toLowerCase() === String(dest).trim().toLowerCase()) return {key:k, price:rates[k]};
+  }
+
+  // fuzzy: check if targetFrom exists inside normalized f or viceversa (handles 'Chile, CL' vs 'Chile')
+  for(const k of candidates){
+    const [f,t] = k.split('|||');
+    const nf = normForMatch(f);
+    const nt = normForMatch(t);
+    if(nf.includes(targetFrom) && nt.includes(targetTo)) return {key:k, price:rates[k]};
+    if(targetFrom.includes(nf) && targetTo.includes(nt)) return {key:k, price:rates[k]};
+  }
+
+  // try reverse match? (maybe sheet stored dest->origin but user picks origin->dest)
+  for(const k of candidates){
+    const [f,t] = k.split('|||');
+    if(normForMatch(f) === targetTo && normForMatch(t) === targetFrom){
+      // found reverse direction; but this rate is for reverse; we inform user
+      return {key:k, price:rates[k], reversed:true};
+    }
+  }
+
+  return undefined;
+}
+
+/* populate country selects */
 function populateSelects(){
-  const o = document.getElementById('selOrigen');
-  const d = document.getElementById('selDestino');
-  o.innerHTML = '<option value="">Selecciona país...</option>';
-  d.innerHTML = '<option value="">Selecciona país...</option>';
-  const arr = Array.from(countries).sort((a,b)=>a.localeCompare(b,'es',{sensitivity:'base'}));
+  const selO = document.getElementById('selOrigen');
+  const selD = document.getElementById('selDestino');
+  selO.innerHTML = '<option value="">Selecciona país...</option>';
+  selD.innerHTML = '<option value="">Selecciona país...</option>';
+  const arr = Array.from(countriesSet).sort((a,b)=>a.localeCompare(b,'es',{sensitivity:'base'}));
   arr.forEach(c=>{
     const opt = document.createElement('option'); opt.value = c; opt.textContent = c;
-    o.appendChild(opt);
-    d.appendChild(opt.cloneNode(true));
+    selO.appendChild(opt);
+    selD.appendChild(opt.cloneNode(true));
   });
 }
 
-/* render table */
-function renderTable(){
+/* render rates table */
+function renderRatesTable(){
   const tbody = document.querySelector('#ratesTable tbody');
   tbody.innerHTML = '';
-  const keys = Object.keys(rates).sort();
+  const keys = Object.keys(rates).sort((a,b)=>a.localeCompare(b));
   if(keys.length === 0){
-    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--muted);padding:14px">No se encontraron tasas "Venta IMAD" en el sheet</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--muted);padding:14px">No se encontraron tasas "Venta IMAD" (columna J)</td></tr>';
     return;
   }
   keys.forEach(k=>{
@@ -325,65 +348,81 @@ function renderTable(){
     const tr = document.createElement('tr');
     const td1 = document.createElement('td'); td1.textContent = f;
     const td2 = document.createElement('td'); td2.textContent = t;
-    const td3 = document.createElement('td'); td3.className = 'td-right'; td3.textContent = formatNumber(rates[k]);
+    const td3 = document.createElement('td'); td3.className='td-right'; td3.textContent = formatNumber(rates[k]);
     tr.append(td1,td2,td3); tbody.appendChild(tr);
   });
 }
 
-/* calculate when press button */
+/* format number */
+function formatNumber(n){
+  if(isNaN(n)) return '--';
+  return Number(n).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+/* calculate on button press */
 function onCalculate(){
   const origen = document.getElementById('selOrigen').value;
   const destino = document.getElementById('selDestino').value;
   const montoRaw = document.getElementById('monto').value;
-  const resLeft = document.querySelector('.res-left');
-  const resRight = document.querySelector('.res-right');
+  const left = document.querySelector('.res-left');
+  const right = document.querySelector('.res-right');
 
   if(!origen || !destino){
-    resLeft.innerHTML = `<span style="color:var(--danger)">Selecciona origen y destino</span>`; resRight.innerText = '--'; return;
+    left.innerHTML = `<span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ff6f6f'}">Selecciona origen y destino</span>`;
+    right.innerText = '--';
+    return;
   }
   if(origen === destino){
-    resLeft.innerHTML = `<span style="color:var(--danger)">Origen y destino deben ser distintos</span>`; resRight.innerText = '--'; return;
+    left.innerHTML = `<span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ff6f6f'}">Origen y destino deben ser distintos</span>`;
+    right.innerText='--';
+    return;
   }
   const monto = Number(montoRaw);
   if(isNaN(monto) || monto <= 0){
-    resLeft.innerHTML = `<span style="color:var(--danger)">Ingresa monto válido (>0)</span>`; resRight.innerText = '--'; return;
-  }
-  const key = `${origen}|||${destino}`;
-  const tasa = rates[key];
-  if(tasa === undefined){
-    resLeft.innerHTML = `<span style="color:var(--danger)">Ruta no disponible (sin tasa "Venta IMAD")</span>`; resRight.innerText = '--'; return;
+    left.innerHTML = `<span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ff6f6f'}">Ingresa monto válido (>0)</span>`;
+    right.innerText='--';
+    return;
   }
 
-  const recibe = monto * tasa;
-  // animate count-up on resRight
-  animateCountUp(0, recibe, 700, (v)=>{
-    resRight.innerText = formatNumber(v);
+  const match = findRateFor(origen, destino);
+  if(!match){
+    left.innerHTML = `<span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ff6f6f'}">Ruta no disponible (no se encuentra tasa)</span>`;
+    right.innerText='--';
+    return;
+  }
+  if(match.reversed){
+    left.innerHTML = `<span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ff6f6f'}">Atención: la hoja tiene la ruta inversa (${match.key.replace('|||',' → ')}). Verifica.</span>`;
+    right.innerText='--';
+    return;
+  }
+
+  const recibe = monto * match.price;
+  // animate count-up
+  animateCountUp(0, recibe, 800, v => {
+    right.innerText = formatNumber(v);
   });
-  resLeft.innerHTML = `${monto.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} (${origen}) → recibe:`;
-  // small pulse
+  left.innerHTML = `${Number(monto).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} (${origen}) → recibe:`;
+  window._lastCalc = {origen,destino,monto,recibe,price:match.price};
+  // subtle pulse
   const box = document.getElementById('resultado');
   box.classList.add('pulse');
   setTimeout(()=>box.classList.remove('pulse'),900);
-
-  // keep last
-  window._last = {origen,destino,monto,recibe,tasa};
 }
 
-/* animate count up */
+/* count up */
 function animateCountUp(from, to, ms, onFrame){
   const start = performance.now();
   function frame(now){
     const t = Math.min(1, (now - start)/ms);
-    // easeOutQuad
-    const ease = 1 - (1 - t)*(1 - t);
-    const current = from + (to - from) * ease;
-    onFrame(current);
+    const ease = 1 - Math.pow(1 - t, 3); // easeOutCubic
+    const curr = from + (to - from) * ease;
+    onFrame(curr);
     if(t < 1) requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 }
 
-/* telegram request */
+/* pedir por telegram */
 function onPedido(){
   const origen = document.getElementById('selOrigen').value;
   const destino = document.getElementById('selDestino').value;
@@ -392,26 +431,24 @@ function onPedido(){
     alert('Completa origen, destino y monto antes de pedir el servicio.');
     return;
   }
-  // use last compute if matches
-  let recibeText = '';
-  if(window._last && window._last.origen === origen && window._last.destino === destino && String(window._last.monto) === String(Number(montoRaw))){
-    recibeText = formatNumber(window._last.recibe);
+  // prefer last calc if matches
+  let recibeTxt = '';
+  if(window._lastCalc && window._lastCalc.origen === origen && window._lastCalc.destino === destino && Number(window._lastCalc.monto) === Number(montoRaw)){
+    recibeTxt = formatNumber(window._lastCalc.recibe);
   } else {
-    // compute on the fly
-    const key = `${origen}|||${destino}`;
-    const tasa = rates[key];
-    if(!tasa){ alert('Ruta no disponible'); return; }
-    recibeText = formatNumber(Number(montoRaw) * tasa);
+    const match = findRateFor(origen, destino);
+    if(!match || match.reversed){
+      alert('No hay tasa detectada para esta ruta. Verifica la hoja.');
+      return;
+    }
+    recibeTxt = formatNumber(Number(montoRaw) * match.price);
   }
-  const tasaVal = rates[`${origen}|||${destino}`] !== undefined ? rates[`${origen}|||${destino}`] : 'N/A';
-  const msg = `Hola, quiero hacer el cambio:\nEnviar: ${Number(montoRaw).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} (${origen})\nRecibir: ${recibeText} (${destino})\nRuta: ${origen} → ${destino}\nTasa (Venta IMAD): ${tasaVal}\nGracias.`;
+  const tasaVal = (rates[`${origen}|||${destino}`] !== undefined) ? rates[`${origen}|||${destino}`] : 'N/D';
+  const msg = `Hola, quiero hacer el cambio:\nEnviar: ${Number(montoRaw).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} (${origen})\nRecibir: ${recibeTxt} (${destino})\nRuta: ${origen} → ${destino}\nTasa (Venta IMAD): ${tasaVal}\nMuchas gracias.`;
   window.open(TELEGRAM_LINK + '?text=' + encodeURIComponent(msg), '_blank');
 }
 
-/* small toast to console */
-function showToast(txt, warn=false){ console.log(warn ? 'WARN: ' + txt : 'OK: ' + txt); }
-
-/* subtle radar background */
+/* radar background */
 (function radar(){
   const canvas = document.getElementById('radarBG');
   if(!canvas) return;
@@ -422,8 +459,7 @@ function showToast(txt, warn=false){ console.log(warn ? 'WARN: ' + txt : 'OK: ' 
   function draw(){
     const w = canvas.offsetWidth, h = canvas.offsetHeight;
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    const cx = w * 0.16, cy = h * 0.18;
-    // rings
+    const cx = w * 0.16, cy = h * 0.16;
     for(let i=0;i<6;i++){
       ctx.beginPath();
       ctx.strokeStyle = `rgba(0,208,255,${0.02 + i*0.005})`;
@@ -432,7 +468,6 @@ function showToast(txt, warn=false){ console.log(warn ? 'WARN: ' + txt : 'OK: ' 
       ctx.arc(cx, cy, r, 0, Math.PI*2);
       ctx.stroke();
     }
-    // sweeping wedge
     const ang = (t/30)%360 * Math.PI/180;
     ctx.beginPath();
     ctx.moveTo(cx,cy);
@@ -450,8 +485,8 @@ function showToast(txt, warn=false){ console.log(warn ? 'WARN: ' + txt : 'OK: ' 
 document.getElementById('btnCalcular').addEventListener('click', onCalculate);
 document.getElementById('btnPedido').addEventListener('click', onPedido);
 
-/* init load */
-loadSheet();
+/* init */
+loadAndProcess();
 </script>
 </body>
 </html>
