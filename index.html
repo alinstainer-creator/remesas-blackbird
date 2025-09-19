@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Servicios Blackbird: Calcula remesas entre España, USA, México, Brasil, Chile, Ecuador, Perú, Argentina, Colombia y Venezuela. Tasas precisas y simulaciones en moneda destino.">
+    <meta name="description" content="Servicios Blackbird: Calculadora de remesas. Selecciona origen, destino, monto. Resultado en moneda destino. Cobertura: España, USA, México, Brasil, Chile, Ecuador, Perú, Argentina, Colombia, Venezuela.">
     <meta name="keywords" content="remesas, cambio moneda, tasas conversión, Blackbird, España, USA, México, Brasil, Chile, Ecuador, Perú, Argentina, Colombia, Venezuela">
     <title>🛩️ Servicios Blackbird - Calculadora de Remesas</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
             line-height: 1.6; 
         }
         .container { 
-            max-width: 800px; 
+            max-width: 900px; 
             margin: 20px auto; 
             background: rgba(10, 15, 25, 0.95); 
             padding: 30px; 
@@ -93,8 +93,19 @@
             font-family: 'Orbitron', monospace; 
             cursor: pointer; 
             transition: transform 0.2s; 
+            margin-bottom: 10px;
         }
         button:hover { transform: translateY(-2px); }
+        .contact-button { 
+            background: linear-gradient(135deg, #28a745, #20c997); 
+            color: white; 
+            font-size: 1.1em; 
+            font-weight: 600; 
+        }
+        .contact-button:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(40,167,69,0.4); 
+        }
         #resultado { 
             margin-top: 20px; 
             padding: 15px; 
@@ -181,33 +192,34 @@
         <header>
             <img src="logo blackbird.png" alt="Logo Servicios Blackbird" class="logo" onerror="this.src='https://via.placeholder.com/120x120/00d4ff/1a1f2e?text=SR-71';">
             <h1>🛩️ Servicios Blackbird</h1>
-            <p class="subtitle">Calculadora simple: Elige origen, destino, monto. Obtén resultado en moneda destino. Tasas entre España, USA, México, Brasil, Chile, Ecuador, Perú, Argentina, Colombia, Venezuela.</p>
+            <p class="subtitle">Calcula remesas: Origen, destino, monto. Resultado en moneda destino. Cobertura: España, USA, México, Brasil, Chile, Ecuador, Perú, Argentina, Colombia, Venezuela.</p>
         </header>
         
         <div class="calculator-section">
-            <h2>🧮 Calculadora de Remesas</h2>
+            <h2>🧮 Calculadora</h2>
             <div class="form-group">
-                <label for="origen">País Origen:</label>
-                <select id="origen">
+                <label for="origen">Origen:</label>
+                <select id="origen" onchange="actualizarDestino()">
                     <option value="">Selecciona...</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="destino">País Destino:</label>
+                <label for="destino">Destino:</label>
                 <select id="destino">
                     <option value="">Selecciona...</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="monto">Monto en Origen:</label>
+                <label for="monto">Monto Origen (Moneda Local):</label>
                 <input type="number" id="monto" placeholder="Ej. 1000" min="0" step="0.01">
             </div>
             <button onclick="calcularRemesa()">Calcular</button>
+            <button class="contact-button" onclick="solicitarRemesa()" id="solicitarBtn" style="display: none;">Solicitar Remesa</button>
             <div id="resultado"></div>
         </div>
         
         <div class="rates-table">
-            <h2>📊 Tasas Disponibles</h2>
+            <h2>📊 Tasas</h2>
             <table id="ratesTable">
                 <thead>
                     <tr>
@@ -225,7 +237,7 @@
     </div>
 
     <footer>
-        <p>© 2025 Servicios Blackbird. Remesas precisas y rápidas.</p>
+        <p>© 2025 Servicios Blackbird. Remesas precisas.</p>
         <div class="social-links">
             <a href="https://wa.me/+51XXXXXXXXX" target="_blank">📱 WhatsApp</a>
             <a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank">✈️ Telegram</a>
@@ -239,19 +251,34 @@
         
         const paises = ['ESP', 'USA', 'MEX', 'BRA', 'CHI', 'ECU', 'PER', 'ARG', 'COL', 'VEN'];
         const nombresPaises = {
-            'ESP': 'España',
-            'USA': 'USA',
-            'MEX': 'México',
-            'BRA': 'Brasil',
-            'CHI': 'Chile',
-            'ECU': 'Ecuador',
-            'PER': 'Perú',
-            'ARG': 'Argentina',
-            'COL': 'Colombia',
-            'VEN': 'Venezuela'
+            'ESP': 'España (EUR)',
+            'USA': 'USA (USD)',
+            'MEX': 'México (MXN)',
+            'BRA': 'Brasil (BRL)',
+            'CHI': 'Chile (CLP)',
+            'ECU': 'Ecuador (USD)',
+            'PER': 'Perú (PEN)',
+            'ARG': 'Argentina (ARS)',
+            'COL': 'Colombia (COP)',
+            'VEN': 'Venezuela (VES)'
         };
-        
-        let rates = {}; // Objeto { 'ESP-USA': 1.08, ... }
+        const siglasPares = {
+            'ESP-USA': 'ESUS', 'USA-ESP': 'USES',
+            'MEX-USA': 'MXUS', 'USA-MEX': 'USMX',
+            'BRA-USA': 'BRUS', 'USA-BRA': 'USBR',
+            'CHI-USA': 'CHUS', 'USA-CHI': 'USCH',
+            'ECU-USA': 'ECUS', 'USA-ECU': 'USEC',
+            'PER-USA': 'PEUS', 'USA-PER': 'USPE',
+            'ARG-USA': 'ARUS', 'USA-ARG': 'USAR',
+            'COL-USA': 'COUS', 'USA-COL': 'USCO',
+            'VEN-USA': 'VEUS', 'USA-VEN': 'USVE',
+            'MEX-ARG': 'MXAR', 'ARG-MEX': 'ARMX',
+            'ARG-CHI': 'ARCL', 'CHI-ARG': 'CLAR',
+            'PER-VEN': 'PEVE', 'VEN-PER': 'VEPE'
+            // Añade más combinaciones según tu CSV
+        };
+
+        let rates = {}; // { 'ESP-USA': 1.08, ... }
 
         // Cargar datos
         async function cargarDatos() {
@@ -281,17 +308,13 @@
                 if (col9 === 'PROVEDOR') {
                     let pairFull = row[1] ? row[1].trim().replace(/"/g, '') : '';
                     pairFull = pairFull.replace('COTIZACION MESA ', '');
-                    // Limpiar emojis y normalizar nombres
-                    paises.forEach(p => {
-                        const emoji = getEmoji(p);
-                        pairFull = pairFull.replace(emoji, '').replace(nombresPaises[p], p);
-                    });
-                    const parts = pairFull.split('-');
-                    if (parts.length >= 2) {
-                        const origen = parts[0].trim();
-                        const destino = parts[1].trim();
-                        if (paises.includes(origen) && paises.includes(destino)) {
-                            currentPair = `${origen}-${destino}`;
+                    // Normalizar a siglas
+                    for (let sigla in siglasPares) {
+                        const [origen, destino] = sigla.split('-');
+                        const nombrePar = `${nombresPaises[origen]} a ${nombresPaises[destino]}`;
+                        if (pairFull.includes(nombrePar) || pairFull.includes(sigla)) {
+                            currentPair = sigla;
+                            break;
                         }
                     }
                 } else if (col9 === 'VENTA IMAD' && currentPair) {
@@ -302,7 +325,7 @@
                         rates[currentPair] = rateFloat;
                         // Añadir inversa si no existe
                         const inversePair = currentPair.split('-').reverse().join('-');
-                        if (!rates[inversePair]) {
+                        if (siglasPares[inversePair] && !rates[inversePair]) {
                             rates[inversePair] = 1 / rateFloat;
                         }
                     }
@@ -329,12 +352,15 @@
                 'PER-USA': 3.75, 'USA-PER': 0.267,
                 'ARG-USA': 950, 'USA-ARG': 0.00105,
                 'COL-USA': 4100, 'USA-COL': 0.000244,
-                'VEN-USA': 36, 'USA-VEN': 0.0278
+                'VEN-USA': 36, 'USA-VEN': 0.0278,
+                'MEX-ARG': 51.35, 'ARG-MEX': 0.0195,
+                'ARG-CHI': 0.0102, 'CHI-ARG': 98.04,
+                'PER-VEN': 13.5, 'VEN-PER': 0.074
             };
             poblarSelects();
             mostrarTabla();
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('error').innerHTML = '<p>Datos de ejemplo cargados. Tasas reales disponibles pronto.</p>';
+            document.getElementById('error').innerHTML = '<p>Datos de ejemplo. Tasas reales disponibles pronto.</p>';
             document.getElementById('error').style.display = 'block';
         }
 
@@ -349,18 +375,20 @@
             });
         }
 
+        function actualizarDestino() {
+            const origen = document.getElementById('origen').value;
+            const destinoSelect = document.getElementById('destino');
+            destinoSelect.value = '';
+        }
+
         function mostrarTabla() {
             const tbody = document.querySelector('#ratesTable tbody');
             tbody.innerHTML = '';
-            paises.forEach(origen => {
-                paises.forEach(destino => {
-                    const pair = `${origen}-${destino}`;
-                    if (rates[pair]) {
-                        const rate = rates[pair].toFixed(4);
-                        tbody.innerHTML += `<tr><td>${nombresPaises[origen]}</td><td>${nombresPaises[destino]}</td><td>${rate}</td></tr>`;
-                    }
-                });
-            });
+            for (let pair in rates) {
+                const [origen, destino] = pair.split('-');
+                const rate = rates[pair].toFixed(4);
+                tbody.innerHTML += `<tr><td>${nombresPaises[origen]}</td><td>${nombresPaises[destino]}</td><td>${rate}</td></tr>`;
+            }
         }
 
         function calcularRemesa() {
@@ -368,22 +396,43 @@
             const destino = document.getElementById('destino').value;
             const monto = parseFloat(document.getElementById('monto').value);
             const resultadoDiv = document.getElementById('resultado');
+            const solicitarBtn = document.getElementById('solicitarBtn');
 
             if (!origen || !destino || isNaN(monto) || monto <= 0) {
                 resultadoDiv.innerHTML = '<p style="color: #dc3545;">Selecciona origen, destino y monto válido.</p>';
+                solicitarBtn.style.display = 'none';
+                return;
+            }
+
+            if (origen === destino) {
+                resultadoDiv.innerHTML = '<p style="color: #dc3545;">Origen y destino deben ser diferentes.</p>';
+                solicitarBtn.style.display = 'none';
                 return;
             }
 
             const pair = `${origen}-${destino}`;
             const tasa = rates[pair];
             if (!tasa) {
-                resultadoDiv.innerHTML = '<p style="color: #dc3545;">Ruta no disponible. Verifica países.</p>';
+                resultadoDiv.innerHTML = '<p style="color: #dc3545;">Ruta no disponible.</p>';
+                solicitarBtn.style.display = 'none';
                 return;
             }
 
+            const monedaOrigen = nombresPaises[origen].match(/\((.*?)\)/)[1];
             const resultado = (monto / tasa).toFixed(2);
+            const monedaDestino = nombresPaises[destino].match(/\((.*?)\)/)[1];
+            resultadoDiv.innerHTML = `<p>Monto Origen: $${monto} ${monedaOrigen} → Recibes: $${resultado} ${monedaDestino}</p>`;
+            solicitarBtn.style.display = 'block';
+            solicitarBtn.onclick = () => solicitarRemesa(origen, destino, monto, resultado, monedaOrigen, monedaDestino);
+        }
+
+        function solicitarRemesa(origen, destino, monto, resultado, monedaOrigen, monedaDestino) {
+            const nombreOrigen = nombresPaises[origen];
             const nombreDestino = nombresPaises[destino];
-            resultadoDiv.innerHTML = `<p>Monto en ${nombreDestino}: $${resultado}</p>`;
+            const mensaje = `Solicitud de remesa: $${monto} ${monedaOrigen} de ${nombreOrigen} a ${nombreDestino}. Recibiré $${resultado} ${monedaDestino}.`;
+            window.open(`https://wa.me/+51XXXXXXXXX?text=${encodeURIComponent(mensaje)}`, '_blank');
+            // Alternativa Telegram: descomenta si prefieres
+            // window.open(`https://t.me/+i02VPMg23TNiOWJh?text=${encodeURIComponent(mensaje)}`, '_blank');
         }
 
         function getEmoji(pais) {
