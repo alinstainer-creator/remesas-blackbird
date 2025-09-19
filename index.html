@@ -103,7 +103,7 @@
               const exchangeRates = {};
               // Filas específicas para pares y tasas
               const pairRows = [6, 15, 24, 33, 42, 51, 60, 69, 78, 87, 96, 105, 114]; // D6, D15, D24, etc.
-              const rateRows = [4, 13, 22, 31, 40, 49, 58, 67, 76, 85, 94, 103, 112]; // FG4, FG13, FG22, etc.
+              const rateRows = [7, 16, 25, 34, 43, 52, 61, 70, 79, 88, 97, 106, 115]; // FG7, FG16, FG25, etc.
               
               pairRows.forEach((pairRow, index) => {
                 const row = results.data[pairRow - 1]; // Ajustar a índice 0-based
@@ -119,6 +119,7 @@
                     // Obtener la tasa de la fila correspondiente en FG
                     const rateRow = results.data[rateRows[index] - 1];
                     if (rateRow && rateRow[5]) {
+                      console.log(`Fila ${rateRows[index]}: Columna FG (índice 5) = ${rateRow[5]}`);
                       let rate = rateRow[5].replace('$', '').replace(',', '.');
                       rate = rate.replace(/\.(?=\d{3})/g, ''); // Quitar separador de miles
                       const parsedRate = parseFloat(rate);
