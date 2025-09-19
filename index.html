@@ -5,71 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blackbird Exchange — Concierge</title>
   <style>
-    /* Tema inmersivo SR-71: Oscuro, futurista, como cabina de avión espía */
+    /* Tema amigable con vibe SR-71: Oscuro pero suave, con toques verdes y negros, pero no tan intenso */
     body {
-      font-family: 'Courier New', monospace; /* Fuente tipo consola para vibe técnica */
-      background-color: #000; /* Negro profundo como el espacio */
-      color: #0f0; /* Verde luminoso como pantallas de radar */
+      font-family: Arial, sans-serif; /* Fuente amigable y legible */
+      background-color: #1a1a1a; /* Gris oscuro suave en lugar de negro puro */
+      color: #ffffff; /* Blanco para contraste */
       max-width: 100vw;
       margin: 0;
       padding: 20px;
       overflow-x: hidden;
-      animation: radar-sweep 10s infinite linear; /* Animación sutil de barrido */
     }
-    @keyframes radar-sweep {
-      0% { background-color: #000; }
-      50% { background-color: #010; }
-      100% { background-color: #000; }
-    }
-    h1, h2, h3 { color: #0f0; text-shadow: 0 0 5px #0f0; } /* Glow effect */
+    h1, h2, h3 { color: #00ff00; text-shadow: 0 0 3px #00ff00; } /* Verde suave con glow sutil */
     select, input, button {
-      background-color: #111;
-      color: #0f0;
-      border: 1px solid #0f0;
+      background-color: #333333;
+      color: #ffffff;
+      border: 1px solid #00ff00;
       padding: 10px;
       margin: 10px 0;
       font-family: inherit;
-      border-radius: 0; /* Bordes rectos como paneles militares */
+      border-radius: 5px; /* Bordes redondeados para amigabilidad */
     }
-    button:hover { background-color: #020; cursor: pointer; }
-    .result { font-weight: bold; font-size: 1.2em; text-shadow: 0 0 3px #0f0; }
+    button:hover { background-color: #444444; cursor: pointer; }
+    .result { font-weight: bold; font-size: 1.2em; color: #00ff00; }
     table {
       border-collapse: collapse;
       width: 100%;
-      background-color: #111;
-      border: 1px solid #0f0;
+      background-color: #333333;
+      border: 1px solid #00ff00;
     }
     th, td {
-      border: 1px solid #0f0;
+      border: 1px solid #00ff00;
       padding: 10px;
       text-align: left;
-      color: #0f0;
+      color: #ffffff;
     }
-    th { background-color: #020; }
-    button.invert { background: none; border: none; color: #f00; font-size: 1.2em; } /* Rojo para alerta */
+    th { background-color: #222222; }
+    button.invert { background: none; border: none; color: #ff0000; font-size: 1.2em; cursor: pointer; }
     footer {
       margin-top: 20px;
       text-align: center;
-      font-size: 0.8em;
-      color: #0a0;
+      font-size: 0.9em;
+      color: #cccccc;
     }
-    footer a { color: #0f0; text-decoration: none; }
+    footer a { color: #00ff00; text-decoration: none; }
     footer a:hover { text-decoration: underline; }
-    /* Loader para inmersión */
-    .loader { display: none; color: #0f0; font-size: 1em; animation: blink 1s infinite; }
+    .loader { display: none; color: #00ff00; font-size: 1em; animation: blink 1s infinite; }
     @keyframes blink { 50% { opacity: 0; } }
-    /* Añadir más estilos para expandir y hacer inmersivo */
     .container { 
-      border: 2px solid #0f0; 
+      border: 2px solid #00ff00; 
       padding: 20px; 
-      box-shadow: 0 0 10px #0f0; 
-      background: rgba(0,0,0,0.8); 
+      box-shadow: 0 0 5px #00ff00; 
+      background: rgba(0, 0, 0, 0.7); 
+      border-radius: 10px; /* Amigable */
     }
-    label { display: block; color: #0a0; }
+    label { display: block; color: #cccccc; }
+    img.logo { max-width: 200px; display: block; margin: 0 auto 20px; }
   </style>
 </head>
 <body>
   <div class="container">
+    <img src="logo%20blackbird.png" alt="Logo Blackbird" class="logo">
     <h1>Blackbird Exchange — Concierge</h1>
     <h2>Interfaz premium — Cabina SR-71</h2>
     
@@ -112,33 +107,33 @@
   
   <footer>
     © 2025 Blackbird Exchange — Concierge<br>
-    Contacto: <a href="https://t.me/BlackbirdExchange">Telegram</a> | <a href="mailto:info@blackbirdexchange.com">Email</a> | <a href="https://blackbirdexchange.com">Sitio Web</a>
+    Contacto: <a href="https://t.me/+i02VPMg23TNiOWJh">Canal de Telegram</a> | <a href="https://www.instagram.com/servicios_blackbird?igsh=MTlwZTVsaWR4dDBoMQ%3D%3D&utm_source=qr">Instagram</a> | <a href="https://www.tiktok.com/@remesasblackbird?_t=ZM-8zqW0ByBXVg&_r=1">TikTok</a>
   </footer>
   
   <script>
-    // Mapeo expandido de países a monedas basado en comunes (ampliado para más datos)
-    const countryToCurrency = {
-      "Argentina": "ARS",
-      "Estados Unidos": "USD",
-      "Brasil": "BRL",
-      "Chile": "CLP",
-      "Colombia": "COP",
-      "México": "MXN",
-      "Eurozona": "EUR",
-      "Reino Unido": "GBP",
-      "Japón": "JPY",
-      "Canadá": "CAD",
-      "Australia": "AUD",
-      "Venezuela": "VES",
-      "Perú": "PEN",
-      "Uruguay": "UYU",
-      "Paraguay": "PYG",
-      // Añade más si es necesario basado en tu sheet
+    // Mapeo de abreviaturas de países a nombres completos y monedas (amplíalo si es necesario)
+    const abbrToCountry = {
+      "ARG": {name: "Argentina", currency: "ARS"},
+      "USA": {name: "Estados Unidos", currency: "USD"},
+      "BRA": {name: "Brasil", currency: "BRL"},
+      "CHL": {name: "Chile", currency: "CLP"},
+      "COL": {name: "Colombia", currency: "COP"},
+      "MEX": {name: "México", currency: "MXN"},
+      "EUR": {name: "Eurozona", currency: "EUR"},
+      "GBR": {name: "Reino Unido", currency: "GBP"},
+      "JPN": {name: "Japón", currency: "JPY"},
+      "CAN": {name: "Canadá", currency: "CAD"},
+      "AUS": {name: "Australia", currency: "AUD"},
+      "VEN": {name: "Venezuela", currency: "VES"},
+      "PER": {name: "Perú", currency: "PEN"},
+      "URY": {name: "Uruguay", currency: "UYU"},
+      "PRY": {name: "Paraguay", currency: "PYG"},
+      // Agrega más abreviaturas basadas en tu sheet
     };
 
-    let ratesData = []; // Almacena pares y tasas del sheet
+    let ratesData = []; // Almacena datos de países, pares y tasas
 
-    // Función para cargar datos del CSV (lectura directa desde sheet)
+    // Cargar datos del CSV
     async function loadSheetData() {
       const loader = document.getElementById('loader');
       loader.style.display = 'block';
@@ -148,42 +143,57 @@
         const csvText = await response.text();
         const rows = csvText.split('\n').map(row => row.split(','));
         
-        // Extraer pares y tasas según el patrón exacto (no inventar nada)
-        for (let i = 5; i < rows.length; i += 9) { // Fila 6 es índice 5 (0-based)
-          const pairCell = rows[i]?.[3] || ''; // Columna D (índice 3)
-          if (!pairCell.trim()) break; // Detener si vacío
+        // Extraer según el patrón: países en B4 (index 3[1]), B13 (12[1]), B22 (21[1])...
+        // Pares en D6 (5[3]), D15 (14[3]), D24 (23[3])...
+        // Tasas en F7 (6[5]), F16 (15[5]), F25 (24[5])... (usando columna F=5 como en tu último mensaje; si alterna, ajusta)
+        for (let n = 0; ; n++) {
+          const countryRow = 3 + n * 9; // 3,12,21,... (0-based for B4, B13...)
+          const countryAbbr = rows[countryRow]?.[1]?.trim() || '';
+          if (!countryAbbr) break; // Detener si no hay más
           
+          const pairRow = 5 + n * 9; // 5,14,23,...
+          const pairCell = rows[pairRow]?.[3]?.trim() || '';
           const pairParts = pairCell.split('/').map(p => p.trim());
-          const origin = pairParts[0] || '';
-          const destination = pairParts[1] || '';
+          const originCurr = pairParts[0] || '';
+          const destCurr = pairParts[1] || '';
           
-          const rateRow = i + 1;
-          const alternIndex = Math.floor((i / 9)); // Alternar basado en posición
-          const rateCol = (alternIndex % 2 === 0) ? 5 : 6; // F=5, G=6
-          const rateStr = rows[rateRow]?.[rateCol] || '0';
-          const rate = parseFloat(rateStr.replace(',', '.')) || 0; // Manejar comas como decimales si es necesario
+          const rateRow = 6 + n * 9; // 6,15,24,...
+          let rateStr = rows[rateRow]?.[5] || ''; // Columna F=5 primero
+          if (!rateStr.trim()) rateStr = rows[rateRow]?.[6] || ''; // Si vacío, probar G=6
+          const rate = parseFloat(rateStr.replace(',', '.')) || 0;
+          
+          const countryInfo = abbrToCountry[countryAbbr] || {name: countryAbbr, currency: originCurr}; // Fallback si no en mapeo
           
           ratesData.push({
-            origin,
-            destination,
+            countryAbbr,
+            countryName: countryInfo.name,
+            originCurr,
+            destCurr,
             rate,
-            inverted: false, // No invertir automáticamente por defecto
-            cell: `Fila ${i + 2}, Celda ${rateCol === 5 ? 'F' : 'G'}` // Diagnóstico (fila 1-based)
+            inverted: false,
+            cell: `Fila ${rateRow + 1}, Celda ${rateStr === rows[rateRow]?.[5] ? 'F' : 'G'}`
           });
         }
         
-        // Poblar selectores de origen y destino con países (filtrados por monedas disponibles)
-        const uniqueCurrencies = new Set(ratesData.flatMap(d => [d.origin, d.destination]));
+        // Poblar selectores con países origen y destino (asumiendo destinos de los pares)
         const originSelect = document.getElementById('origin');
         const destinationSelect = document.getElementById('destination');
         originSelect.innerHTML = '<option value="">Selecciona origen...</option>';
         destinationSelect.innerHTML = '<option value="">Selecciona destino...</option>';
         
-        Object.entries(countryToCurrency).forEach(([country, currency]) => {
-          if (uniqueCurrencies.has(currency)) {
-            originSelect.innerHTML += `<option value="${country}">${country} (${currency})</option>`;
-            destinationSelect.innerHTML += `<option value="${country}">${country} (${currency})</option>`;
-          }
+        const uniqueDestCurr = new Set(ratesData.map(d => d.destCurr));
+        ratesData.forEach(data => {
+          originSelect.innerHTML += `<option value="${data.countryAbbr}">${data.countryName} (${data.originCurr})</option>`;
+        });
+        
+        // Para destinos, usar el mapeo inverso: curr to country
+        const currToCountry = {};
+        Object.entries(abbrToCountry).forEach(([abbr, info]) => {
+          currToCountry[info.currency] = info.name;
+        });
+        uniqueDestCurr.forEach(curr => {
+          const countryName = currToCountry[curr] || curr; // Fallback
+          destinationSelect.innerHTML += `<option value="${curr}">${countryName} (${curr})</option>`;
         });
         
         updateRates();
@@ -194,7 +204,7 @@
       }
     }
 
-    // Actualizar tabla de tasas detectadas
+    // Actualizar tabla
     function updateRates() {
       const tbody = document.getElementById('ratesBody');
       tbody.innerHTML = '';
@@ -202,87 +212,68 @@
         const effectiveRate = data.inverted ? (1 / data.rate) : data.rate;
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${data.origin}</td>
-          <td>${data.destination}</td>
+          <td>${data.originCurr}</td>
+          <td>${data.destCurr}</td>
           <td>${effectiveRate.toFixed(4)}</td>
           <td><button class="invert" onclick="invertRate(${index})">↺</button></td>
-          <td>Muestra fila y celda origen del valor detectado: ${data.cell}</td>
+          <td>${data.cell} (para ${data.countryName})</td>
         `;
         tbody.appendChild(row);
       });
     }
 
-    // Función para invertir tasa manualmente (forzar lógica)
+    // Invertir
     function invertRate(index) {
       ratesData[index].inverted = !ratesData[index].inverted;
       updateRates();
     }
 
-    // Validar monto (para experiencia smooth)
+    // Validar monto
     function validateAmount() {
       const amountInput = document.getElementById('amount');
       if (amountInput.value < 0) amountInput.value = 0;
     }
 
-    // Calcular conversión (usar tasas del sheet tal cual, detectar auto multiply/divide basado en >1 o <1)
+    // Calcular
     function calculate() {
-      const originCountry = document.getElementById('origin').value;
-      const destCountry = document.getElementById('destination').value;
+      const originAbbr = document.getElementById('origin').value;
+      const destCurr = document.getElementById('destination').value;
       const amount = parseFloat(document.getElementById('amount').value);
       const resultDiv = document.getElementById('result');
       
-      if (!originCountry || !destCountry || isNaN(amount) || amount <= 0) {
+      if (!originAbbr || !destCurr || isNaN(amount) || amount <= 0) {
         resultDiv.textContent = 'Completa los campos correctamente.';
         return;
       }
       
-      const originCurrency = countryToCurrency[originCountry];
-      const destCurrency = countryToCurrency[destCountry];
-      
-      // Buscar par directo o inverso
-      let pair = ratesData.find(d => 
-        (d.origin === originCurrency && d.destination === destCurrency) ||
-        (d.origin === destCurrency && d.destination === originCurrency)
-      );
+      const pair = ratesData.find(d => d.countryAbbr === originAbbr && d.destCurr === destCurr);
       
       if (!pair) {
-        resultDiv.textContent = 'Par de monedas no disponible en el sheet.';
+        resultDiv.textContent = 'Par no disponible para este origen y destino.';
         return;
       }
       
       let effectiveRate = pair.rate;
-      let isDirect = (pair.origin === originCurrency && pair.destination === destCurrency);
-      
-      // Detección automática: si rate >1, asumir multiplicar para currecies inflacionarias; si <1, dividir (pero solo si no manual invert)
       if (!pair.inverted) {
-        if (effectiveRate > 1 && !isDirect) {
-          effectiveRate = 1 / effectiveRate; // Auto ajustar si parece inverso
-          isDirect = !isDirect;
-        } else if (effectiveRate < 1 && isDirect) {
-          effectiveRate = 1 / effectiveRate;
-          isDirect = !isDirect;
-        }
+        // Detección auto: si rate >1, multiplicar; <1, dividir (ajusta según lógica)
+        if (effectiveRate < 1) effectiveRate = 1 / effectiveRate;
       } else {
         effectiveRate = pair.inverted ? (1 / pair.rate) : pair.rate;
       }
       
-      // Calcular: multiply o divide basado en dirección
-      let result = isDirect ? (amount * effectiveRate) : (amount / effectiveRate);
+      const result = amount * effectiveRate; // Asumir multiplicar; ajusta si es divide
+      const destCountry = document.getElementById('destination').options[document.getElementById('destination').selectedIndex].text.split(' (')[0];
       
-      resultDiv.textContent = `${result.toFixed(2)} ${destCurrency} (moneda oficial del destino)`;
+      resultDiv.textContent = `${result.toFixed(2)} ${destCurr} (moneda oficial de ${destCountry})`;
     }
 
-    // Copiar resultado al portapapeles
+    // Copiar
     function copyResult() {
       const resultText = document.getElementById('result').textContent;
-      navigator.clipboard.writeText(resultText).then(() => {
-        alert('Resultado copiado al portapapeles.');
-      }).catch(err => {
-        alert('Error al copiar: ' + err.message);
-      });
+      navigator.clipboard.writeText(resultText).then(() => alert('Copiado')).catch(err => alert('Error: ' + err));
     }
 
-    // Cargar datos al iniciar la página (inmersión inmediata)
+    // Iniciar
     window.onload = loadSheetData;
   </script>
 </body>
