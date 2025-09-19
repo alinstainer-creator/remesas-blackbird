@@ -1,493 +1,211 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Blackbird SR-71 — Calculadora Ultrapremium (Venta IMAD)</title>
-<meta name="description" content="Calculadora Blackbird SR-71 - Lee CSV de Google Sheets, usa filas 'Venta IMAD' y precios en F/G.">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛩️ Blackbird SR-71 - Calculadora Supersónica</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#000000;
-  --panel:#07070a;
-  --accent:#00d0ff;
-  --accent-deep:#0077cc;
-  --muted:#9fbfdc;
-  --glass: rgba(255,255,255,0.025);
-  --success:#4de07a;
-  --danger:#ff6f6f;
+body {
+  margin:0; padding:0;
+  font-family:'Roboto Condensed',sans-serif;
+  background:#000; color:#d0e0f0; overflow-x:hidden;
 }
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:linear-gradient(180deg,#000 0%,#05050a 60%);color:#e9fbff;font-family:'Roboto Condensed',sans-serif}
-.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
-.shell{width:100%;max-width:1200px;border-radius:16px;position:relative;overflow:hidden;border:1px solid rgba(0,208,255,0.04);box-shadow:0 30px 80px rgba(0,0,0,0.85)}
-canvas#radarBG{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:0.12;filter:blur(0.6px)}
-.header{position:relative;z-index:2;padding:22px 28px;display:flex;gap:18px;align-items:center;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
-.logo{width:92px;height:92px;border-radius:50%;border:3px solid var(--accent);box-shadow:0 12px 40px rgba(0,208,255,0.06);object-fit:cover}
-.brand{flex:1}
-.title{font-family:'Orbitron',monospace;color:var(--accent);font-size:20px;margin:0}
-.subtitle{color:var(--muted);font-size:13px;margin-top:6px}
-.body{display:grid;grid-template-columns:1fr 420px;gap:20px;padding:24px;position:relative;z-index:2}
-@media(max-width:980px){ .body{grid-template-columns:1fr} }
-.card{background:linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.006));border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.02)}
-label{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;font-weight:700}
-.row{display:flex;gap:12px}
-.col{flex:1}
-select,input{width:100%;padding:12px 14px;border-radius:10px;background:rgba(10,10,12,0.6);border:1px solid rgba(255,255,255,0.03);color:#eafcff;font-size:15px}
-select:focus,input:focus{outline:none;box-shadow:0 8px 26px rgba(0,208,255,0.06);border-color:var(--accent)}
-.small{font-size:13px;color:var(--muted);margin-top:8px}
-.actions{display:flex;gap:12px;margin-top:14px}
-.btn{flex:1;padding:12px 14px;border-radius:12px;border:none;cursor:pointer;font-weight:800;letter-spacing:0.6px}
-.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-deep));color:#02131a;box-shadow:0 10px 30px rgba(0,208,255,0.12), inset 0 1px 0 rgba(255,255,255,0.06)}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
-.btn-telegram{background:linear-gradient(90deg,#2bd36b,#1ea64b);color:#02110a}
-.btn:hover{transform:translateY(-3px);box-shadow:0 22px 60px rgba(0,208,255,0.08)}
-.result{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(0,180,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(0,180,255,0.04)}
-.res-left{font-size:14px;color:#eafcff}
-.res-right{font-family:'Orbitron',monospace;color:var(--accent);font-size:22px}
-.side-title{font-family:'Orbitron',monospace;color:var(--accent);font-size:15px;margin-bottom:10px}
-.table-wrap{max-height:520px;overflow:auto;margin-top:8px}
-table{width:100%;border-collapse:collapse;color:#eafcff}
-th,td{padding:10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.03)}
-th{background:linear-gradient(90deg,var(--accent),var(--accent-deep));color:#02131a;font-weight:800;font-size:12px}
-.td-right{text-align:right}
-.footer{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-top:1px solid rgba(255,255,255,0.02);font-size:13px;color:var(--muted)}
-.note{font-size:12px;color:var(--muted);margin-top:10px}
-@media(max-width:520px){ .header{padding:16px} .body{padding:16px} .res-right{font-size:18px} }
+.container{
+  max-width:1100px; margin:40px auto; padding:50px;
+  background: rgba(0,0,0,0.9);
+  border-radius:15px;
+  box-shadow:0 0 50px #00b4ff;
+  position:relative; overflow:hidden;
+}
+.logo{
+  width:150px; display:block; margin:0 auto 15px;
+  border-radius:50%; border:3px solid #00b4ff;
+}
+h1{
+  font-family:'Orbitron',monospace; text-align:center;
+  color:#00b4ff; font-size:3.5em; margin:10px 0;
+  text-shadow:0 0 20px #00b4ff;
+}
+.subtitle{text-align:center; font-size:1.3em; color:#a0c0e0; margin-bottom:35px;}
+.calculator-section{
+  background: rgba(10,20,40,0.95); padding:35px;
+  border-radius:12px; margin-bottom:35px; border:1px solid #00b4ff;
+}
+.calculator-section h2{text-align:center;color:#00b4ff;font-family:'Orbitron',monospace;margin-bottom:30px;}
+.form-row{display:flex; gap:25px; flex-wrap:wrap;}
+.form-group{flex:1; min-width:150px;}
+label{display:block;margin-bottom:8px;text-transform:uppercase;font-weight:600;color:#d0e0f0;}
+select,input{width:100%;padding:14px;border-radius:6px;border:1px solid #00b4ff;background: rgba(255,255,255,0.05);color:#d0e0f0;font-size:1.1em;}
+button{
+  width:100%; padding:18px; background:linear-gradient(135deg,#00b4ff,#0077cc);
+  color:#000;font-weight:700;border:none;border-radius:6px;font-family:'Orbitron',monospace;cursor:pointer;margin-top:15px;font-size:1.2em;
+  transition: all 0.2s;
+}
+button:hover{transform:translateY(-4px); box-shadow:0 10px 25px #00b4ff;}
+#resultado{
+  margin-top:25px; text-align:center; font-size:1.3em;
+  padding:18px; background:rgba(0,180,255,0.15); border-radius:8px;
+  box-shadow: inset 0 0 20px rgba(0,180,255,0.2);
+}
+footer{text-align:center; color:#a0c0e0; margin-top:40px;}
+.social-links{display:flex;justify-content:center;gap:25px;margin-top:15px;}
+.social-links a{color:#00b4ff;font-size:2em;text-decoration:none;transition: all 0.3s;}
+.social-links a:hover{color:#0077cc;text-shadow:0 0 15px #00b4ff;}
+canvas{position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;}
+@media(max-width:600px){.form-row{flex-direction:column;}}
 </style>
 </head>
 <body>
-<div class="page">
-  <div class="shell">
-    <canvas id="radarBG"></canvas>
+<canvas id="bgCanvas"></canvas>
+<div class="container">
+  <img src="logo blackbird.png" alt="Logo Blackbird" class="logo" onerror="this.src='https://via.placeholder.com/150x150/00b4ff/000?text=SR71';">
+  <h1>🛩️ Blackbird SR-71</h1>
+  <p class="subtitle">Calculadora de remesas supersónica inmersiva</p>
 
-    <div class="header">
-      <img src="logo blackbird.png" alt="logo" class="logo" onerror="this.onerror=null;this.src='https://via.placeholder.com/92/00d0ff/071017?text=SR-71'">
-      <div class="brand">
-        <div class="title">BLACKBIRD SR-71 — REMESAS</div>
-        <div class="subtitle">Ultrapremium • Lectura fiable desde tu Google Sheet</div>
+  <div class="calculator-section">
+    <h2>🧮 Calculadora de Remesas</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="origen">Origen</label>
+        <select id="origen"></select>
       </div>
-      <div style="text-align:right;color:var(--muted);font-size:12px">vFINAL • LAB-GRADE</div>
-    </div>
-
-    <div class="body">
-      <!-- LEFT -->
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div>
-            <div style="font-weight:800;color:var(--accent);font-size:13px">Calculadora Blackbird</div>
-            <div class="note">Selecciona origen y destino (los países salen desde la columna D de tu sheet). Presiona CALCULAR.</div>
-          </div>
-          <div style="font-size:12px;color:var(--muted)">Modo: frontend directo</div>
-        </div>
-
-        <div style="margin-top:8px">
-          <label for="selOrigen">País de Origen</label>
-          <select id="selOrigen"><option value="">Cargando países...</option></select>
-        </div>
-
-        <div style="margin-top:12px">
-          <label for="selDestino">País de Destino</label>
-          <select id="selDestino"><option value="">Cargando países...</option></select>
-        </div>
-
-        <div style="margin-top:12px">
-          <label for="monto">Monto (moneda local del origen)</label>
-          <input id="monto" type="number" placeholder="Ej. 1000.00" />
-        </div>
-
-        <div class="actions">
-          <button id="btnCalcular" class="btn btn-primary">CALCULAR</button>
-          <button id="btnPedido" class="btn btn-telegram">PEDIR POR TELEGRAM</button>
-        </div>
-
-        <div id="resultado" class="result">
-          <div class="res-left">Aquí verás cuánto recibirá el destinatario</div>
-          <div class="res-right">--</div>
-        </div>
-
-        <div class="note">Asegúrate de que tu sheet esté publicado en la web (o en modo lectura). Si quieres, pégame 5 filas de ejemplo y ajusto el parser en caliente.</div>
+      <div class="form-group">
+        <label for="destino">Destino</label>
+        <select id="destino"></select>
       </div>
-
-      <!-- RIGHT -->
-      <aside class="card">
-        <div class="side-title">Tasas (Venta IMAD)</div>
-        <div class="table-wrap">
-          <table id="ratesTable">
-            <thead><tr><th>Origen</th><th>Destino</th><th class="td-right">Tasa</th></tr></thead>
-            <tbody><tr><td colspan="3" style="color:var(--muted);padding:18px">Cargando tasas...</td></tr></tbody>
-          </table>
-        </div>
-
-        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
-          <div class="note">Contacto y redes</div>
-          <div style="display:flex;gap:8px"><a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank">✈️</a><a href="https://www.instagram.com/servicios_blackbird" target="_blank">📸</a><a href="https://www.tiktok.com/@remesasblackbird" target="_blank">🎵</a></div>
-        </div>
-      </aside>
     </div>
-
-    <div class="footer">
-      <div>© 2025 Blackbird SR-71 — Ultrapremium</div>
-      <div style="color:var(--muted);font-size:12px">Optimizado para móviles • Experiencia Mach-3</div>
+    <div class="form-group">
+      <label for="monto">Monto (Moneda Local)</label>
+      <input type="number" id="monto" placeholder="Ej. 1000" min="0" step="0.01">
     </div>
+    <button onclick="calcularRemesa()">Calcular</button>
+    <button onclick="abrirTelegram()" style="background:linear-gradient(135deg,#28a745,#1a8f5e); margin-top:10px;">Solicitar Servicio por Telegram</button>
+    <div id="resultado"></div>
   </div>
+
+  <footer>
+    <p>© 2025 Blackbird SR-71. Operando a velocidad supersónica.</p>
+    <div class="social-links">
+      <a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank">✈️</a>
+      <a href="https://www.instagram.com/servicios_blackbird" target="_blank">📸</a>
+      <a href="https://www.tiktok.com/@remesasblackbird" target="_blank">🎵</a>
+    </div>
+  </footer>
 </div>
 
-<!-- PapaParse -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
 <script>
-/* ========== CONFIG ========== */
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3yMHp1HF-2JS1j0vNcp_snCjtTaWuF6y8AldyFGxbWvQrmhvisnagcBC1pWiskalafvz0EVY8svR6/pub?gid=983978085&single=true&output=csv';
-const TELEGRAM_LINK = 'https://t.me/+i02VPMg23TNiOWJh';
-const RATE_MARKER = 'Venta IMAD'; // text in column J that signals the desired row
-/* ============================ */
+// CSV sheet con tus pares y precios
+const csvUrl='https://docs.google.com/spreadsheets/d/e/2PACX-1vR3yMHp1HF-2JS1j0vNcp_snCjtTaWuF6y8AldyFGxbWvQrmhvisnagcBC1pWiskalafvz0EVY8svR6/pub?gid=983978085&single=true&output=csv';
+let rates={}, paises=[], nombresPaises={};
 
-let rates = {};   // { "from|||to": price }
-let countriesSet = new Set();
-let allPairsSeen = []; // array of raw pair strings (for debugging)
-
-/* utility: remove accents and normalize string */
-function normalizeStr(s){
-  if(!s) return '';
-  // strip html / weird whitespace
-  s = String(s).trim();
-  // remove diacritics
-  s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  // lower case
-  s = s.toLowerCase();
-  // remove extra symbols from ends
-  s = s.replace(/^[^a-z0-9]+|[^a-z0-9]+$/gi,'');
-  // collapse spaces
-  s = s.replace(/\s+/g,' ');
-  return s;
-}
-
-/* parse price robustly: accepts "$852.75", "852,75", "0.2371", "0,2371" */
-function parsePrice(raw){
-  if(raw === undefined || raw === null) return NaN;
-  let s = String(raw).trim();
-  if(s === '') return NaN;
-  // strip currency symbols except digits, commas, dots, minus
-  s = s.replace(/[^\d\.,\-]/g,'').trim();
-  // if both comma and dot present, treat comma as thousand separator -> remove commas
-  if(s.indexOf(',') !== -1 && s.indexOf('.') !== -1){
-    s = s.replace(/,/g,'');
-  } else if(s.indexOf(',') !== -1 && s.indexOf('.') === -1){
-    // only comma present -> assume decimal separator
-    s = s.replace(/,/g,'.');
-  }
-  // remove stray non numeric
-  s = s.replace(/^[^0-9\-]+|[^0-9]+$/g,'');
-  const n = parseFloat(s);
-  return isNaN(n) ? NaN : n;
-}
-
-/* split pair into [from,to] for many separators */
-function splitPair(rawPair){
-  if(!rawPair) return null;
-  let p = String(rawPair).trim();
-  // normalize multiple whitespace
-  p = p.replace(/\s+/g,' ');
-  // try splitting by " - " or " -", "-", " – ", "—", " a ", " to ", "/", "\"
-  const parts = p.split(/\s*(?:[-–—\/\\]|(?:\sa\s)|(?:\sto\s))\s*/i).map(x=>x.trim()).filter(Boolean);
-  if(parts.length >= 2) return [parts[0], parts[1]];
-  // fallback: split by space if exactly 2 tokens
-  const tokens = p.split(' ').filter(Boolean);
-  if(tokens.length === 2) return [tokens[0], tokens[1]];
-  return null;
-}
-
-/* load CSV and process */
-async function loadAndProcess(){
+// Leer CSV y procesar pares
+async function cargarDatos(){
   try{
-    const res = await fetch(CSV_URL);
-    if(!res.ok) throw new Error('CSV fetch failed ' + res.status);
-    const text = await res.text();
-    Papa.parse(text, {header:false, skipEmptyLines:true, complete: (r) => handleRows(r.data) });
-  }catch(e){
-    console.error('Error loading CSV:', e);
-    // fallback demo
-    rates = {'Chile|||Venezuela': 0.2371, 'Chile|||USA':852.75, 'Argentina|||Chile': 0.005};
-    countriesSet = new Set(['Chile','Venezuela','USA','Argentina']);
-    populateSelects();
-    renderRatesTable();
-    console.warn('Usando fallback demo rates');
-  }
+    const res=await fetch(csvUrl);
+    const text=await res.text();
+    Papa.parse(text,{header:false,skipEmptyLines:true,complete:function(results){
+      procesarDatos(results.data);
+    }});
+  }catch(err){alert('Error al cargar sheet.'); console.error(err);}
 }
 
-/* handle rows: build country list from col D and rates from rows where col J == RATE_MARKER using F or G */
-function handleRows(rows){
-  rates = {};
-  countriesSet = new Set();
-  allPairsSeen = [];
-  // first gather all pairs seen in column D so selects include all possible countries
-  rows.forEach((row, idx)=>{
-    const rawPair = row[3] ? String(row[3]).trim() : '';
-    if(rawPair){
-      allPairsSeen.push(rawPair);
-      const parsed = splitPair(rawPair);
-      if(parsed && parsed.length >= 2){
-        countriesSet.add(parsed[0]);
-        countriesSet.add(parsed[1]);
-      }
-    }
-  });
-
-  // second, find rows where column J equals RATE_MARKER and use price from F or G
-  rows.forEach((row, idx)=>{
-    const marker = row[9] ? String(row[9]).trim() : '';
-    if(marker && marker.toLowerCase() === RATE_MARKER.toLowerCase()){
-      const rawPair = row[3] ? String(row[3]).trim() : '';
-      const parsed = splitPair(rawPair);
-      if(parsed && parsed.length >= 2){
-        const pF = parsePrice(row[5]);
-        const pG = parsePrice(row[6]);
-        const price = (!isNaN(pF) && pF !== 0) ? pF : ((!isNaN(pG) && pG !== 0) ? pG : NaN);
-        if(!isNaN(price)){
-          const key = `${parsed[0]}|||${parsed[1]}`;
-          rates[key] = price;
+function procesarDatos(rows){
+  rates={}; paises=[]; nombresPaises={};
+  rows.forEach(row=>{
+    if(row[9] && row[9].trim()==='Venta IMAD'){
+      const par=row[3]?.trim();
+      const precio=row[5]?.trim() || row[6]?.trim();
+      if(par && precio){
+        const [origen,destino]=par.split('-').map(s=>s.trim());
+        if(origen && destino){
+          rates[`${origen}-${destino}`]=parseFloat(precio.replace(',','.'));
+          if(!paises.includes(origen)) paises.push(origen);
+          if(!paises.includes(destino)) paises.push(destino);
+          nombresPaises[origen]=origen; nombresPaises[destino]=destino;
         }
       }
     }
   });
+  poblarSelects();
+}
 
-  // If no countries found via pairs, try scanning column D raw for tokens to synthesize list
-  if(countriesSet.size === 0 && allPairsSeen.length > 0){
-    allPairsSeen.forEach(raw => {
-      const parsed = splitPair(raw);
-      if(parsed && parsed.length >= 2){
-        countriesSet.add(parsed[0]); countriesSet.add(parsed[1]);
+function poblarSelects(){
+  const origenSelect=document.getElementById('origen');
+  const destinoSelect=document.getElementById('destino');
+  origenSelect.innerHTML='<option value="">Selecciona...</option>';
+  destinoSelect.innerHTML='<option value="">Selecciona...</option>';
+  paises.forEach(p=>{
+    origenSelect.innerHTML+=`<option value="${p}">${p}</option>`;
+    destinoSelect.innerHTML+=`<option value="${p}">${p}</option>`;
+  });
+}
+
+function calcularRemesa(){
+  const origen=document.getElementById('origen').value;
+  const destino=document.getElementById('destino').value;
+  const monto=parseFloat(document.getElementById('monto').value);
+  const resDiv=document.getElementById('resultado');
+  if(!origen||!destino||isNaN(monto)||monto<=0){resDiv.innerHTML='<span style="color:#dc3545;">Completa todos los campos.</span>'; return;}
+  if(origen===destino){resDiv.innerHTML='<span style="color:#dc3545;">Origen y destino deben ser diferentes.</span>'; return;}
+  const key=`${origen}-${destino}`;
+  const tasa=rates[key];
+  if(!tasa){resDiv.innerHTML='<span style="color:#dc3545;">Ruta no disponible.</span>'; return;}
+  const resultado=(monto*tasa).toFixed(2);
+  // Cambio dinámico del fondo según país destino
+  let colorDest="#00b4ff";
+  switch(destino){
+    case 'CHI': colorDest="#0055ff"; break;
+    case 'USA': colorDest="#00ffdd"; break;
+    case 'VEN': colorDest="#ff5555"; break;
+    case 'MEX': colorDest="#ffaa00"; break;
+    case 'BRA': colorDest="#55ff55"; break;
+    default: colorDest="#00b4ff";
+  }
+  document.querySelector('.container').style.boxShadow=`0 0 50px ${colorDest}`;
+  resDiv.innerHTML=`<p>Envías: ${monto} ${origen} → Recibes: ${resultado} ${destino} (Tasa: ${tasa})</p>`;
+}
+
+function abrirTelegram(){window.open('https://t.me/+i02VPMg23TNiOWJh','_blank');}
+
+// Animación radar y partículas
+const canvas=document.getElementById('bgCanvas');
+const ctx=canvas.getContext('2d');
+canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+let particles=[];
+for(let i=0;i<100;i++){
+  particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+1,dx:(Math.random()-0.5)*0.7,dy:(Math.random()-0.5)*0.7});
+}
+function draw(){
+  ctx.fillStyle='rgba(0,0,0,0.12)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  // Radar circulando
+  ctx.beginPath(); ctx.arc(canvas.width/2,canvas.height/2,150,0,Math.PI*2); ctx.strokeStyle='rgba(0,180,255,0.3)'; ctx.lineWidth=2; ctx.stroke();
+  ctx.beginPath(); ctx.arc(canvas.width/2,canvas.height/2,250,0,Math.PI*2); ctx.strokeStyle='rgba(0,180,255,0.15)'; ctx.lineWidth=1.5; ctx.stroke();
+  // Partículas
+  particles.forEach(p=>{
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle='rgba(0,180,255,0.6)'; ctx.fill();
+    p.x+=p.dx; p.y+=p.dy;
+    if(p.x>canvas.width)p.x=0;if(p.x<0)p.x=canvas.width;
+    if(p.y>canvas.height)p.y=0;if(p.y<0)p.y=canvas.height;
+    // Conexiones
+    particles.forEach(p2=>{
+      let dx=p.x-p2.x,dy=p.y-p2.y;
+      let dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p2.x,p2.y);
+        ctx.strokeStyle=`rgba(0,180,255,${1-dist/120})`; ctx.lineWidth=0.5; ctx.stroke();
       }
     });
-  }
-
-  // If still empty -> fallback sample
-  if(countriesSet.size === 0){
-    countriesSet = new Set(['Chile','Venezuela','USA','Mexico','Argentina','Peru','Colombia','Ecuador','Spain','Canada','Uruguay','Brazil']);
-    console.warn('No pairs detected — usando fallback country list');
-  }
-
-  populateSelects();
-  renderRatesTable();
-}
-
-/* helper: produce normalized matching key */
-function normForMatch(s){
-  // normalize and also remove common words
-  const n = normalizeStr(s);
-  return n.replace(/\b(country|república|de|del|the)\b/g,'').trim();
-}
-
-/* attempt to find rate given origin,dest with tolerant matching */
-function findRateFor(origin, dest){
-  if(!origin || !dest) return undefined;
-  const candidates = Object.keys(rates);
-  const targetFrom = normForMatch(origin);
-  const targetTo = normForMatch(dest);
-
-  // direct exact normalized match
-  for(const k of candidates){
-    const [f,t] = k.split('|||');
-    if(normForMatch(f) === targetFrom && normForMatch(t) === targetTo) return {key:k, price:rates[k]};
-  }
-
-  // try case-insensitive trimmed direct (original strings)
-  for(const k of candidates){
-    const [f,t] = k.split('|||');
-    if(String(f).trim().toLowerCase() === String(origin).trim().toLowerCase()
-       && String(t).trim().toLowerCase() === String(dest).trim().toLowerCase()) return {key:k, price:rates[k]};
-  }
-
-  // fuzzy: check if targetFrom exists inside normalized f or viceversa (handles 'Chile, CL' vs 'Chile')
-  for(const k of candidates){
-    const [f,t] = k.split('|||');
-    const nf = normForMatch(f);
-    const nt = normForMatch(t);
-    if(nf.includes(targetFrom) && nt.includes(targetTo)) return {key:k, price:rates[k]};
-    if(targetFrom.includes(nf) && targetTo.includes(nt)) return {key:k, price:rates[k]};
-  }
-
-  // try reverse match? (maybe sheet stored dest->origin but user picks origin->dest)
-  for(const k of candidates){
-    const [f,t] = k.split('|||');
-    if(normForMatch(f) === targetTo && normForMatch(t) === targetFrom){
-      // found reverse direction; but this rate is for reverse; we inform user
-      return {key:k, price:rates[k], reversed:true};
-    }
-  }
-
-  return undefined;
-}
-
-/* populate country selects */
-function populateSelects(){
-  const selO = document.getElementById('selOrigen');
-  const selD = document.getElementById('selDestino');
-  selO.innerHTML = '<option value="">Selecciona país...</option>';
-  selD.innerHTML = '<option value="">Selecciona país...</option>';
-  const arr = Array.from(countriesSet).sort((a,b)=>a.localeCompare(b,'es',{sensitivity:'base'}));
-  arr.forEach(c=>{
-    const opt = document.createElement('option'); opt.value = c; opt.textContent = c;
-    selO.appendChild(opt);
-    selD.appendChild(opt.cloneNode(true));
   });
-}
-
-/* render rates table */
-function renderRatesTable(){
-  const tbody = document.querySelector('#ratesTable tbody');
-  tbody.innerHTML = '';
-  const keys = Object.keys(rates).sort((a,b)=>a.localeCompare(b));
-  if(keys.length === 0){
-    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--muted);padding:14px">No se encontraron tasas "Venta IMAD" (columna J)</td></tr>';
-    return;
-  }
-  keys.forEach(k=>{
-    const [f,t] = k.split('|||');
-    const tr = document.createElement('tr');
-    const td1 = document.createElement('td'); td1.textContent = f;
-    const td2 = document.createElement('td'); td2.textContent = t;
-    const td3 = document.createElement('td'); td3.className='td-right'; td3.textContent = formatNumber(rates[k]);
-    tr.append(td1,td2,td3); tbody.appendChild(tr);
-  });
-}
-
-/* format number */
-function formatNumber(n){
-  if(isNaN(n)) return '--';
-  return Number(n).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
-}
-
-/* calculate on button press */
-function onCalculate(){
-  const origen = document.getElementById('selOrigen').value;
-  const destino = document.getElementById('selDestino').value;
-  const montoRaw = document.getElementById('monto').value;
-  const left = document.querySelector('.res-left');
-  const right = document.querySelector('.res-right');
-
-  if(!origen || !destino){
-    left.innerHTML = `<span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ff6f6f'}">Selecciona origen y destino</span>`;
-    right.innerText = '--';
-    return;
-  }
-  if(origen === destino){
-    left.innerHTML = `<span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ff6f6f'}">Origen y destino deben ser distintos</span>`;
-    right.innerText='--';
-    return;
-  }
-  const monto = Number(montoRaw);
-  if(isNaN(monto) || monto <= 0){
-    left.innerHTML = `<span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ff6f6f'}">Ingresa monto válido (>0)</span>`;
-    right.innerText='--';
-    return;
-  }
-
-  const match = findRateFor(origen, destino);
-  if(!match){
-    left.innerHTML = `<span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ff6f6f'}">Ruta no disponible (no se encuentra tasa)</span>`;
-    right.innerText='--';
-    return;
-  }
-  if(match.reversed){
-    left.innerHTML = `<span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ff6f6f'}">Atención: la hoja tiene la ruta inversa (${match.key.replace('|||',' → ')}). Verifica.</span>`;
-    right.innerText='--';
-    return;
-  }
-
-  const recibe = monto * match.price;
-  // animate count-up
-  animateCountUp(0, recibe, 800, v => {
-    right.innerText = formatNumber(v);
-  });
-  left.innerHTML = `${Number(monto).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} (${origen}) → recibe:`;
-  window._lastCalc = {origen,destino,monto,recibe,price:match.price};
-  // subtle pulse
-  const box = document.getElementById('resultado');
-  box.classList.add('pulse');
-  setTimeout(()=>box.classList.remove('pulse'),900);
-}
-
-/* count up */
-function animateCountUp(from, to, ms, onFrame){
-  const start = performance.now();
-  function frame(now){
-    const t = Math.min(1, (now - start)/ms);
-    const ease = 1 - Math.pow(1 - t, 3); // easeOutCubic
-    const curr = from + (to - from) * ease;
-    onFrame(curr);
-    if(t < 1) requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-}
-
-/* pedir por telegram */
-function onPedido(){
-  const origen = document.getElementById('selOrigen').value;
-  const destino = document.getElementById('selDestino').value;
-  const montoRaw = document.getElementById('monto').value;
-  if(!origen || !destino || !montoRaw){
-    alert('Completa origen, destino y monto antes de pedir el servicio.');
-    return;
-  }
-  // prefer last calc if matches
-  let recibeTxt = '';
-  if(window._lastCalc && window._lastCalc.origen === origen && window._lastCalc.destino === destino && Number(window._lastCalc.monto) === Number(montoRaw)){
-    recibeTxt = formatNumber(window._lastCalc.recibe);
-  } else {
-    const match = findRateFor(origen, destino);
-    if(!match || match.reversed){
-      alert('No hay tasa detectada para esta ruta. Verifica la hoja.');
-      return;
-    }
-    recibeTxt = formatNumber(Number(montoRaw) * match.price);
-  }
-  const tasaVal = (rates[`${origen}|||${destino}`] !== undefined) ? rates[`${origen}|||${destino}`] : 'N/D';
-  const msg = `Hola, quiero hacer el cambio:\nEnviar: ${Number(montoRaw).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} (${origen})\nRecibir: ${recibeTxt} (${destino})\nRuta: ${origen} → ${destino}\nTasa (Venta IMAD): ${tasaVal}\nMuchas gracias.`;
-  window.open(TELEGRAM_LINK + '?text=' + encodeURIComponent(msg), '_blank');
-}
-
-/* radar background */
-(function radar(){
-  const canvas = document.getElementById('radarBG');
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  function fit(){ const dpr = devicePixelRatio || 1; canvas.width = canvas.offsetWidth * dpr; canvas.height = canvas.offsetHeight * dpr; ctx.setTransform(dpr,0,0,dpr,0,0); }
-  fit(); window.addEventListener('resize', fit);
-  let t=0;
-  function draw(){
-    const w = canvas.offsetWidth, h = canvas.offsetHeight;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    const cx = w * 0.16, cy = h * 0.16;
-    for(let i=0;i<6;i++){
-      ctx.beginPath();
-      ctx.strokeStyle = `rgba(0,208,255,${0.02 + i*0.005})`;
-      ctx.lineWidth = 1;
-      const r = 40 + i*70 + (t%80);
-      ctx.arc(cx, cy, r, 0, Math.PI*2);
-      ctx.stroke();
-    }
-    const ang = (t/30)%360 * Math.PI/180;
-    ctx.beginPath();
-    ctx.moveTo(cx,cy);
-    ctx.arc(cx,cy,260, ang-0.22, ang+0.22);
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(0,208,255,0.02)';
-    ctx.fill();
-    t += 1.1;
-    requestAnimationFrame(draw);
-  }
   requestAnimationFrame(draw);
-})();
+}
+draw();
 
-/* attach events */
-document.getElementById('btnCalcular').addEventListener('click', onCalculate);
-document.getElementById('btnPedido').addEventListener('click', onPedido);
-
-/* init */
-loadAndProcess();
+window.onload=cargarDatos;
+window.onresize=()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;};
 </script>
 </body>
 </html>
+
 
