@@ -8,17 +8,21 @@
         body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
         .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         .tabs { display: flex; margin-bottom: 20px; }
-        .tab { padding: 10px 20px; background: #ddd; cursor: pointer; border: none; margin-right: 5px; }
+        .tab { padding: 10px 20px; background: #ddd; cursor: pointer; border: none; margin-right: 5px; border-radius: 5px; }
         .tab.active { background: #007bff; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
+        th { background-color: #f2f2f2; font-weight: bold; }
         .calculator { background: #e9ecef; padding: 15px; border-radius: 5px; margin-top: 20px; }
-        input, select, button { padding: 8px; margin: 5px; }
+        input, select, button { padding: 8px; margin: 5px; border-radius: 3px; border: 1px solid #ccc; }
+        button { background: #007bff; color: white; cursor: pointer; }
+        button:hover { background: #0056b3; }
         #resultado { font-weight: bold; color: #007bff; margin-top: 10px; }
         .emoji { font-size: 1.2em; }
+        #loading, #error { text-align: center; margin: 10px; }
+        #error { color: red; }
     </style>
 </head>
 <body>
@@ -29,8 +33,8 @@
         <div id="tabs" class="tabs"></div>
         <div id="tab-contents"></div>
         
-        <div id="loading" style="text-align: center; display: none;">Cargando datos...</div>
-        <div id="error" style="color: red; display: none;"></div>
+        <div id="loading">Cargando datos...</div>
+        <div id="error" style="display: none;"></div>
     </div>
 
     <script>
@@ -42,17 +46,19 @@
         // Fetch CSV y procesar datos
         async function cargarDatos() {
             document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
             try {
                 const response = await fetch(csvUrl);
+                if (!response.ok) throw new Error('Error al cargar el CSV');
                 const text = await response.text();
-                const rows = text.split('\n').map(row => row.split(','));
+                const rows = text.split('\n').map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)); // Maneja comas en campos
                 
-                // Procesar como en el Python: filtrar pares y tasas
+                // Procesar como en el Python
                 let pairs = [], rates = [], currentPair = null;
                 rows.forEach((row, index) => {
                     if (row[9] === 'PROVEDOR') {
                         let pairFull = row[1] || '';
-                        let pairClean = pairFull.replace('COTIZACION MESA ', '').split(' 🇦')[0].split(' 🇨')[0].split(' 🇲')[0].split(' 🇵')[0].split(' 🇧')[0].split(' 🇻')[0].strip();
+                        let pairClean = pairFull.replace('COTIZACION MESA ', '').split(' 🇦')[0].split(' 🇨')[0].split(' 🇲')[0].split(' 🇵')[0].split(' 🇧')[0].split(' 🇻')[0].trim();
                         currentPair = pairClean;
                     } else if (row[9] === 'VENTA IMAD' && currentPair) {
                         let rate = row[5] || '';
@@ -139,13 +145,13 @@
             tablaHtml += `
                 <div class="calculator">
                     <h3>Calculadora de Remesa</h3>
-                    <input type="number" id="monto" placeholder="Monto en origen" min="0">
-                    <select id="conversionSelect">
+                    <input type="number" id="monto-${pais}" placeholder="Monto en origen" min="0">
+                    <select id="conversionSelect-${pais}">
                         <option value="">Selecciona conversión</option>
-                        ${dfPais.map(row => `<option value="${row.conversion}">${row.conversion}</option>`).join('')}
+                        ${dfPais.map(row => `<option value="${row.conversion}|${row.precio}">${row.conversion}</option>`).join('')}
                     </select>
-                    <button onclick="calcular()">Calcular</button>
-                    <div id="resultado"></div>
+                    <button onclick="calcular('${pais}')">Calcular</button>
+                    <div id="resultado-${pais}"></div>
                 </div>
             `;
 
@@ -153,18 +159,16 @@
         }
 
         // Función calculadora
-        function calcular() {
-            const monto = parseFloat(document.getElementById('monto').value);
-            const conv = document.getElementById('conversionSelect').value;
+        function calcular(pais) {
+            const monto = parseFloat(document.getElementById(`monto-${pais}`).value);
+            const [conv, precio] = document.getElementById(`conversionSelect-${pais}`).value.split('|');
             if (!monto || !conv) {
-                document.getElementById('resultado').textContent = 'Ingresa monto y conversión.';
+                document.getElementById(`resultado-${pais}`).textContent = 'Ingresa monto y conversión.';
                 return;
             }
-            const row = data.find(d => d.conversion === conv);
-            if (row) {
-                const resultado = (conv.includes('ARG-') ? monto / row.precio : monto * row.precio).toFixed(2);
-                document.getElementById('resultado').innerHTML = `Resultado: $${resultado} en destino. <span class="emoji">🚀</span>`;
-            }
+            const precioFloat = parseFloat(precio);
+            const resultado = (conv.includes(`${pais}-`) ? monto / precioFloat : monto * precioFloat).toFixed(2).replace(/\.?0+$/, '');
+            document.getElementById(`resultado-${pais}`).innerHTML = `Resultado: $${resultado} en destino. <span class="emoji">🚀</span>`;
         }
 
         // Cargar datos al iniciar
