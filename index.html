@@ -3,207 +3,144 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🛩️ Blackbird SR-71 - Calculadora Supersónica</title>
+<title>🛩️ Blackbird Remesas - Cabina SR-71</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
-body {
-  margin:0; padding:0;
-  font-family:'Roboto Condensed',sans-serif;
-  background:#000; color:#d0e0f0; overflow-x:hidden;
-}
-.container{
-  max-width:1100px; margin:40px auto; padding:50px;
-  background: rgba(0,0,0,0.9);
-  border-radius:15px;
-  box-shadow:0 0 50px #00b4ff;
-  position:relative; overflow:hidden;
-}
-.logo{
-  width:150px; display:block; margin:0 auto 15px;
-  border-radius:50%; border:3px solid #00b4ff;
-}
-h1{
-  font-family:'Orbitron',monospace; text-align:center;
-  color:#00b4ff; font-size:3.5em; margin:10px 0;
-  text-shadow:0 0 20px #00b4ff;
-}
-.subtitle{text-align:center; font-size:1.3em; color:#a0c0e0; margin-bottom:35px;}
-.calculator-section{
-  background: rgba(10,20,40,0.95); padding:35px;
-  border-radius:12px; margin-bottom:35px; border:1px solid #00b4ff;
-}
-.calculator-section h2{text-align:center;color:#00b4ff;font-family:'Orbitron',monospace;margin-bottom:30px;}
-.form-row{display:flex; gap:25px; flex-wrap:wrap;}
-.form-group{flex:1; min-width:150px;}
-label{display:block;margin-bottom:8px;text-transform:uppercase;font-weight:600;color:#d0e0f0;}
-select,input{width:100%;padding:14px;border-radius:6px;border:1px solid #00b4ff;background: rgba(255,255,255,0.05);color:#d0e0f0;font-size:1.1em;}
-button{
-  width:100%; padding:18px; background:linear-gradient(135deg,#00b4ff,#0077cc);
-  color:#000;font-weight:700;border:none;border-radius:6px;font-family:'Orbitron',monospace;cursor:pointer;margin-top:15px;font-size:1.2em;
-  transition: all 0.2s;
-}
-button:hover{transform:translateY(-4px); box-shadow:0 10px 25px #00b4ff;}
-#resultado{
-  margin-top:25px; text-align:center; font-size:1.3em;
-  padding:18px; background:rgba(0,180,255,0.15); border-radius:8px;
-  box-shadow: inset 0 0 20px rgba(0,180,255,0.2);
-}
-footer{text-align:center; color:#a0c0e0; margin-top:40px;}
-.social-links{display:flex;justify-content:center;gap:25px;margin-top:15px;}
-.social-links a{color:#00b4ff;font-size:2em;text-decoration:none;transition: all 0.3s;}
-.social-links a:hover{color:#0077cc;text-shadow:0 0 15px #00b4ff;}
-canvas{position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;}
-@media(max-width:600px){.form-row{flex-direction:column;}}
+body{margin:0;padding:0;font-family:'Roboto Condensed',sans-serif;background:#000;color:#d0e0f0;overflow-x:hidden;}
+canvas{position:fixed;top:0;left:0;z-index:-1;}
+.container{max-width:900px;margin:40px auto;padding:40px;background:rgba(10,15,25,0.95);border-radius:12px;box-shadow:0 0 50px rgba(0,180,255,0.5);}
+header{text-align:center;margin-bottom:30px;}
+.logo{width:140px;height:auto;margin-bottom:20px;border-radius:50%;border:3px solid #00b4ff;}
+h1{font-family:'Orbitron',monospace;color:#00b4ff;font-size:2.8em;margin:10px 0;text-shadow:0 0 10px #00b4ff;}
+.subtitle{color:#a0c0e0;font-size:1.1em;margin-bottom:20px;}
+.calculator-section{background:rgba(20,40,60,0.85);padding:25px;border-radius:10px;margin-bottom:25px;border:1px solid rgba(0,180,255,0.3);}
+.calculator-section h2{text-align:center;color:#00b4ff;font-family:'Orbitron',monospace;margin-bottom:20px;}
+.form-row{display:flex;gap:15px;margin-bottom:15px;}
+.form-group{flex:1;}
+label{display:block;margin-bottom:8px;color:#d0e0f0;font-weight:600;text-transform:uppercase;font-size:0.95em;}
+select,input{width:100%;padding:12px;border-radius:6px;border:1px solid rgba(0,180,255,0.3);background:rgba(255,255,255,0.05);color:#d0e0f0;font-size:1em;}
+select:focus,input:focus{outline:none;border-color:#00b4ff;box-shadow:0 0 10px rgba(0,180,255,0.4);}
+button{width:100%;padding:15px;margin-top:10px;background:linear-gradient(135deg,#00b4ff,#0077cc);color:#0d1725;font-family:'Orbitron',monospace;font-weight:700;font-size:1.2em;border:none;border-radius:6px;cursor:pointer;transition:all 0.2s;}
+button:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,180,255,0.6);}
+#resultado{margin-top:20px;padding:15px;background:rgba(0,180,255,0.1);border-radius:6px;text-align:center;font-size:1.1em;font-weight:500;border:1px solid rgba(0,180,255,0.25);}
+.social-links{display:flex;justify-content:center;gap:20px;margin-top:15px;}
+.social-links a{color:#00b4ff;font-size:1.8em;text-decoration:none;transition:0.3s;}
+.social-links a:hover{color:#0077cc;text-shadow:0 0 10px rgba(0,180,255,0.7);}
+@media(max-width:600px){.form-row{flex-direction:column;}h1{font-size:2em;}.logo{width:100px;}}
 </style>
 </head>
 <body>
 <canvas id="bgCanvas"></canvas>
 <div class="container">
-  <img src="logo blackbird.png" alt="Logo Blackbird" class="logo" onerror="this.src='https://via.placeholder.com/150x150/00b4ff/000?text=SR71';">
-  <h1>🛩️ Blackbird SR-71</h1>
-  <p class="subtitle">Calculadora de remesas supersónica inmersiva</p>
+<header>
+<img src="logo blackbird.png" alt="Logo Blackbird" class="logo" onerror="this.src='https://via.placeholder.com/140/00b4ff/1a2e44?text=SR-71';">
+<h1>🛩️ Blackbird Remesas</h1>
+<p class="subtitle">Cabina SR-71: Calculadora de remesas supersónica</p>
+</header>
 
-  <div class="calculator-section">
-    <h2>🧮 Calculadora de Remesas</h2>
-    <div class="form-row">
-      <div class="form-group">
-        <label for="origen">Origen</label>
-        <select id="origen"></select>
-      </div>
-      <div class="form-group">
-        <label for="destino">Destino</label>
-        <select id="destino"></select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="monto">Monto (Moneda Local)</label>
-      <input type="number" id="monto" placeholder="Ej. 1000" min="0" step="0.01">
-    </div>
-    <button onclick="calcularRemesa()">Calcular</button>
-    <button onclick="abrirTelegram()" style="background:linear-gradient(135deg,#28a745,#1a8f5e); margin-top:10px;">Solicitar Servicio por Telegram</button>
-    <div id="resultado"></div>
-  </div>
-
-  <footer>
-    <p>© 2025 Blackbird SR-71. Operando a velocidad supersónica.</p>
-    <div class="social-links">
-      <a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank">✈️</a>
-      <a href="https://www.instagram.com/servicios_blackbird" target="_blank">📸</a>
-      <a href="https://www.tiktok.com/@remesasblackbird" target="_blank">🎵</a>
-    </div>
-  </footer>
+<div class="calculator-section">
+<h2>🧮 Calculadora de Remesas</h2>
+<div class="form-row">
+<div class="form-group">
+<label for="origen">Origen</label>
+<select id="origen" onchange="actualizarDestino()"><option value="">Selecciona...</option></select>
+</div>
+<div class="form-group">
+<label for="destino">Destino</label>
+<select id="destino"><option value="">Selecciona...</option></select>
+</div>
+</div>
+<div class="form-group">
+<label for="monto">Monto (Moneda Local)</label>
+<input type="number" id="monto" placeholder="Ej. 1000" min="0" step="0.01">
+</div>
+<button onclick="calcularRemesa()">Calcular</button>
+<button onclick="abrirTelegram()" style="background:linear-gradient(135deg,#28a745,#1a8f5e);color:#fff;">Pedir Servicio</button>
+<div id="resultado"></div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script>
-// CSV sheet con tus pares y precios
-const csvUrl='https://docs.google.com/spreadsheets/d/e/2PACX-1vR3yMHp1HF-2JS1j0vNcp_snCjtTaWuF6y8AldyFGxbWvQrmhvisnagcBC1pWiskalafvz0EVY8svR6/pub?gid=983978085&single=true&output=csv';
-let rates={}, paises=[], nombresPaises={};
+<div class="social-links">
+<a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank">✈️</a>
+<a href="https://www.instagram.com/servicios_blackbird" target="_blank">📸</a>
+<a href="https://www.tiktok.com/@remesasblackbird" target="_blank">🎵</a>
+</div>
+</div>
 
-// Leer CSV y procesar pares
+<script>
+const csvUrl='https://docs.google.com/spreadsheets/d/e/2PACX-1vR3yMHp1HF-2JS1j0vNcp_snCjtTaWuF6y8AldyFGxbWvQrmhvisnagcBC1pWiskalafvz0EVY8svR6/pub?gid=983978085&single=true&output=csv';
+let rates={}; let paises=new Set();
+
 async function cargarDatos(){
-  try{
-    const res=await fetch(csvUrl);
-    const text=await res.text();
-    Papa.parse(text,{header:false,skipEmptyLines:true,complete:function(results){
-      procesarDatos(results.data);
-    }});
-  }catch(err){alert('Error al cargar sheet.'); console.error(err);}
+try{
+const res=await fetch(csvUrl);
+const csvText=await res.text();
+Papa.parse(csvText,{header:false,skipEmptyLines:true,complete:function(result){
+procesarDatos(result.data);
+}});
+}catch(err){console.error('Error CSV:',err);alert('Error cargando datos, revisa la sheet');}
 }
 
 function procesarDatos(rows){
-  rates={}; paises=[]; nombresPaises={};
-  rows.forEach(row=>{
-    if(row[9] && row[9].trim()==='Venta IMAD'){
-      const par=row[3]?.trim();
-      const precio=row[5]?.trim() || row[6]?.trim();
-      if(par && precio){
-        const [origen,destino]=par.split('-').map(s=>s.trim());
-        if(origen && destino){
-          rates[`${origen}-${destino}`]=parseFloat(precio.replace(',','.'));
-          if(!paises.includes(origen)) paises.push(origen);
-          if(!paises.includes(destino)) paises.push(destino);
-          nombresPaises[origen]=origen; nombresPaises[destino]=destino;
-        }
-      }
-    }
-  });
-  poblarSelects();
+rows.forEach(row=>{
+const colJ=row[9]?row[9].trim():'';
+if(colJ==='Venta IMAD'){
+const par=row[3]?row[3].trim():''; // Columna D
+const valorF=row[5]?parseFloat(row[5].replace(',','.')):null; // F
+const valorG=row[6]?parseFloat(row[6].replace(',','.')):null; // G
+const precio=valorF||valorG;
+if(par && precio){
+const [origen,destino]=par.split('-').map(s=>s.trim());
+rates[`${origen}-${destino}`]=precio;
+paises.add(origen);paises.add(destino);
+}
+}
+});
+poblarSelects();
 }
 
 function poblarSelects(){
-  const origenSelect=document.getElementById('origen');
-  const destinoSelect=document.getElementById('destino');
-  origenSelect.innerHTML='<option value="">Selecciona...</option>';
-  destinoSelect.innerHTML='<option value="">Selecciona...</option>';
-  paises.forEach(p=>{
-    origenSelect.innerHTML+=`<option value="${p}">${p}</option>`;
-    destinoSelect.innerHTML+=`<option value="${p}">${p}</option>`;
-  });
+const origenSelect=document.getElementById('origen');
+const destinoSelect=document.getElementById('destino');
+origenSelect.innerHTML='<option value="">Selecciona...</option>';
+destinoSelect.innerHTML='<option value="">Selecciona...</option>';
+Array.from(paises).sort().forEach(p=>{
+origenSelect.innerHTML+=`<option value="${p}">${p}</option>`;
+destinoSelect.innerHTML+=`<option value="${p}">${p}</option>`;
+});
 }
 
+function actualizarDestino(){document.getElementById('destino').value='';}
+
 function calcularRemesa(){
-  const origen=document.getElementById('origen').value;
-  const destino=document.getElementById('destino').value;
-  const monto=parseFloat(document.getElementById('monto').value);
-  const resDiv=document.getElementById('resultado');
-  if(!origen||!destino||isNaN(monto)||monto<=0){resDiv.innerHTML='<span style="color:#dc3545;">Completa todos los campos.</span>'; return;}
-  if(origen===destino){resDiv.innerHTML='<span style="color:#dc3545;">Origen y destino deben ser diferentes.</span>'; return;}
-  const key=`${origen}-${destino}`;
-  const tasa=rates[key];
-  if(!tasa){resDiv.innerHTML='<span style="color:#dc3545;">Ruta no disponible.</span>'; return;}
-  const resultado=(monto*tasa).toFixed(2);
-  // Cambio dinámico del fondo según país destino
-  let colorDest="#00b4ff";
-  switch(destino){
-    case 'CHI': colorDest="#0055ff"; break;
-    case 'USA': colorDest="#00ffdd"; break;
-    case 'VEN': colorDest="#ff5555"; break;
-    case 'MEX': colorDest="#ffaa00"; break;
-    case 'BRA': colorDest="#55ff55"; break;
-    default: colorDest="#00b4ff";
-  }
-  document.querySelector('.container').style.boxShadow=`0 0 50px ${colorDest}`;
-  resDiv.innerHTML=`<p>Envías: ${monto} ${origen} → Recibes: ${resultado} ${destino} (Tasa: ${tasa})</p>`;
+const origen=document.getElementById('origen').value;
+const destino=document.getElementById('destino').value;
+const monto=parseFloat(document.getElementById('monto').value);
+const resDiv=document.getElementById('resultado');
+if(!origen||!destino||isNaN(monto)||monto<=0){resDiv.innerHTML='<p style="color:#dc3545;">Selecciona origen, destino y monto válido.</p>';return;}
+if(origen===destino){resDiv.innerHTML='<p style="color:#dc3545;">Origen y destino deben ser diferentes.</p>';return;}
+const pair=`${origen}-${destino}`;
+const tasa=rates[pair];
+if(!tasa){resDiv.innerHTML='<p style="color:#dc3545;">Ruta no disponible. Verifica la sheet.</p>';return;}
+const resultado=(monto*tasa).toFixed(2);
+resDiv.innerHTML=`<p>Envías: ${monto} ${origen} → Recibes: ${resultado} ${destino} (Tasa: ${tasa})</p>`;
 }
 
 function abrirTelegram(){window.open('https://t.me/+i02VPMg23TNiOWJh','_blank');}
 
-// Animación radar y partículas
-const canvas=document.getElementById('bgCanvas');
-const ctx=canvas.getContext('2d');
-canvas.width=window.innerWidth; canvas.height=window.innerHeight;
-let particles=[];
-for(let i=0;i<100;i++){
-  particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+1,dx:(Math.random()-0.5)*0.7,dy:(Math.random()-0.5)*0.7});
-}
+// Fondo animado radar y partículas
+const canvas=document.getElementById('bgCanvas');const ctx=canvas.getContext('2d');canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+let particles=[];for(let i=0;i<80;i++){particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+1,dx:(Math.random()-0.5)*0.7,dy:(Math.random()-0.5)*0.7});}
 function draw(){
-  ctx.fillStyle='rgba(0,0,0,0.12)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-  // Radar circulando
-  ctx.beginPath(); ctx.arc(canvas.width/2,canvas.height/2,150,0,Math.PI*2); ctx.strokeStyle='rgba(0,180,255,0.3)'; ctx.lineWidth=2; ctx.stroke();
-  ctx.beginPath(); ctx.arc(canvas.width/2,canvas.height/2,250,0,Math.PI*2); ctx.strokeStyle='rgba(0,180,255,0.15)'; ctx.lineWidth=1.5; ctx.stroke();
-  // Partículas
-  particles.forEach(p=>{
-    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle='rgba(0,180,255,0.6)'; ctx.fill();
-    p.x+=p.dx; p.y+=p.dy;
-    if(p.x>canvas.width)p.x=0;if(p.x<0)p.x=canvas.width;
-    if(p.y>canvas.height)p.y=0;if(p.y<0)p.y=canvas.height;
-    // Conexiones
-    particles.forEach(p2=>{
-      let dx=p.x-p2.x,dy=p.y-p2.y;
-      let dist=Math.sqrt(dx*dx+dy*dy);
-      if(dist<120){
-        ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p2.x,p2.y);
-        ctx.strokeStyle=`rgba(0,180,255,${1-dist/120})`; ctx.lineWidth=0.5; ctx.stroke();
-      }
-    });
-  });
-  requestAnimationFrame(draw);
-}
-draw();
-
-window.onload=cargarDatos;
-window.onresize=()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;};
+ctx.fillStyle='rgba(0,0,0,0.15)';ctx.fillRect(0,0,canvas.width,canvas.height);
+// Radar
+ctx.beginPath();ctx.arc(canvas.width/2,canvas.height/2,150,0,Math.PI*2);ctx.strokeStyle='rgba(0,180,255,0.25)';ctx.lineWidth=2;ctx.stroke();
+ctx.beginPath();ctx.arc(canvas.width/2,canvas.height/2,250,0,Math.PI*2);ctx.strokeStyle='rgba(0,180,255,0.12)';ctx.lineWidth=1.5;ctx.stroke();
+// Partículas
+particles.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(0,180,255,0.6)';ctx.fill();p.x+=p.dx;p.y+=p.dy;if(p.x>canvas.width)p.x=0;if(p.x<0)p.x=canvas.width;if(p.y>canvas.height)p.y=0;if(p.y<0)p.y=canvas.height;});
+requestAnimationFrame(draw);}
+draw();window.onload=cargarDatos;
+window.onresize=()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;};
 </script>
 </body>
 </html>
