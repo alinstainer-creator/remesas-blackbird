@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Servicios Blackbird: Calculadora de remesas profesional. Tasas VENTA IMAD para todas las combinaciones de países. Resultado en moneda destino con precio al público.">
+    <meta name="description" content="Servicios Blackbird: Calculadora de remesas profesional. Tasas VENTA IMAD directas desde el CSV.">
     <meta name="keywords" content="remesas, cambio moneda, tasas conversión, Blackbird, Chile, Argentina, Perú, Colombia, México, España, USA, Venezuela, Ecuador, Brasil, Uruguay, Canadá">
     <title>🛩️ Servicios Blackbird - Calculadora de Remesas</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
@@ -259,8 +259,6 @@
                 <input type="number" id="monto" placeholder="Ej. 1000" min="0" step="0.01">
             </div>
             <button onclick="calcularRemesa()">Calcular a Mach 3+</button>
-            <button class="contact-button" onclick="solicitarRemesa()" id="solicitarBtn" style="display: none;">Solicitar Remesa</button>
-            <button class="contact-button" onclick="cotizarRemesa()" id="cotizarBtn" style="display: none;">Cotizar</button>
             <div id="resultado"></div>
         </div>
         
@@ -285,7 +283,6 @@
     <footer>
         <p>© 2025 Servicios Blackbird. Operando a velocidad supersónica.</p>
         <div class="social-links">
-            <a href="https://wa.me/+51XXXXXXXXX" target="_blank" title="Contactar por WhatsApp">📱</a>
             <a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank" title="Contactar por Telegram">✈️</a>
             <a href="https://www.instagram.com/servicios_blackbird?igsh=MTlwZTVsaWR4dDBoMQ%3D%3D&utm_source=qr" target="_blank" title="Seguir en Instagram">📸</a>
             <a href="https://www.tiktok.com/@remesasblackbird?_t=ZM-8zqW0ByBXVg&_r=1" target="_blank" title="Seguir en TikTok">🎵</a>
@@ -318,20 +315,17 @@
                     skipEmptyLines: true,
                     complete: function(results) {
                         procesarDatos(results.data);
-                    },
-                    error: function(err) {
-                        throw new Error('Error al procesar CSV: ' + err.message);
                     }
                 });
             } catch (err) {
                 console.error('Fallo en CSV:', err);
-                document.getElementById('error').innerHTML = '<p>Error al cargar datos. Usando tasas de ejemplo. Verifica la conexión o el CSV.</p>';
+                document.getElementById('error').innerHTML = '<p>Error al cargar datos. Usando tasas de ejemplo.</p>';
                 usarDatosEjemplo();
             }
         }
 
         function procesarDatos(rows) {
-            let currentPair = null;
+            const pairMap = {};
             rows.forEach(row => {
                 const colJ = row[9] ? row[9].trim().replace(/"/g, '') : '';
                 if (colJ === 'Venta IMAD') {
@@ -340,40 +334,30 @@
                     let c = row[2] ? row[2].trim().replace(/"/g, '') : '';
                     let d = row[3] ? row[3].trim().replace(/"/g, '') : '';
                     pairFull = [b, c, d].filter(Boolean).join(' ').replace('Cotización Mesa ', '');
-                    for (let origen of paises) {
-                        for (let destino of paises) {
-                            if (origen !== destino) {
-                                const nombrePar = `${nombresPaises[origen]} a ${nombresPaises[destino]}`;
-                                if (pairFull.includes(nombrePar)) {
-                                    currentPair = `${origen}-${destino}`;
-                                    break;
-                                }
-                            }
-                        }
-                        if (currentPair) break;
-                    }
-                    if (currentPair) {
-                        let fValue = row[6] ? row[6].trim().replace(/"/g, '') : '';
-                        let gValue = row[7] ? row[7].trim().replace(/"/g, '') : '';
-                        fValue = fValue.replace('$', '').replace(',', '');
-                        gValue = gValue.replace('$', '').replace(',', '');
-                        let fFloat = parseFloat(fValue);
-                        let gFloat = parseFloat(gValue);
-                        if (!isNaN(fFloat) && fFloat > 0) {
-                            rates[currentPair] = 1 / fFloat;
-                            // Añadir tasa inversa si no existe
-                            const [origen, destino] = currentPair.split('-');
-                            const reversePair = `${destino}-${origen}`;
-                            if (!rates[reversePair] && fFloat > 0) rates[reversePair] = fFloat;
-                        } else if (!isNaN(gFloat) && gFloat > 0) {
-                            rates[currentPair] = 1 / gFloat;
-                            const [origen, destino] = currentPair.split('-');
-                            const reversePair = `${destino}-${origen}`;
-                            if (!rates[reversePair] && gFloat > 0) rates[reversePair] = gFloat;
-                        }
+                    let rate = row[6] ? row[6].trim().replace(/"/g, '').replace('$', '').replace(',', '') : '';
+                    if (!rate) rate = row[7] ? row[7].trim().replace(/"/g, '').replace('$', '').replace(',', '') : '';
+                    rate = parseFloat(rate);
+                    if (rate > 0) {
+                        pairMap[pairFull] = rate;
                     }
                 }
             });
+
+            // Mapear pares a códigos de país
+            for (let pairFull in pairMap) {
+                for (let origen of paises) {
+                    for (let destino of paises) {
+                        if (origen !== destino) {
+                            const nombrePar = `${nombresPaises[origen]} a ${nombresPaises[destino]}`;
+                            if (pairFull.includes(nombrePar)) {
+                                rates[`${origen}-${destino}`] = pairMap[pairFull];
+                                break;
+                            }
+                        }
+                    }
+                    if (rates[`${origen}-${destino}`]) break;
+                }
+            }
 
             if (Object.keys(rates).length === 0) {
                 document.getElementById('error').innerHTML = '<p>No se encontraron tasas válidas en el CSV. Usando datos de ejemplo.</p>';
@@ -387,17 +371,10 @@
 
         function usarDatosEjemplo() {
             rates = {
-                'ARG-VEN': 0.1484, 'VEN-ARG': 6.74,
-                'CHI-VEN': 0.2369, 'VEN-CHI': 4.22,
-                'USA-VEN': 217.86, 'VEN-USA': 0.00459,
-                'PER-VEN': 0.2519, 'VEN-PER': 3.97,
-                'COL-VEN': 0.1923, 'VEN-COL': 5.20,
-                'MEX-VEN': 0.0538, 'VEN-MEX': 18.59,
-                'ESP-VEN': 0.0093, 'VEN-ESP': 107.53,
-                'ECU-VEN': 217.86, 'VEN-ECU': 0.00459,
-                'BRA-VEN': 0.1852, 'VEN-BRA': 5.40,
-                'URU-VEN': 0.0244, 'VEN-URU': 40.98,
-                'CAN-VEN': 0.0137, 'VEN-CAN': 73.03
+                'ARG-VEN': 0.1483, 'CHI-VEN': 0.2371, 'USA-VEN': 218.07,
+                'PER-VEN': 0.2519, 'COL-VEN': 0.1923, 'MEX-VEN': 0.0538,
+                'ESP-VEN': 0.0093, 'ECU-VEN': 218.07, 'BRA-VEN': 0.1852,
+                'URU-VEN': 0.0244, 'CAN-VEN': 0.0137
             };
             poblarSelects();
             mostrarTabla();
@@ -436,19 +413,13 @@
             const destino = document.getElementById('destino').value;
             const monto = parseFloat(document.getElementById('monto').value);
             const resultadoDiv = document.getElementById('resultado');
-            const solicitarBtn = document.getElementById('solicitarBtn');
-            const cotizarBtn = document.getElementById('cotizarBtn');
 
             if (!origen || !destino || isNaN(monto) || monto <= 0) {
                 resultadoDiv.innerHTML = '<p style="color: #dc3545;">Selecciona origen, destino y monto válido.</p>';
-                solicitarBtn.style.display = 'none';
-                cotizarBtn.style.display = 'none';
                 return;
             }
             if (origen === destino) {
                 resultadoDiv.innerHTML = '<p style="color: #dc3545;">Origen y destino deben ser diferentes.</p>';
-                solicitarBtn.style.display = 'none';
-                cotizarBtn.style.display = 'none';
                 return;
             }
 
@@ -456,8 +427,6 @@
             const tasa = rates[pair];
             if (!tasa) {
                 resultadoDiv.innerHTML = '<p style="color: #dc3545;">Ruta no disponible. Verifica el CSV.</p>';
-                solicitarBtn.style.display = 'none';
-                cotizarBtn.style.display = 'none';
                 return;
             }
 
@@ -465,33 +434,10 @@
             const resultado = (monto * tasa).toFixed(2);
             const monedaDestino = nombresPaises[destino].match(/\((.*?)\)/)[1];
             resultadoDiv.innerHTML = `<p>Monto Origen: $${monto} ${monedaOrigen} → Recibes: $${resultado} ${monedaDestino} (Tasa IMAD: ${tasa.toFixed(4)})</p>`;
-            solicitarBtn.style.display = 'block';
-            cotizarBtn.style.display = 'block';
-        }
-
-        function solicitarRemesa() {
-            const origen = document.getElementById('origen').value;
-            const destino = document.getElementById('destino').value;
-            const monto = parseFloat(document.getElementById('monto').value);
-            const resultado = (monto * rates[`${origen}-${destino}`]).toFixed(2);
-            const monedaOrigen = nombresPaises[origen].match(/\((.*?)\)/)[1];
-            const monedaDestino = nombresPaises[destino].match(/\((.*?)\)/)[1];
-            const mensaje = `Solicitud de remesa: $${monto} ${monedaOrigen} de ${nombresPaises[origen]} a ${nombresPaises[destino]}. Recibiré $${resultado} ${monedaDestino} (Tasa IMAD: ${rates[`${origen}-${destino}`].toFixed(4)}).`;
-            window.open(`https://wa.me/+51XXXXXXXXX?text=${encodeURIComponent(mensaje)}`, '_blank');
-        }
-
-        function cotizarRemesa() {
-            const origen = document.getElementById('origen').value;
-            const destino = document.getElementById('destino').value;
-            const monto = parseFloat(document.getElementById('monto').value);
-            const resultado = (monto * rates[`${origen}-${destino}`]).toFixed(2);
-            const monedaOrigen = nombresPaises[origen].match(/\((.*?)\)/)[1];
-            const monedaDestino = nombresPaises[destino].match(/\((.*?)\)/)[1];
-            const mensaje = `Cotización de remesa: $${monto} ${monedaOrigen} de ${nombresPaises[origen]} a ${nombresPaises[destino]}. Recibirás $${resultado} ${monedaDestino} (Tasa IMAD: ${rates[`${origen}-${destino}`].toFixed(4)}).`;
-            window.open(`https://wa.me/+51XXXXXXXXX?text=${encodeURIComponent(mensaje)}`, '_blank');
         }
 
         window.onload = () => {
+            poblarSelects(); // Llenar selects al cargar, incluso si el CSV falla
             cargarDatos();
         };
     </script>
