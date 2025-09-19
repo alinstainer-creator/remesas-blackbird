@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Servicios Blackbird: Calculadora completa de remesas. Tasas para todas las combinaciones entre España, USA, México, Brasil, Chile, Ecuador, Perú, Argentina, Colombia y Venezuela. Resultado en moneda destino. Solicita por WhatsApp o Telegram.">
-    <meta name="keywords" content="remesas, cambio moneda, tasas conversión, Blackbird, España, USA, México, Brasil, Chile, Ecuador, Perú, Argentina, Colombia, Venezuela, calculadora remesas">
-    <title>🛩️ Servicios Blackbird - Calculadora Completa de Remesas</title>
+    <meta name="description" content="Servicios Blackbird: Calculadora de remesas para Chile, Argentina, Perú, Colombia, México, España, USA, Venezuela, Ecuador, Brasil, Uruguay y Canadá. Tasas IMAD al público desde el CSV.">
+    <meta name="keywords" content="remesas, cambio moneda, tasas conversión, Blackbird, Chile, Argentina, Perú, Colombia, México, España, USA, Venezuela, Ecuador, Brasil, Uruguay, Canadá">
+    <title>🛩️ Servicios Blackbird - Calculadora de Remesas</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         body { 
@@ -198,7 +198,7 @@
         <header>
             <img src="logo blackbird.png" alt="Logo Servicios Blackbird" class="logo" onerror="this.src='https://via.placeholder.com/120x120/00d4ff/1a1f2e?text=SR-71';">
             <h1>🛩️ Servicios Blackbird</h1>
-            <p class="subtitle">Calculadora de remesas al estilo SR-71: Origen, destino, monto. Resultado en moneda destino. Todas las rutas entre España, USA, México, Brasil, Chile, Ecuador, Perú, Argentina, Colombia y Venezuela.</p>
+            <p class="subtitle">Calculadora de remesas: Origen, destino, monto. Tasas IMAD del CSV.</p>
         </header>
         
         <div class="calculator-section">
@@ -221,26 +221,26 @@
                 <label for="monto">Monto Origen (Moneda Local):</label>
                 <input type="number" id="monto" placeholder="Ej. 1000" min="0" step="0.01">
             </div>
-            <button onclick="calcularRemesa()">Calcular a Mach 3+</button>
+            <button onclick="calcularRemesa()">Calcular</button>
             <button class="contact-button" onclick="solicitarRemesa()" id="solicitarBtn" style="display: none;">Solicitar Remesa</button>
             <div id="resultado"></div>
         </div>
         
         <div class="rates-table">
-            <h2>📊 Tasas Disponibles</h2>
+            <h2>📊 Tasas IMAD (Precio Público)</h2>
             <table id="ratesTable">
                 <thead>
                     <tr>
                         <th>Origen</th>
                         <th>Destino</th>
-                        <th>Tasa (Precio IMAD)</th>
+                        <th>Tasa IMAD</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
         </div>
         
-        <div id="loading" style="display: none;">Escaneando rutas globales...</div>
+        <div id="loading" style="display: none;">Cargando rutas...</div>
         <div id="error" style="display: none;"></div>
     </div>
 
@@ -257,38 +257,12 @@
     <script>
         const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3yMHp1HF-2JS1j0vNcp_snCjtTaWuF6y8AldyFGxbWvQrmhvisnagcBC1pWiskalafvz0EVY8svR6/pub?gid=983978085&single=true&output=csv';
         
-        const paises = ['ESP', 'USA', 'MEX', 'BRA', 'CHI', 'ECU', 'PER', 'ARG', 'COL', 'VEN'];
+        const paises = ['CHI', 'ARG', 'PER', 'COL', 'MEX', 'ESP', 'USA', 'VEN', 'ECU', 'BRA', 'URU', 'CAN'];
         const nombresPaises = {
-            'ESP': 'España (EUR)',
-            'USA': 'USA (USD)',
-            'MEX': 'México (MXN)',
-            'BRA': 'Brasil (BRL)',
-            'CHI': 'Chile (CLP)',
-            'ECU': 'Ecuador (USD)',
-            'PER': 'Perú (PEN)',
-            'ARG': 'Argentina (ARS)',
-            'COL': 'Colombia (COP)',
-            'VEN': 'Venezuela (VES)'
-        };
-        const siglasPares = {
-            'ESP-USA': 'ESUS', 'USA-ESP': 'USES',
-            'MEX-USA': 'MXUS', 'USA-MEX': 'USMX',
-            'BRA-USA': 'BRUS', 'USA-BRA': 'USBR',
-            'CHI-USA': 'CHUS', 'USA-CHI': 'USCH',
-            'ECU-USA': 'ECUS', 'USA-ECU': 'USEC',
-            'PER-USA': 'PEUS', 'USA-PER': 'USPE',
-            'ARG-USA': 'ARUS', 'USA-ARG': 'USAR',
-            'COL-USA': 'COUS', 'USA-COL': 'USCO',
-            'VEN-USA': 'VEUS', 'USA-VEN': 'USVE',
-            'MEX-ARG': 'MXAR', 'ARG-MEX': 'ARMX',
-            'ARG-CHI': 'ARCL', 'CHI-ARG': 'CLAR',
-            'PER-VEN': 'PEVE', 'VEN-PER': 'VEPE',
-            'MEX-VEN': 'MXVE', 'VEN-MEX': 'VEMX',
-            'BRA-VEN': 'BRVE', 'VEN-BRA': 'VEBR',
-            'CHI-VEN': 'CHVE', 'VEN-CHI': 'VECH',
-            'ECU-VEN': 'ECVE', 'VEN-ECU': 'VEEC',
-            'PER-ARG': 'PEAR', 'ARG-PER': 'ARPE',
-            'COL-VEN': 'COVE', 'VEN-COL': 'VECOL'
+            'CHI': 'Chile (CLP)', 'ARG': 'Argentina (ARS)', 'PER': 'Perú (PEN)',
+            'COL': 'Colombia (COP)', 'MEX': 'México (MXN)', 'ESP': 'España (EUR)',
+            'USA': 'USA (USD)', 'VEN': 'Venezuela (VES)', 'ECU': 'Ecuador (USD)',
+            'BRA': 'Brasil (BRL)', 'URU': 'Uruguay (UYU)', 'CAN': 'Canadá (CAD)'
         };
 
         let rates = {};
@@ -307,11 +281,11 @@
                         procesarDatos(results.data);
                     },
                     error: function(err) {
-                        throw new Error('Error al escanear CSV: ' + err.message);
+                        throw new Error('Error al cargar tasas: ' + err.message);
                     }
                 });
             } catch (err) {
-                console.error('Fallo en carga CSV:', err);
+                console.error('Fallo en CSV:', err);
                 usarDatosEjemplo();
             }
         }
@@ -323,24 +297,24 @@
                 if (col9 === 'PROVEDOR') {
                     let pairFull = row[1] ? row[1].trim().replace(/"/g, '') : '';
                     pairFull = pairFull.replace('COTIZACION MESA ', '');
-                    for (let sigla in siglasPares) {
-                        const [origen, destino] = sigla.split('-');
-                        const nombrePar = `${nombresPaises[origen]} a ${nombresPaises[destino]}`;
-                        if (pairFull.includes(nombrePar) || pairFull.includes(siglasPares[sigla])) {
-                            currentPair = sigla;
-                            break;
+                    for (let origen of paises) {
+                        for (let destino of paises) {
+                            if (origen !== destino) {
+                                const nombrePar = `${nombresPaises[origen]} a ${nombresPaises[destino]}`;
+                                if (pairFull.includes(nombrePar)) {
+                                    currentPair = `${origen}-${destino}`;
+                                    break;
+                                }
+                            }
                         }
+                        if (currentPair) break;
                     }
-                } else if (col9 === 'IMAD' && currentPair) { // Usamos IMAD como precio de venta
+                } else if (col9 === 'IMAD' && currentPair) {
                     let rate = row[5] ? row[5].trim().replace(/"/g, '') : '';
                     rate = rate.replace('$', '').replace(',', '');
                     let rateFloat = parseFloat(rate);
                     if (!isNaN(rateFloat) && rateFloat > 0) {
                         rates[currentPair] = rateFloat;
-                        const inversePair = currentPair.split('-').reverse().join('-');
-                        if (siglasPares[inversePair] && !rates[inversePair]) {
-                            rates[inversePair] = 1 / rateFloat;
-                        }
                     }
                     currentPair = null;
                 }
@@ -357,29 +331,23 @@
 
         function usarDatosEjemplo() {
             rates = {
-                'ESP-USA': 1.08, 'USA-ESP': 0.93,
-                'MEX-USA': 18.5, 'USA-MEX': 0.054,
-                'BRA-USA': 5.2, 'USA-BRA': 0.192,
                 'CHI-USA': 920, 'USA-CHI': 0.00109,
-                'ECU-USA': 1.0, 'USA-ECU': 1.0,
-                'PER-USA': 3.75, 'USA-PER': 0.267,
                 'ARG-USA': 950, 'USA-ARG': 0.00105,
+                'PER-USA': 3.75, 'USA-PER': 0.267,
                 'COL-USA': 4100, 'USA-COL': 0.000244,
+                'MEX-USA': 18.5, 'USA-MEX': 0.054,
+                'ESP-USA': 1.08, 'USA-ESP': 0.93,
                 'VEN-USA': 36, 'USA-VEN': 0.0278,
-                'MEX-ARG': 51.35, 'ARG-MEX': 0.0195,
-                'ARG-CHI': 0.0102, 'CHI-ARG': 98.04,
-                'PER-VEN': 13.5, 'VEN-PER': 0.074,
-                'MEX-VEN': 0.51, 'VEN-MEX': 1960.78,
-                'BRA-VEN': 6.9, 'VEN-BRA': 0.145,
-                'CHI-VEN': 0.039, 'VEN-CHI': 25641,
-                'ECU-VEN': 36, 'VEN-ECU': 0.0278,
-                'PER-ARG': 0.00395, 'ARG-PER': 253.16,
-                'COL-VEN': 0.0088, 'VEN-COL': 113636
+                'ECU-USA': 1.0, 'USA-ECU': 1.0,
+                'BRA-USA': 5.2, 'USA-BRA': 0.192,
+                'URU-USA': 40, 'USA-URU': 0.025,
+                'CAN-USA': 1.35, 'USA-CAN': 0.74
+                // Solo tasas de ejemplo basadas en USA como referencia
             };
             poblarSelects();
             mostrarTabla();
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('error').innerHTML = '<p>Rutas escaneadas con datos de ejemplo. Verifica conexión o CSV.</p>';
+            document.getElementById('error').innerHTML = '<p>Datos de ejemplo cargados. Verifica tu CSV.</p>';
             document.getElementById('error').style.display = 'block';
         }
 
@@ -431,7 +399,7 @@
             const pair = `${origen}-${destino}`;
             const tasa = rates[pair];
             if (!tasa) {
-                resultadoDiv.innerHTML = '<p style="color: #dc3545;">Ruta no disponible. Verifica tasas.</p>';
+                resultadoDiv.innerHTML = '<p style="color: #dc3545;">Ruta no disponible. Verifica tasas en el CSV.</p>';
                 solicitarBtn.style.display = 'none';
                 return;
             }
@@ -447,15 +415,10 @@
         function solicitarRemesa(origen, destino, monto, resultado, monedaOrigen, monedaDestino) {
             const nombreOrigen = nombresPaises[origen];
             const nombreDestino = nombresPaises[destino];
-            const mensaje = `Solicitud de remesa: $${monto} ${monedaOrigen} de ${nombreOrigen} a ${nombreDestino}. Recibiré $${resultado} ${monedaDestino}.`;
+            const mensaje = `Solicitud de remesa: $${monto} ${monedaOrigen} de ${nombreOrigen} a ${nombreDestino}. Recibiré $${resultado} ${monedaDestino} (Tasa IMAD: ${rates[`${origen}-${destino}`].toFixed(4)}).`;
             window.open(`https://wa.me/+51XXXXXXXXX?text=${encodeURIComponent(mensaje)}`, '_blank');
             // Alternativa Telegram: descomenta si prefieres
             // window.open(`https://t.me/+i02VPMg23TNiOWJh?text=${encodeURIComponent(mensaje)}`, '_blank');
-        }
-
-        function getEmoji(pais) {
-            const emojis = { 'ESP': '🇪🇸', 'USA': '🇺🇸', 'MEX': '🇲🇽', 'BRA': '🇧🇷', 'CHI': '🇨🇱', 'ECU': '🇪🇨', 'PER': '🇵🇪', 'ARG': '🇦🇷', 'COL': '🇨🇴', 'VEN': '🇻🇪' };
-            return emojis[pais] || '';
         }
 
         window.onload = () => {
