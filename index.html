@@ -329,37 +329,40 @@
         function procesarDatos(rows) {
             let currentPair = null;
             rows.forEach(row => {
-                const col9 = row[9] ? row[9].trim().replace(/"/g, '') : '';
-                if (col9 === 'IMAD') { // Fila indica precio al público
-                    let pairFull = row[1] ? row[1].trim().replace(/"/g, '') : '';
-                    pairFull = pairFull.replace('COTIZACION MESA ', '');
-                    for (let origen of paises) {
-                        for (let destino of paises) {
-                            if (origen !== destino) {
-                                const nombrePar = `${nombresPaises[origen]} a ${nombresPaises[destino]}`;
-                                if (pairFull.includes(nombrePar)) {
-                                    currentPair = `${origen}-${destino}`;
-                                    break;
+                const colJ = row[9] ? row[9].trim().replace(/"/g, '') : '';
+                if (colJ === 'Venta IMAD') { // Indicador de precio al público
+                    let pairFull = '';
+                    // Combinar B, C, D para identificar el par
+                    let b = row[1] ? row[1].trim().replace(/"/g, '') : '';
+                    let c = row[2] ? row[2].trim().replace(/"/g, '') : '';
+                    let d = row[3] ? row[3].trim().replace(/"/g, '') : '';
+                    pairFull = [b, c, d].filter(Boolean).join(' ');
+                    if (pairFull.includes('Cotización Mesa')) {
+                        pairFull = pairFull.replace('Cotización Mesa ', '');
+                        for (let origen of paises) {
+                            for (let destino of paises) {
+                                if (origen !== destino) {
+                                    const nombrePar = `${nombresPaises[origen]} a ${nombresPaises[destino]}`;
+                                    if (pairFull.includes(nombrePar)) {
+                                        currentPair = `${origen}-${destino}`;
+                                        break;
+                                    }
                                 }
                             }
+                            if (currentPair) break;
                         }
-                        if (currentPair) break;
                     }
                     if (currentPair) {
-                        let imad = row[5] ? row[5].trim().replace(/"/g, '') : '';
                         let fValue = row[6] ? row[6].trim().replace(/"/g, '') : '';
                         let gValue = row[7] ? row[7].trim().replace(/"/g, '') : '';
-                        imad = imad.replace('$', '').replace(',', '');
                         fValue = fValue.replace('$', '').replace(',', '');
                         gValue = gValue.replace('$', '').replace(',', '');
-                        let imadFloat = parseFloat(imad);
                         let fFloat = parseFloat(fValue);
                         let gFloat = parseFloat(gValue);
-                        if (!isNaN(imadFloat) && imadFloat > 0) {
-                            let tasa = imadFloat; // Base IMAD
-                            if (!isNaN(fFloat) && fFloat > 0) tasa = imadFloat / fFloat; // Ajuste con F
-                            else if (!isNaN(gFloat) && gFloat > 0) tasa = imadFloat / gFloat; // Ajuste con G
-                            rates[currentPair] = tasa;
+                        if (!isNaN(fFloat) && fFloat > 0) {
+                            rates[currentPair] = 1 / fFloat; // Tasa como inverso del precio al público
+                        } else if (!isNaN(gFloat) && gFloat > 0) {
+                            rates[currentPair] = 1 / gFloat; // Tasa como inverso del precio al público
                         }
                     }
                 }
@@ -376,10 +379,12 @@
 
         function usarDatosEjemplo() {
             rates = {
-                'USA-VEN': 36, 'VEN-USA': 0.0278,
-                'CHI-USA': 920, 'USA-CHI': 0.00109,
-                'ARG-USA': 950, 'USA-ARG': 0.00105
-                // Añade más según el CSV
+                'USA-VEN': 0.0278, // 1 / 36
+                'VEN-USA': 36,     // 1 / 0.0278
+                'CHI-USA': 0.00109, // 1 / 920
+                'USA-CHI': 920,     // 1 / 0.00109
+                'ARG-USA': 0.00105, // 1 / 950
+                'USA-ARG': 950      // 1 / 0.00105
             };
             poblarSelects();
             mostrarTabla();
