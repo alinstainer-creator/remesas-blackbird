@@ -3,39 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remesas Blackbird - Tasas por País</title>
+    <meta name="description" content="Remesas Blackbird: Tu aliado empático para enviar dinero con las mejores tasas. Calcula remesas fáciles y seguras por país. ¡Estamos aquí para ayudarte!">
+    <meta name="keywords" content="remesas, cambio moneda, tasas conversión, Blackbird, Argentina, USD, ARS, calculadora remesas">
+    <title>🎮 Remesas Blackbird - Tu Aliado Empático para Remesas Seguras</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .tabs { display: flex; margin-bottom: 20px; }
-        .tab { padding: 10px 20px; background: #ddd; cursor: pointer; border: none; margin-right: 5px; border-radius: 5px; }
-        .tab.active { background: #007bff; color: white; }
-        .tab-content { display: none; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); 
+            color: #333; 
+            line-height: 1.6; 
+        }
+        .container { 
+            max-width: 1000px; 
+            margin: 20px auto; 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+            backdrop-filter: blur(10px); 
+        }
+        header { 
+            text-align: center; 
+            margin-bottom: 40px; 
+            animation: fadeInDown 1s ease-out; 
+        }
+        .logo { 
+            width: 120px; 
+            height: auto; 
+            border-radius: 50%; 
+            box-shadow: 0 8px 20px rgba(0,123,255,0.3); 
+            margin-bottom: 15px; 
+            transition: transform 0.3s; 
+        }
+        .logo:hover { transform: scale(1.05); }
+        h1 { 
+            color: #007bff; 
+            font-size: 2.8em; 
+            font-weight: 700; 
+            margin: 10px 0; 
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1); 
+        }
+        .subtitle { 
+            font-size: 1.3em; 
+            color: #6c757d; 
+            font-weight: 300; 
+            margin-bottom: 20px; 
+        }
+        .empathetic-note { 
+            background: linear-gradient(135deg, #d4edda, #c3e6cb); 
+            padding: 20px; 
+            border-radius: 15px; 
+            margin-bottom: 30px; 
+            text-align: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+            font-style: italic; 
+        }
+        .tabs { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            margin-bottom: 30px; 
+            gap: 10px; 
+        }
+        .tab { 
+            padding: 15px 30px; 
+            background: linear-gradient(135deg, #e9ecef, #dee2e6); 
+            cursor: pointer; 
+            border: none; 
+            border-radius: 30px; 
+            transition: all 0.4s; 
+            font-weight: 600; 
+            font-size: 1.1em; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+        }
+        .tab:hover { 
+            background: linear-gradient(135deg, #007bff, #0056b3); 
+            color: white; 
+            transform: translateY(-3px); 
+            box-shadow: 0 6px 15px rgba(0,123,255,0.4); 
+        }
+        .tab.active { 
+            background: linear-gradient(135deg, #007bff, #0056b3); 
+            color: white; 
+            box-shadow: 0 6px 15px rgba(0,123,255,0.4); 
+        }
+        .tab-content { 
+            display: none; 
+            animation: fadeInUp 0.6s ease-out; 
+        }
         .tab-content.active { display: block; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; font-weight: bold; }
-        .calculator { background: #e9ecef; padding: 15px; border-radius: 5px; margin-top: 20px; }
-        input, select, button { padding: 8px; margin: 5px; border-radius: 3px; border: 1px solid #ccc; }
-        button { background: #007bff; color: white; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        #resultado { font-weight: bold; color: #007bff; margin-top: 10px; }
-        .emoji { font-size: 1.2em; }
-        #loading, #error { text-align: center; margin: 10px; }
-        #error { color: red; }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-bottom: 25px; 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1); 
+            border-radius: 15px; 
+            overflow: hidden; 
+        }
+        th, td { 
+            border: 1px solid #e0e0e0; 
+            padding: 15px; 
+            text-align: left; 
+        }
+        th { 
+            background: linear-gradient(135deg, #007bff, #0056b3); 
+            color: white; 
+            font-weight: 600; 
+        }
+        tr:nth-child(even) { background: #f8f9fa; }
+        tr:hover { background: #e3f2fd; transform: scale(1.01); transition: 0.2s; }
+        .calculator { 
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5); 
+            padding: 25px; 
+            border-radius: 15px; 
+            margin-top: 25px; 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1); 
+            border: 1px solid #dee2e6; 
+        }
+        .calculator h3 { 
+            color: #007bff; 
+            margin-top: 0; 
+            font-size: 1.4em; 
+            text-align: center; 
+        }
+        input, select, button { 
+            padding: 12px; 
+            margin: 8px; 
+            border-radius: 8px; 
+            border: 1px solid #ccc; 
+            font-size: 1em; 
+            width: calc(100% - 20px); 
+            box-sizing: border-box; 
+            transition: border-color 0.3s; 
+        }
+        input:focus, select:focus { border-color: #007bff; outline: none; }
+        button { 
+            background: linear-gradient(135deg, #28a745, #20c997); 
+            color: white; 
+            cursor: pointer; 
+            border: none; 
+            width: auto; 
+            padding: 12px 30px; 
+            font-weight: 600; 
+        }
+        button:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 10px rgba(40,167,69,0.3); 
+        }
+        #resultado { 
+            font-weight: 600; 
+            color: #28a745; 
+            margin-top: 15px; 
+            padding: 15px; 
+            background: white; 
+            border-radius: 10px; 
+            text-align: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        }
+        .emoji { font-size: 1.5em; margin: 0 5px; }
+        footer { 
+            background: linear-gradient(135deg, #333, #555); 
+            color: white; 
+            text-align: center; 
+            padding: 30px; 
+            margin-top: 50px; 
+        }
+        .social-links { 
+            display: flex; 
+            justify-content: center; 
+            gap: 25px; 
+            margin: 15px 0; 
+        }
+        .social-links a { 
+            color: white; 
+            font-size: 2.2em; 
+            text-decoration: none; 
+            transition: all 0.3s; 
+            padding: 10px; 
+            border-radius: 50%; 
+            background: rgba(255,255,255,0.1); 
+        }
+        .social-links a:hover { 
+            color: #007bff; 
+            transform: scale(1.2); 
+            background: rgba(0,123,255,0.2); 
+        }
+        #loading, #error { 
+            text-align: center; 
+            margin: 20px; 
+            padding: 25px; 
+            border-radius: 10px; 
+            font-weight: 500; 
+        }
+        #loading { 
+            background: linear-gradient(135deg, #d4edda, #c3e6cb); 
+            color: #155724; 
+        }
+        #error { 
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb); 
+            color: #721c24; 
+        }
+        .update-btn { 
+            background: linear-gradient(135deg, #ffc107, #fd7e14); 
+            color: #212529; 
+            border: none; 
+            padding: 12px 25px; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            margin: 10px; 
+            transition: all 0.3s; 
+        }
+        .update-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 10px rgba(255,193,7,0.3); 
+        }
+        .how-it-works { 
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7); 
+            padding: 20px; 
+            border-radius: 15px; 
+            margin: 20px 0; 
+            text-align: center; 
+        }
+        .how-it-works ul { list-style: none; padding: 0; }
+        .how-it-works li { margin: 10px 0; font-size: 1.1em; }
+        @media (max-width: 600px) { 
+            .container { padding: 15px; margin: 10px; } 
+            h1 { font-size: 2em; } 
+            .tabs { flex-direction: column; align-items: center; } 
+            .tab { width: 100%; max-width: 300px; } 
+            table { font-size: 0.9em; } 
+            input, select { font-size: 0.9em; } 
+            .social-links { gap: 15px; } 
+            .social-links a { font-size: 1.8em; } 
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>🎮 Remesas Blackbird - Tasas Actualizadas</h1>
-        <p>Explora tasas de conversión por país. Usa la calculadora para estimar remesas.</p>
+        <header>
+            <img src="logo blackbird.png" alt="Logo Remesas Blackbird" class="logo" onerror="this.src='https://via.placeholder.com/120x120/007bff/ffffff?text=Blackbird';">
+            <h1>🎮 Remesas Blackbird</h1>
+            <p class="subtitle">Tu aliado empático para enviar dinero a quien más quieres. Con tasas transparentes y una calculadora que te facilita todo. ¡Estamos aquí para hacer tu vida más sencilla!</p>
+            <div class="empathetic-note">
+                💕 Sabemos que enviar remesas es más que dinero: es amor, apoyo y conexión. Por eso, te ofrecemos las mejores tasas con cero complicaciones. ¡Confía en nosotros como en un amigo!
+            </div>
+            <button class="update-btn" onclick="cargarDatos()">🔄 Actualizar Tasas</button>
+        </header>
+        
+        <div class="how-it-works">
+            <h3>🌟 Cómo funciona (súper simple)</h3>
+            <ul>
+                <li>1. Selecciona tu país arriba 👆</li>
+                <li>2. Explora las tasas en la tabla 📊</li>
+                <li>3. Usa la calculadora para estimar tu remesa 🧮</li>
+                <li>4. Contáctanos y envía con seguridad 🚀</li>
+            </ul>
+        </div>
         
         <div id="tabs" class="tabs"></div>
         <div id="tab-contents"></div>
         
-        <div id="loading">Cargando datos...</div>
+        <div id="loading" style="display: none;">Cargando tus tasas favoritas... ⏳ ¡Paciencia, que valdrá la pena!</div>
         <div id="error" style="display: none;"></div>
     </div>
+
+    <footer>
+        <p>© 2025 Remesas Blackbird. Tu familia te lo agradecerá. ❤️ Envíos seguros y rápidos, siempre con empatía.</p>
+        <div class="social-links">
+            <a href="https://wa.me/+51XXXXXXXXX" target="_blank" title="Chatea por WhatsApp">📱</a>
+            <a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank" title="Únete a nuestro canal de Telegram">✈️</a>
+            <a href="https://www.instagram.com/servicios_blackbird?igsh=MTlwZTVsaWR4dDBoMQ%3D%3D&utm_source=qr" target="_blank" title="Síguenos en Instagram">📸</a>
+            <a href="https://www.tiktok.com/@remesasblackbird?_t=ZM-8zqW0ByBXVg&_r=1" target="_blank" title="Mira videos en TikTok">🎵</a>
+        </div>
+    </footer>
 
     <script>
         const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3yMHp1HF-2JS1j0vNcp_snCjtTaWuF6y8AldyFGxbWvQrmhvisnagcBC1pWiskalafvz0EVY8svR6/pub?gid=983978085&single=true&output=csv';
@@ -43,50 +290,82 @@
         let data = [];
         let paisesUnicos = [];
 
-        // Fetch CSV y procesar datos
+        // Datos de ejemplo para fallback
+        const datosEjemplo = [
+            { conversion: 'ARS-USD', precio: 1000, origen: 'ARS', destino: 'USD' },
+            { conversion: 'USD-ARS', precio: 0.001, origen: 'USD', destino: 'ARS' },
+            { conversion: 'ARS-EUR', precio: 900, origen: 'ARS', destino: 'EUR' },
+            { conversion: 'EUR-ARS', precio: 0.0011, origen: 'EUR', destino: 'ARS' }
+        ];
+
+        // Fetch CSV con PapaParse
         async function cargarDatos() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('error').style.display = 'none';
+            console.log('Cargando datos del CSV...');
             try {
-                const response = await fetch(csvUrl);
-                if (!response.ok) throw new Error('Error al cargar el CSV');
-                const text = await response.text();
-                const rows = text.split('\n').map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)); // Maneja comas en campos
-                
-                // Procesar como en el Python
-                let pairs = [], rates = [], currentPair = null;
-                rows.forEach((row, index) => {
-                    if (row[9] === 'PROVEDOR') {
-                        let pairFull = row[1] || '';
-                        let pairClean = pairFull.replace('COTIZACION MESA ', '').split(' 🇦')[0].split(' 🇨')[0].split(' 🇲')[0].split(' 🇵')[0].split(' 🇧')[0].split(' 🇻')[0].trim();
-                        currentPair = pairClean;
-                    } else if (row[9] === 'VENTA IMAD' && currentPair) {
-                        let rate = row[5] || '';
-                        rate = rate.replace('$', '').replace(',', '');
-                        let rateFloat = parseFloat(rate);
-                        if (!isNaN(rateFloat)) {
-                            pairs.push(currentPair);
-                            rates.push(rateFloat);
-                        }
-                        currentPair = null;
+                Papa.parse(csvUrl, {
+                    download: true,
+                    header: false,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        console.log('CSV parseado, filas:', results.data.length);
+                        procesarDatos(results.data);
+                    },
+                    error: function(err) {
+                        throw new Error('Error al parsear CSV: ' + err);
                     }
                 });
-                
+            } catch (err) {
+                console.error('Error al cargar CSV:', err);
+                data = datosEjemplo;
+                paisesUnicos = ['ARS', 'USD', 'EUR'];
+                crearTabs();
+                document.getElementById('error').innerHTML = `<p>¡Ups! No pudimos cargar las tasas reales justo ahora. Usando ejemplos para que sigas navegando. <button onclick="cargarDatos()">Reintentar 🔄</button></p>`;
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Procesar datos del CSV
+        function procesarDatos(rows) {
+            let pairs = [], rates = [], currentPair = null;
+            rows.forEach((row, index) => {
+                const col9 = row[9] ? row[9].trim().replace(/"/g, '') : '';
+                if (col9 === 'PROVEDOR') {
+                    let pairFull = row[1] ? row[1].trim().replace(/"/g, '') : '';
+                    let pairClean = pairFull.replace('COTIZACION MESA ', '').split(' 🇦')[0].split(' 🇨')[0].split(' 🇲')[0].split(' 🇵')[0].split(' 🇧')[0].split(' 🇻')[0].trim();
+                    currentPair = pairClean;
+                    console.log('Par encontrado:', pairClean);
+                } else if (col9 === 'VENTA IMAD' && currentPair) {
+                    let rate = row[5] ? row[5].trim().replace(/"/g, '') : '';
+                    rate = rate.replace('$', '').replace(',', '');
+                    let rateFloat = parseFloat(rate);
+                    if (!isNaN(rateFloat)) {
+                        pairs.push(currentPair);
+                        rates.push(rateFloat);
+                        console.log('Tasa para', currentPair, ':', rateFloat);
+                    }
+                    currentPair = null;
+                }
+            });
+
+            if (pairs.length === 0) {
+                console.warn('No se encontraron datos válidos, usando ejemplo');
+                data = datosEjemplo;
+                paisesUnicos = ['ARS', 'USD', 'EUR'];
+            } else {
                 data = pairs.map((pair, i) => ({
                     conversion: pair,
                     precio: rates[i],
                     origen: pair.split('-')[0].trim(),
                     destino: pair.split('-')[1].trim()
                 }));
-                
                 paisesUnicos = [...new Set(data.map(d => d.origen).concat(data.map(d => d.destino)))];
-                crearTabs();
-                document.getElementById('loading').style.display = 'none';
-            } catch (err) {
-                document.getElementById('error').textContent = 'Error al cargar datos: ' + err.message;
-                document.getElementById('error').style.display = 'block';
-                document.getElementById('loading').style.display = 'none';
             }
+            console.log('Países únicos:', paisesUnicos);
+            crearTabs();
+            document.getElementById('loading').style.display = 'none';
         }
 
         // Crear tabs por país
@@ -97,7 +376,6 @@
             contentsDiv.innerHTML = '';
 
             paisesUnicos.forEach((pais, index) => {
-                // Tab button
                 const tabBtn = document.createElement('button');
                 tabBtn.className = 'tab';
                 tabBtn.textContent = pais.toUpperCase();
@@ -105,21 +383,18 @@
                 if (index === 0) tabBtn.classList.add('active');
                 tabsDiv.appendChild(tabBtn);
 
-                // Tab content
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'tab-content';
                 if (index === 0) contentDiv.classList.add('active');
                 contentsDiv.appendChild(contentDiv);
             });
 
-            mostrarTab(0); // Mostrar primer tab
+            mostrarTab(0);
         }
 
         // Mostrar tab específico
         function mostrarTab(index) {
-            document.querySelectorAll('.tab').forEach((tab, i) => {
-                tab.classList.toggle('active', i === index);
-            });
+            document.querySelectorAll('.tab').forEach((tab, i) => tab.classList.toggle('active', i === index));
             document.querySelectorAll('.tab-content').forEach((content, i) => {
                 content.classList.toggle('active', i === index);
                 if (i === index) actualizarTabla(index);
@@ -134,7 +409,7 @@
             const entradas = data.filter(d => d.destino === pais).map(d => ({...d, direccion: `A ${pais} desde`}));
             const dfPais = [...salidas, ...entradas].sort((a, b) => a.direccion.localeCompare(b.direccion) || a.conversion.localeCompare(b.conversion));
 
-            let tablaHtml = '<h2>Tasas para ' + pais.toUpperCase() + '</h2><table><tr><th>Dirección</th><th>Conversión</th><th>Precio (USD)</th></tr>';
+            let tablaHtml = `<h2>💰 Tasas para ${pais.toUpperCase()} (actualizadas con cariño)</h2><table><tr><th>Dirección</th><th>Conversión</th><th>Precio (USD)</th></tr>`;
             dfPais.forEach(row => {
                 const precioFormateado = row.precio.toFixed(2).replace(/\.?0+$/, '');
                 tablaHtml += `<tr><td>${row.direccion}</td><td>${row.conversion}</td><td>$${precioFormateado}</td></tr>`;
@@ -144,35 +419,56 @@
             // Calculadora
             tablaHtml += `
                 <div class="calculator">
-                    <h3>Calculadora de Remesa</h3>
-                    <input type="number" id="monto-${pais}" placeholder="Monto en origen" min="0">
+                    <h3>🧮 Calculadora Amigable</h3>
+                    <p style="text-align: center; font-style: italic; color: #6c757d;">Ingresa tu monto y elige la conversión. Te calculamos todo con precisión. ¡Es fácil!</p>
+                    <input type="number" id="monto-${pais}" placeholder="Ej. 1000 ARS" min="0" step="0.01">
                     <select id="conversionSelect-${pais}">
-                        <option value="">Selecciona conversión</option>
-                        ${dfPais.map(row => `<option value="${row.conversion}|${row.precio}">${row.conversion}</option>`).join('')}
+                        <option value="">Elige tu conversión...</option>
+                        ${dfPais.map(row => `<option value="${row.conversion}|${row.precio}|${row.origen}">${row.conversion} ($${row.precio.toFixed(2).replace(/\.?0+$/, '')})</option>`).join('')}
                     </select>
-                    <button onclick="calcular('${pais}')">Calcular</button>
+                    <button onclick="calcular('${pais}')">Calcular con Amor ❤️</button>
                     <div id="resultado-${pais}"></div>
                 </div>
             `;
 
             content.innerHTML = tablaHtml;
+            console.log(`Tabla actualizada para ${pais}, filas: ${dfPais.length}`);
         }
 
         // Función calculadora
         function calcular(pais) {
-            const monto = parseFloat(document.getElementById(`monto-${pais}`).value);
-            const [conv, precio] = document.getElementById(`conversionSelect-${pais}`).value.split('|');
-            if (!monto || !conv) {
-                document.getElementById(`resultado-${pais}`).textContent = 'Ingresa monto y conversión.';
+            const montoInput = document.getElementById(`monto-${pais}`);
+            const select = document.getElementById(`conversionSelect-${pais}`);
+            const monto = parseFloat(montoInput.value);
+            const [conv, precioStr, origen] = select.value.split('|');
+            const precio = parseFloat(precioStr);
+            const resultadoDiv = document.getElementById(`resultado-${pais}`);
+            
+            if (!monto || !conv || isNaN(precio)) {
+                resultadoDiv.innerHTML = '<span style="color: #dc3545;">¡Hey! Ingresa el monto y la conversión para ayudarte. 😊</span>';
                 return;
             }
-            const precioFloat = parseFloat(precio);
-            const resultado = (conv.includes(`${pais}-`) ? monto / precioFloat : monto * precioFloat).toFixed(2).replace(/\.?0+$/, '');
-            document.getElementById(`resultado-${pais}`).innerHTML = `Resultado: $${resultado} en destino. <span class="emoji">🚀</span>`;
+            
+            let resultado;
+            if (origen === pais) { // Salida: divide por tasa
+                resultado = (monto / precio).toFixed(2).replace(/\.?0+$/, '');
+                resultadoDiv.innerHTML = `<span>¡Excelente elección! De ${pais}: $${monto} → Recibes: $${resultado} en destino ${emojiParaMoneda(conv.split('-')[1])}. ¡Listo para enviar! 🚀</span>`;
+            } else { // Entrada: multiplica por tasa
+                resultado = (monto * precio).toFixed(2).replace(/\.?0+$/, '');
+                resultadoDiv.innerHTML = `<span>¡Perfecto! De origen: $${monto} → Pagas: $${resultado} en ${pais} ${emojiParaMoneda(conv.split('-')[0])}. Todo claro y seguro. 💕</span>`;
+            }
+        }
+
+        function emojiParaMoneda(moneda) {
+            const emojis = { 'USD': '💵', 'ARS': '🇦🇷', 'EUR': '🇪🇺', 'PEN': '🇵🇪' };
+            return emojis[moneda] || '💱';
         }
 
         // Cargar datos al iniciar
-        cargarDatos();
+        window.onload = () => {
+            console.log('Página cargada, iniciando fetch...');
+            cargarDatos();
+        };
     </script>
 </body>
 </html>
