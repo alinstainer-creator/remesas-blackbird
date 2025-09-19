@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remesas Blackbird - Tasas por País</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .tabs { display: flex; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; background: #ddd; cursor: pointer; border: none; margin-right: 5px; }
+        .tab.active { background: #007bff; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .calculator { background: #e9ecef; padding: 15px; border-radius: 5px; margin-top: 20px; }
+        input, select, button { padding: 8px; margin: 5px; }
+        #resultado { font-weight: bold; color: #007bff; margin-top: 10px; }
+        .emoji { font-size: 1.2em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Remesas Blackbird - Tasas Actualizadas</h1>
+        <p>Explora tasas de conversión por país. Usa la calculadora para estimar remesas.</p>
+        
+        <div id="tabs" class="tabs"></div>
+        <div id="tab-contents"></div>
+        
+        <div id="loading" style="text-align: center; display: none;">Cargando datos...</div>
+        <div id="error" style="color: red; display: none;"></div>
+    </div>
+
+    <script>
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3yMHp1HF-2JS1j0vNcp_snCjtTaWuF6y8AldyFGxbWvQrmhvisnagcBC1pWiskalafvz0EVY8svR6/pub?gid=983978085&single=true&output=csv';
+        
+        let data = [];
+        let paisesUnicos = [];
+
+        // Fetch CSV y procesar datos
+        async function cargarDatos() {
+            document.getElementById('loading').style.display = 'block';
+            try {
+                const response = await fetch(csvUrl);
+                const text = await response.text();
+                const rows = text.split('\n').map(row => row.split(','));
+                
+                // Procesar como en el Python: filtrar pares y tasas
+                let pairs = [], rates = [], currentPair = null;
+                rows.forEach((row, index) => {
+                    if (row[9] === 'PROVEDOR') {
+                        let pairFull = row[1] || '';
+                        let pairClean = pairFull.replace('COTIZACION MESA ', '').split(' 🇦')[0].split(' 🇨')[0].split(' 🇲')[0].split(' 🇵')[0].split(' 🇧')[0].split(' 🇻')[0].strip();
+                        currentPair = pairClean;
+                    } else if (row[9] === 'VENTA IMAD' && currentPair) {
+                        let rate = row[5] || '';
+                        rate = rate.replace('$', '').replace(',', '');
+                        let rateFloat = parseFloat(rate);
+                        if (!isNaN(rateFloat)) {
+                            pairs.push(currentPair);
+                            rates.push(rateFloat);
+                        }
+                        currentPair = null;
+                    }
+                });
+                
+                data = pairs.map((pair, i) => ({
+                    conversion: pair,
+                    precio: rates[i],
+                    origen: pair.split('-')[0].trim(),
+                    destino: pair.split('-')[1].trim()
+                }));
+                
+                paisesUnicos = [...new Set(data.map(d => d.origen).concat(data.map(d => d.destino)))];
+                crearTabs();
+                document.getElementById('loading').style.display = 'none';
+            } catch (err) {
+                document.getElementById('error').textContent = 'Error al cargar datos: ' + err.message;
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Crear tabs por país
+        function crearTabs() {
+            const tabsDiv = document.getElementById('tabs');
+            const contentsDiv = document.getElementById('tab-contents');
+            tabsDiv.innerHTML = '';
+            contentsDiv.innerHTML = '';
+
+            paisesUnicos.forEach((pais, index) => {
+                // Tab button
+                const tabBtn = document.createElement('button');
+                tabBtn.className = 'tab';
+                tabBtn.textContent = pais.toUpperCase();
+                tabBtn.onclick = () => mostrarTab(index);
+                if (index === 0) tabBtn.classList.add('active');
+                tabsDiv.appendChild(tabBtn);
+
+                // Tab content
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'tab-content';
+                if (index === 0) contentDiv.classList.add('active');
+                contentsDiv.appendChild(contentDiv);
+            });
+
+            mostrarTab(0); // Mostrar primer tab
+        }
+
+        // Mostrar tab específico
+        function mostrarTab(index) {
+            document.querySelectorAll('.tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            document.querySelectorAll('.tab-content').forEach((content, i) => {
+                content.classList.toggle('active', i === index);
+                if (i === index) actualizarTabla(index);
+            });
+        }
+
+        // Actualizar tabla para el país
+        function actualizarTabla(paisIndex) {
+            const pais = paisesUnicos[paisIndex];
+            const content = document.querySelectorAll('.tab-content')[paisIndex];
+            const salidas = data.filter(d => d.origen === pais).map(d => ({...d, direccion: `De ${pais} a`}));
+            const entradas = data.filter(d => d.destino === pais).map(d => ({...d, direccion: `A ${pais} desde`}));
+            const dfPais = [...salidas, ...entradas].sort((a, b) => a.direccion.localeCompare(b.direccion) || a.conversion.localeCompare(b.conversion));
+
+            let tablaHtml = '<h2>Tasas para ' + pais.toUpperCase() + '</h2><table><tr><th>Dirección</th><th>Conversión</th><th>Precio (USD)</th></tr>';
+            dfPais.forEach(row => {
+                const precioFormateado = row.precio.toFixed(2).replace(/\.?0+$/, '');
+                tablaHtml += `<tr><td>${row.direccion}</td><td>${row.conversion}</td><td>$${precioFormateado}</td></tr>`;
+            });
+            tablaHtml += '</table>';
+
+            // Calculadora
+            tablaHtml += `
+                <div class="calculator">
+                    <h3>Calculadora de Remesa</h3>
+                    <input type="number" id="monto" placeholder="Monto en origen" min="0">
+                    <select id="conversionSelect">
+                        <option value="">Selecciona conversión</option>
+                        ${dfPais.map(row => `<option value="${row.conversion}">${row.conversion}</option>`).join('')}
+                    </select>
+                    <button onclick="calcular()">Calcular</button>
+                    <div id="resultado"></div>
+                </div>
+            `;
+
+            content.innerHTML = tablaHtml;
+        }
+
+        // Función calculadora
+        function calcular() {
+            const monto = parseFloat(document.getElementById('monto').value);
+            const conv = document.getElementById('conversionSelect').value;
+            if (!monto || !conv) {
+                document.getElementById('resultado').textContent = 'Ingresa monto y conversión.';
+                return;
+            }
+            const row = data.find(d => d.conversion === conv);
+            if (row) {
+                const resultado = (conv.includes('ARG-') ? monto / row.precio : monto * row.precio).toFixed(2);
+                document.getElementById('resultado').innerHTML = `Resultado: $${resultado} en destino. <span class="emoji">🚀</span>`;
+            }
+        }
+
+        // Cargar datos al iniciar
+        cargarDatos();
+    </script>
+</body>
+</html>
