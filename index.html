@@ -27,8 +27,8 @@
       box-shadow: 0 0 6px rgba(0, 153, 119, 0.3);
       border-radius: 6px;
       padding: 0.75rem;
-      max-width: 90%;
-      width: 90%;
+      max-width: 95%;
+      width: 95%;
       margin: 1rem auto;
       animation: fadeIn 1s ease-out;
     }
@@ -54,7 +54,7 @@
       background: transparent;
       border: 1px solid #009977;
       color: #e6e6e6;
-      padding: 0.75rem;
+      padding: 0.875rem;
       font-size: 0.875rem;
       font-weight: 600;
       border-radius: 6px;
@@ -62,8 +62,8 @@
       position: relative;
       overflow: hidden;
       width: auto;
-      display: block;
-      margin: 0 auto;
+      display: inline-block;
+      margin: 0.5rem;
     }
     button:hover {
       background: #009977;
@@ -110,7 +110,7 @@
       background: rgba(28, 37, 38, 0.9);
       border: 1px solid #009977;
       color: #e6e6e6;
-      font-size: 0.75rem;
+      font-size: 0.875rem;
       padding: 0.5rem;
       border-radius: 4px;
       transition: all 0.3s ease;
@@ -143,7 +143,7 @@
       height: 100%;
       background: linear-gradient(45deg, rgba(0, 153, 119, 0.06), transparent);
       will-change: transform;
-      animation: supersonicClouds 20s linear infinite; /* Más rápido para inmersión */
+      animation: supersonicClouds 15s linear infinite;
       z-index: -2;
     }
     .clouds-layer2 {
@@ -154,7 +154,7 @@
       height: 100%;
       background: linear-gradient(90deg, rgba(0, 153, 119, 0.04), transparent);
       will-change: transform;
-      animation: supersonicClouds 20s linear infinite reverse;
+      animation: supersonicClouds 15s linear infinite reverse;
       z-index: -2;
     }
     .clouds-layer3 {
@@ -165,8 +165,20 @@
       height: 100%;
       background: linear-gradient(135deg, rgba(0, 153, 119, 0.05), transparent);
       will-change: transform;
-      animation: supersonicClouds 20s linear infinite;
-      animation-delay: -10s;
+      animation: supersonicClouds 15s linear infinite;
+      animation-delay: -7.5s;
+      z-index: -2;
+    }
+    .clouds-layer4 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0, 153, 119, 0.03), transparent);
+      will-change: transform;
+      animation: supersonicClouds 15s linear infinite reverse;
+      animation-delay: -3s;
       z-index: -2;
     }
     .stars {
@@ -183,7 +195,7 @@
       height: 1px;
       background: #e6e6e6;
       opacity: 0.3;
-      animation: pulseStar calc(3s + var(--delay) * 2s) infinite;
+      animation: pulseStar calc(2s + var(--delay) * 1s) infinite;
     }
     .radar {
       position: fixed;
@@ -200,8 +212,8 @@
       border: 1px solid rgba(0, 153, 119, 0.05);
       border-radius: 50%;
       transform: translate(-50%, -50%);
-      animation: radarPulse 8s infinite;
-      animation-delay: calc(var(--delay) * 4s);
+      animation: radarPulse 6s infinite;
+      animation-delay: calc(var(--delay) * 2s);
       opacity: 0;
     }
     .social-bar {
@@ -258,9 +270,6 @@
       height: 100%;
       z-index: -3;
     }
-    .hud-text {
-      text-shadow: 0 0 5px rgba(0, 204, 153, 0.6);
-    }
     .radar-grid {
       position: fixed;
       top: 0;
@@ -269,9 +278,28 @@
       height: 100%;
       background: radial-gradient(circle, transparent 80%, rgba(0, 153, 119, 0.02) 100%);
       z-index: -2;
+      animation: gridFlicker 4s infinite;
+    }
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+    }
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(0, 153, 119, 0.5);
+      animation: flyParticle calc(2s + var(--delay) * 1s) linear infinite;
     }
     .vibrate-container {
       animation: vibrate 0.1s linear;
+    }
+    .hud-text {
+      text-shadow: 0 0 5px rgba(0, 204, 153, 0.6);
     }
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -306,7 +334,7 @@
     }
     @keyframes pulseStar {
       0% { opacity: 0.3; }
-      50% { opacity: 0.6; }
+      50% { opacity: 0.7; }
       100% { opacity: 0.3; }
     }
     @keyframes supersonicClouds {
@@ -329,6 +357,14 @@
       75% { transform: translateX(2px); }
       100% { transform: translateX(0); }
     }
+    @keyframes gridFlicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+    @keyframes flyParticle {
+      0% { transform: translate(100vw, -100vh); opacity: 0.5; }
+      100% { transform: translate(-100vw, 100vh); opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -336,13 +372,16 @@
     <div class="clouds-layer1"></div>
     <div class="clouds-layer2"></div>
     <div class="clouds-layer3"></div>
+    <div class="clouds-layer4"></div>
     <div class="stars" id="stars"></div>
     <div class="radar">
       <div class="radar-circle" style="width: 200px; height: 200px; --delay: 0;"></div>
       <div class="radar-circle" style="width: 300px; height: 300px; --delay: 1;"></div>
-      <div class="radar-circle" style="width: 400px; height: 400px; --delay: 2;"></div> <!-- Más para inmersión -->
+      <div class="radar-circle" style="width: 400px; height: 400px; --delay: 2;"></div>
+      <div class="radar-circle" style="width: 500px; height: 500px; --delay: 3;"></div>
     </div>
     <div class="radar-grid"></div>
+    <div class="particles" id="particles"></div>
   </div>
   <canvas class="starfield" id="starfield"></canvas>
   <canvas class="speedometer" id="speedometer"></canvas>
@@ -421,7 +460,7 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       const stars = [];
-      const numStars = 40;
+      const numStars = 60;
       let mouseX = canvas.width / 2;
       let mouseY = canvas.height / 2;
       // Crear estrellas
@@ -430,8 +469,8 @@
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
           radius: Math.random() * 1 + 0.5,
-          vx: (Math.random() - 0.5) * 0.05,
-          vy: (Math.random() - 0.5) * 0.05
+          vx: (Math.random() - 0.5) * 0.1,
+          vy: (Math.random() - 0.5) * 0.1
         });
       }
       // Actualizar posición del mouse/touch
@@ -453,13 +492,13 @@
         lastTime = timestamp;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         stars.forEach(star => {
-          // Mover estrellas hacia el mouse
+          // Mover estrellas hacia el mouse/touch
           const dx = mouseX - star.x;
           const dy = mouseY - star.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          if (distance < 80) {
-            star.vx += dx * 0.0001;
-            star.vy += dy * 0.0001;
+          if (distance < 100) {
+            star.vx += dx * 0.0002;
+            star.vy += dy * 0.0002;
           }
           star.x += star.vx;
           star.y += star.vy;
@@ -472,16 +511,16 @@
           ctx.fillStyle = '#e6e6e6';
           ctx.fill();
         });
-        // Dibujar líneas aleatorias
-        ctx.strokeStyle = 'rgba(0, 153, 119, 0.1)';
-        ctx.lineWidth = 0.5;
+        // Dibujar líneas de conexión
+        ctx.strokeStyle = 'rgba(0, 153, 119, 0.2)';
+        ctx.lineWidth = 0.7;
         for (let i = 0; i < stars.length; i++) {
           for (let j = i + 1; j < stars.length; j++) {
-            if (Math.random() < 0.02) {
+            if (Math.random() < 0.03) {
               const dx = stars[i].x - stars[j].x;
               const dy = stars[i].y - stars[j].y;
               const distance = Math.sqrt(dx * dx + dy * dy);
-              if (distance < 60) {
+              if (distance < 80) {
                 ctx.beginPath();
                 ctx.moveTo(stars[i].x, stars[i].y);
                 ctx.lineTo(stars[j].x, stars[j].y);
@@ -493,6 +532,18 @@
         requestAnimationFrame(animate);
       }
       animate(0);
+    }
+    // Partículas de vuelo
+    function initParticles() {
+      const particlesContainer = document.getElementById('particles');
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.setProperty('--delay', Math.random() * 2);
+        particlesContainer.appendChild(particle);
+      }
     }
     // Velocímetro gráfico
     function initSpeedometer() {
@@ -550,6 +601,7 @@
       const [amount, setAmount] = React.useState('');
       const [result, setResult] = React.useState(null);
       const [error, setError] = React.useState('');
+      const [rateDisplay, setRateDisplay] = React.useState(null);
       const containerRef = React.useRef(null);
       // Cargar y parsear el CSV
       React.useEffect(() => {
@@ -577,8 +629,8 @@
                     if (rateRow && rateRow[5]) {
                       console.log(`Fila ${rateRows[index]}: Columna FG (índice 5) = ${rateRow[5]}`);
                       let rate = rateRow[5].replace('$', '').trim();
-                      rate = rate.replace(/\./g, ''); // Eliminar separadores de miles (.)
-                      rate = rate.replace(',', '.'); // Reemplazar decimal (,) por (.)
+                      rate = rate.replace(/\./g, '');
+                      rate = rate.replace(',', '.');
                       const parsedRate = parseFloat(rate);
                       if (!isNaN(parsedRate)) {
                         exchangeRates[pair] = parsedRate;
@@ -609,20 +661,21 @@
           console.error('Error al cargar el CSV:', err);
         });
       }, []);
-      // Generar estrellas y inicializar canvas
+      // Generar estrellas, partículas y inicializar canvas
       React.useEffect(() => {
         const starsContainer = document.getElementById('stars');
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 100; i++) {
           const star = document.createElement('div');
           star.className = 'star';
           star.style.left = `${Math.random() * 100}%`;
           star.style.top = `${Math.random() * 100}%`;
           star.style.width = `${Math.random() * 1 + 0.5}px`;
           star.style.height = `${Math.random() * 1 + 0.5}px`;
-          star.style.setProperty('--delay', Math.random() * 2);
+          star.style.setProperty('--delay', Math.random() * 1);
           starsContainer.appendChild(star);
         }
         initStarfield();
+        initParticles();
         initSpeedometer();
       }, []);
       // Reproducir sonido
@@ -634,22 +687,22 @@
       const handleCalculate = () => {
         setError('');
         setResult(null);
+        setRateDisplay(null);
         if (!originCountry || !destinationCountry) {
           setError('Por favor, selecciona los países de origen y destino.');
           return;
         }
-        // Check if the amount is a string of zeros
         if (!amount || /^0+$/.test(amount.trim())) {
           setAmount('0');
           setError('Por favor, ingresa un monto válido mayor que 0.');
           return;
         }
-        if (isNaN(amount) || parseFloat(amount) < 0) {
+        if (isNaN(amount) || parseFloat(amount) <= 0) {
           setError('Por favor, ingresa un monto válido.');
           return;
         }
         playClickSound();
-        if (navigator.vibrate) navigator.vibrate(50); // Vibración para inmersión en móvil
+        if (navigator.vibrate) navigator.vibrate(50);
         containerRef.current.classList.add('vibrate-container');
         setTimeout(() => containerRef.current.classList.remove('vibrate-container'), 200);
         const amountValue = parseFloat(amount);
@@ -668,8 +721,32 @@
           converted: convertedAmount,
           currency: destinationCountry
         });
-        // Actualizar velocímetro
         window.updateSpeedometer(amountValue);
+      };
+      // Manejar visualización de tasa
+      const handleViewRate = () => {
+        setError('');
+        setResult(null);
+        setRateDisplay(null);
+        if (!originCountry || !destinationCountry) {
+          setError('Por favor, selecciona los países de origen y destino.');
+          return;
+        }
+        playClickSound();
+        if (navigator.vibrate) navigator.vibrate(50);
+        const pair = `${originCountry}/${destinationCountry}`;
+        if (!data || !data[pair]) {
+          setError(`No se encontró la tasa de cambio de ${currencyToCountry[originCountry]} a ${currencyToCountry[destinationCountry]}.`);
+          return;
+        }
+        const rate = data[pair];
+        setRateDisplay({
+          from: currencyToCountry[originCountry],
+          to: currencyToCountry[destinationCountry],
+          rate: rate,
+          originCurrency: originCountry,
+          destinationCurrency: destinationCountry
+        });
       };
       // Mostrar estado de carga
       if (!data) {
@@ -685,64 +762,81 @@
         <div className="min-h-screen flex items-center justify-center p-3">
           <div className="container" ref={containerRef}>
             <img src="logo blackbird.png" alt="Blackbird Exchange Logo" className="logo mx-auto mb-2" />
-            <h1 className="text-base font-semibold mb-2 text-center text-gray-300 hud-text">Blackbird Exchange SR-71</h1>
+            <h1 className="text-base font-semibold mb-2 text-center text-gray-300 hud-text">Blackbird Exchange</h1>
             {error && (
               <div className="bg-red-900/50 text-red-300 p-1.5 rounded-lg mb-2 text-xs animate-pulse">{error}</div>
             )}
             <div className="mb-2">
-              <label className="block text-xs font-light text-gray-300 mb-1 hud-text">Sector de Origen</label>
+              <label className="block text-xs font-light text-gray-300 mb-1 hud-text">País de Origen</label>
               <select
                 value={originCountry}
                 onChange={(e) => setOriginCountry(e.target.value)}
                 className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
               >
-                <option value="">Selecciona el sector de origen</option>
+                <option value="">Selecciona el país de origen</option>
                 {countries.map((currency) => (
                   <option key={currency} value={currency}>{currencyToCountry[currency]}</option>
                 ))}
               </select>
             </div>
             <div className="mb-2">
-              <label className="block text-xs font-light text-gray-300 mb-1 hud-text">Vector de Destino</label>
+              <label className="block text-xs font-light text-gray-300 mb-1 hud-text">País de Destino</label>
               <select
                 value={destinationCountry}
                 onChange={(e) => setDestinationCountry(e.target.value)}
                 className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
               >
-                <option value="">Selecciona el vector de destino</option>
+                <option value="">Selecciona el país de destino</option>
                 {countries.map((currency) => (
                   <option key={currency} value={currency}>{currencyToCountry[currency]}</option>
                 ))}
               </select>
             </div>
             <div className="mb-2">
-              <label className="block text-xs font-light text-gray-300 mb-1 hud-text">Carga de Remesa</label>
+              <label className="block text-xs font-light text-gray-300 mb-1 hud-text">Monto</label>
               <input
                 type="number"
                 inputmode="numeric"
                 pattern="[0-9]*"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="Ingresa la carga"
+                placeholder="Ingresa el monto"
                 className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
                 min="0"
                 step="0.01"
               />
             </div>
-            <button
-              onClick={handleCalculate}
-              className="text-xs font-medium rounded-lg"
-            >
-              Lanzar Maniobra
-            </button>
+            <div className="flex justify-center gap-2">
+              {originCountry && destinationCountry && (
+                <button
+                  onClick={handleViewRate}
+                  className="text-xs font-medium rounded-lg"
+                >
+                  Ver Tasa
+                </button>
+              )}
+              <button
+                onClick={handleCalculate}
+                className="text-xs font-medium rounded-lg"
+              >
+                Calcular
+              </button>
+            </div>
+            {rateDisplay && (
+              <div className="result mt-2 p-1.5 bg-gray-800/50 rounded-lg border border-gray-600">
+                <p className="text-xs text-gray-300 hud-text">
+                  Tasa de Cambio: 1 {rateDisplay.originCurrency} ({rateDisplay.from}) = {formatNumber(rateDisplay.rate)} {rateDisplay.destinationCurrency} ({rateDisplay.to})
+                </p>
+              </div>
+            )}
             {result && (
               <div className="result mt-2 p-1.5 bg-gray-800/50 rounded-lg border border-gray-600">
                 <p className="text-xs text-gray-300 hud-text">
-                  Misión Cumplida: {formatNumber(result.amount)} {result.from} ({originCountry}) ={' '}
+                  Resultado de la Conversión: {formatNumber(result.amount)} {result.from} ({originCountry}) ={' '}
                   {formatNumber(result.converted)} {result.to} ({destinationCountry})
                 </p>
                 <p className="text-xs text-gray-400 mt-1 hud-text">
-                  Velocidad de Cambio: 1 {originCountry} = {formatNumber(result.rate)} {destinationCountry}
+                  Tasa de Cambio: 1 {originCountry} = {formatNumber(result.rate)} {destinationCountry}
                 </p>
                 <a
                   href="https://t.me/+i02VPMg23TNiOWJh"
@@ -751,7 +845,7 @@
                   className="telegram-button mt-1.5"
                 >
                   <i className="fab fa-telegram-plane"></i>
-                  ¡Desplegar Remesa por Telegram!
+                  ¡Envía tu remesa por Telegram!
                 </a>
               </div>
             )}
