@@ -167,18 +167,9 @@
       "URY": {name: "Uruguay", currency: "UYU"}
     };
 
-    const normalizationMap = {
-      'CHILE': 'CHL',
-      'VZLA': 'VEN',
-      'ARG': 'ARG',
-      'USA': 'USA',
-      'BRA': 'BRA',
-      'MEX': 'MEX',
-      'COL': 'COL',
-      'PER': 'PER',
-      'URY': 'URY',
-      'ECU': 'ECU'
-    };
+    const currencyToAbbr = Object.fromEntries(
+      Object.entries(abbrToCountry).map(([abbr, { currency }]) => [currency, abbr])
+    );
 
     let ratesData = [];
 
@@ -194,30 +185,29 @@
         for (let i = 0; i < rows.length; i++) {
           if (rows[i][1] && rows[i][1].includes('COTIZACION MESA')) {
             const header = rows[i][1];
-            let parts = header.split(' ');
-            let countryStr = parts[2].split('-')[0];
-            const countryAbbr = normalizationMap[countryStr] || countryStr;
-
-            if (!abbrToCountry[countryAbbr]) continue;
-
             const tasaRow = rows[i + 1];
+            const parRow = rows[i + 2];
+
             const rateStr = tasaRow[5] || tasaRow[6]; // Columna F
             const rate = parseFloat(rateStr.replace('$', '').replace(',', '.')) || 0;
 
-            let destStr = parts[2].split('-')[1];
-            const destAbbr = normalizationMap[destStr] || destStr;
-            const destCurr = abbrToCountry[destAbbr] ? abbrToCountry[destAbbr].currency : '';
+            const pairCell = parRow[1] || parRow[2] || parRow[3]; // B, C, D
+            if (pairCell && rate > 0) {
+              const [originCurr, destCurr] = pairCell.split('/').map(c => c.trim());
+              const countryAbbr = currencyToAbbr[originCurr];
+              const destAbbr = currencyToAbbr[destCurr];
 
-            if (destAbbr && rate > 0 && abbrToCountry[destAbbr]) {
-              ratesData.push({
-                countryAbbr,
-                countryName: abbrToCountry[countryAbbr].name,
-                originCurr: abbrToCountry[countryAbbr].currency,
-                destAbbr,
-                destCurr,
-                rate,
-                cell: `Fila ${i + 2}, Celda F`
-              });
+              if (countryAbbr && destAbbr && abbrToCountry[countryAbbr] && abbrToCountry[destAbbr]) {
+                ratesData.push({
+                  countryAbbr,
+                  countryName: abbrToCountry[countryAbbr].name,
+                  originCurr,
+                  destAbbr,
+                  destCurr,
+                  rate,
+                  cell: `Fila ${i + 2}, Celda F`
+                });
+              }
             }
           }
         }
@@ -245,19 +235,12 @@
       destinationSelect.innerHTML = '<option value="">Selecciona destino...</option>';
 
       if (originAbbr) {
-        const availableDests = [...new Set(ratesData.filter(d => d.countryAbbr === originAbbr).map(d => d.destAbbr))];
-        if (availableDests.length === 0) {
-          // Fallback a todos los países si no hay datos
-          Object.entries(abbrToCountry).forEach(([abbr, country]) => {
+        const availableDests = ratesData.filter(d => d.countryAbbr === originAbbr).map(d => d.destAbbr);
+        Object.entries(abbrToCountry).forEach(([abbr, country]) => {
+          if (availableDests.includes(abbr)) {
             destinationSelect.innerHTML += `<option value="${abbr}">${country.name}</option>`;
-          });
-        } else {
-          availableDests.forEach(abbr => {
-            if (abbrToCountry[abbr]) {
-              destinationSelect.innerHTML += `<option value="${abbr}">${abbrToCountry[abbr].name}</option>`;
-            }
-          });
-        }
+          }
+        });
       } else {
         Object.entries(abbrToCountry).forEach(([abbr, country]) => {
           destinationSelect.innerHTML += `<option value="${abbr}">${country.name}</option>`;
