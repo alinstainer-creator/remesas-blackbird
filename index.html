@@ -1,491 +1,452 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Blackbird SR-71 — Calculadora de Remesas (ULTRA)</title>
-<meta name="description" content="Calculadora Blackbird: lectura robusta de Google Sheet (pares en columna D / precios en F-G fila siguiente). UI Cabina SR-71." />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Blackbird Exchange — Concierge</title>
+<meta name="description" content="Blackbird Exchange — interfaz premium para conversiones. Lectura robusta desde Google Sheets.">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
-  /* ---------- Base / Tipografía ---------- */
-  :root{
-    --bg:#040509;
-    --panel:#07101a;
-    --accent:#00b4ff;
-    --accent-2:#0077cc;
-    --muted:#9fbfdc;
-    --glass: rgba(255,255,255,0.03);
-    --hud: rgba(0,180,255,0.06);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#020308 60%);color:#e6f9ff;font-family:'Roboto Condensed',sans-serif;-webkit-font-smoothing:antialiased}
-  /* ---------- Layout ---------- */
-  .page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
-  .card{
-    width:100%; max-width:1100px; border-radius:14px; position:relative; overflow:hidden;
-    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
-    border:1px solid rgba(255,255,255,0.02);
-    box-shadow: 0 30px 80px rgba(0,0,0,0.85);
-  }
-  canvas#bg { position:absolute; inset:0; z-index:0; opacity:0.14; filter:blur(0.6px); }
-  header{position:relative;z-index:2;padding:28px 34px;display:flex;gap:18px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.02)}
-  .logo{width:96px;height:96px;border-radius:50%;border:2px solid var(--accent);box-shadow:0 12px 40px rgba(0,180,255,0.06);object-fit:cover}
-  .brand h1{font-family:'Orbitron',monospace;color:var(--accent);margin:0;font-size:20px;letter-spacing:1px}
-  .brand p{margin:6px 0 0;color:var(--muted);font-size:13px}
-  /* ---------- Main ---------- */
-  .main{display:grid;grid-template-columns: 1fr 380px; gap:20px;padding:26px;position:relative;z-index:2}
-  @media(max-width:980px){ .main{grid-template-columns:1fr} }
-  .panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); padding:18px; border-radius:12px; border:1px solid rgba(255,255,255,0.02)}
-  /* form */
-  label{display:block;color:var(--muted);font-weight:700;font-size:12px;margin-bottom:8px;text-transform:uppercase}
-  .grid2{display:grid;grid-template-columns:1fr 1fr; gap:12px}
-  .input, select{width:100%;padding:12px;border-radius:8px;background:rgba(10,12,16,0.6);border:1px solid rgba(255,255,255,0.03);color:#e9fbff;font-size:15px}
-  .input:focus, select:focus{outline:none;border-color:var(--accent);box-shadow:0 8px 28px rgba(0,180,255,0.06)}
-  .controls{display:flex;gap:12px;margin-top:14px;align-items:center}
-  /* small, refined buttons (not blocky) */
-  .btn { padding:11px 16px;border-radius:10px;border:none;font-weight:800;font-family:'Orbitron',monospace;cursor:pointer; font-size:13px; letter-spacing:0.4px; }
-  .btn-primary{ background: linear-gradient(90deg,var(--accent),var(--accent-2)); color:#021018; box-shadow: 0 10px 30px rgba(0,180,255,0.12); }
-  .btn-ghost{ background: transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.03); }
-  .btn-tele{ background: linear-gradient(90deg,#2bd36b,#1ea64b); color:#05110a; }
-  .btn:hover{ transform: translateY(-2px); }
-  /* result HUD */
-  .hud{ margin-top:14px; padding:14px; border-radius:10px; background: linear-gradient(180deg, rgba(0,180,255,0.03), rgba(255,255,255,0.01)); border:1px solid rgba(0,180,255,0.06); display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:56px }
-  .hud .left{ font-size:14px; color:#e8fbff }
-  .hud .right{ font-family:'Orbitron',monospace; color:var(--accent); font-size:20px }
-  /* side info */
-  .side h3{margin:0 0 12px 0;color:var(--accent);font-family:'Orbitron',monospace;font-size:14px}
-  table{width:100%;border-collapse:collapse;font-size:13px;color:#dff7ff}
-  th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.02); text-align:left}
-  th{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#021018; font-weight:800;font-size:12px}
-  tr:hover td{ background: rgba(0,180,255,0.02) }
-  /* footer */
-  footer{padding:18px;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid rgba(255,255,255,0.02)}
-  .small{font-size:12px;color:var(--muted)}
+:root{
+  --bg:#04060a;
+  --panel:#08121a;
+  --accent:#00c0ff;
+  --accent-2:#0077cc;
+  --muted:#9fbfdc;
+  --glass: rgba(255,255,255,0.03);
+  --hud: rgba(0,192,255,0.06);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#02030a 70%);color:#e6fbff;font-family:'Roboto Condensed',sans-serif;-webkit-font-smoothing:antialiased}
+.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+.card{width:100%;max-width:1180px;border-radius:14px;position:relative;overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,0.007), rgba(255,255,255,0.004));border:1px solid rgba(255,255,255,0.02);box-shadow:0 30px 80px rgba(0,0,0,0.85)}
+/* background canvas */
+canvas#bg{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:0.12;filter:blur(0.6px)}
+/* header */
+header{position:relative;z-index:2;padding:22px 28px;display:flex;gap:18px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.02)}
+.logo{width:88px;height:88px;border-radius:50%;border:2px solid var(--accent);box-shadow:0 12px 40px rgba(0,192,255,0.06);object-fit:cover}
+.brand h1{font-family:'Orbitron',monospace;color:var(--accent);margin:0;font-size:20px;letter-spacing:1px}
+.brand p{margin:6px 0 0;color:var(--muted);font-size:13px}
+/* main layout */
+.main{display:grid;grid-template-columns:1fr 420px;gap:20px;padding:22px;position:relative;z-index:2}
+@media(max-width:980px){.main{grid-template-columns:1fr}}
+.panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.006)); padding:18px; border-radius:12px; border:1px solid rgba(255,255,255,0.02)}
+/* form */
+label{display:block;color:var(--muted);font-weight:700;font-size:12px;margin-bottom:8px;text-transform:uppercase}
+.input, select{width:100%;padding:12px;border-radius:10px;background:rgba(8,10,14,0.6);border:1px solid rgba(255,255,255,0.03);color:#e9fbff;font-size:15px}
+.input:focus, select:focus{outline:none;border-color:var(--accent);box-shadow:0 10px 28px rgba(0,192,255,0.06)}
+.controls{display:flex;gap:10px;margin-top:14px}
+.btn{padding:10px 14px;border-radius:10px;border:none;font-weight:800;font-family:'Orbitron',monospace;cursor:pointer;font-size:13px}
+.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#031418;box-shadow:0 10px 30px rgba(0,192,255,0.12)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+.btn-tele{background:linear-gradient(90deg,#2bd36b,#1ea64b);color:#03110a}
+.btn-small{padding:8px 10px;font-size:12px;border-radius:8px}
+.hud{margin-top:14px;padding:14px;border-radius:10px;background:linear-gradient(180deg, rgba(0,192,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(0,192,255,0.06);display:flex;justify-content:space-between;align-items:center}
+.hud .left{font-size:14px;color:#eafcff}
+.hud .right{font-family:'Orbitron',monospace;color:var(--accent);font-size:20px}
+.table-wrap{max-height:520px;overflow:auto}
+table{width:100%;border-collapse:collapse;color:#eafcff}
+th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.02);text-align:left;font-size:13px}
+th{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#031418;font-weight:800;font-size:12px}
+.kv{font-size:13px;color:var(--muted)}
+.small{font-size:12px;color:var(--muted);margin-top:10px}
+.debugNote{font-size:12px;color:#ffc;opacity:0.9}
 </style>
 </head>
 <body>
-  <div class="page">
-    <div class="card" role="main" aria-labelledby="title">
-      <canvas id="bg"></canvas>
+<canvas id="bg"></canvas>
 
-      <header>
-        <img class="logo" src="logo blackbird.png" alt="Blackbird logo" onerror="this.onerror=null;this.src='https://via.placeholder.com/96/00b4ff/071017?text=SR71'">
-        <div class="brand">
-          <h1 id="title">Blackbird SR-71 — Calculadora de Remesas</h1>
-          <p class="small">Interfaz cabina • Lectura robusta de tu Google Sheet (Venta IMAD)</p>
+<div class="page">
+  <div class="card" role="main" aria-labelledby="title">
+    <header>
+      <img class="logo" src="logo blackbird.png" alt="Blackbird logo" onerror="this.onerror=null;this.src='https://via.placeholder.com/96/00c0ff/071017?text=SR71'">
+      <div class="brand">
+        <h1 id="title">Blackbird Exchange — Concierge</h1>
+        <p class="kv">Interfaz premium — Cabina SR-71</p>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- LEFT: form -->
+      <section class="panel" aria-label="Conversion">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:800;color:var(--accent)">Exchange · Cliente</div>
+          <div class="kv">Frontend · lectura directa</div>
         </div>
-      </header>
 
-      <main class="main">
-        <!-- left: calculator -->
-        <section class="panel" aria-label="Calculadora">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <div style="font-weight:800;color:var(--accent)">Calculadora Mach-3</div>
-            <div class="small">Frontend • Sin backend</div>
-          </div>
+        <h2 style="font-family:Orbitron,monospace;color:var(--accent);margin:12px 0">Conversion rápida</h2>
 
-          <h2 style="font-family:Orbitron,monospace;color:var(--accent);margin:8px 0 18px 0;font-size:16px">Conversión entre países</h2>
+        <div>
+          <label for="selOrigin">Origen</label>
+          <select id="selOrigin" class="input"><option value="">Cargando países…</option></select>
+        </div>
 
-          <div>
-            <label for="selOrigen">País de origen</label>
-            <select id="selOrigen" class="input" aria-label="País de origen"><option value="">Cargando países…</option></select>
-          </div>
+        <div style="margin-top:12px">
+          <label for="selDest">Destino</label>
+          <select id="selDest" class="input"><option value="">Selecciona destino…</option></select>
+        </div>
 
-          <div style="margin-top:12px">
-            <label for="selDestino">País de destino</label>
-            <select id="selDestino" class="input" aria-label="País de destino"><option value="">Selecciona destino…</option></select>
-          </div>
+        <div style="margin-top:12px">
+          <label for="amount">Monto (moneda local)</label>
+          <input id="amount" class="input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Ej. 1000.00">
+        </div>
 
-          <div style="margin-top:12px">
-            <label for="monto">Monto (moneda local)</label>
-            <input id="monto" class="input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Ej. 1000.00">
-          </div>
+        <div class="controls">
+          <button id="btnCalc" class="btn btn-primary">Calcular</button>
+          <button id="btnCopy" class="btn btn-ghost btn-small">Copiar</button>
+          <button id="btnTele" class="btn btn-tele btn-small">Pedir por Telegram</button>
+        </div>
 
-          <div class="controls" style="margin-top:14px">
-            <button id="btnCalc" class="btn btn-primary">CALCULAR</button>
-            <button id="btnCopy" class="btn btn-ghost">Copiar resultado</button>
-            <button id="btnTelegram" class="btn btn-tele">Pedir por Telegram</button>
-          </div>
+        <div class="hud" aria-live="polite">
+          <div class="left" id="hudLeft">Resultado aparecerá aquí</div>
+          <div class="right" id="hudRight">--</div>
+        </div>
 
-          <div class="hud" style="margin-top:14px" aria-live="polite">
-            <div class="left" id="hudLeft">Resultado aparecerá aquí</div>
-            <div class="right" id="hudRight">--</div>
-          </div>
+        <div class="small">Si un par sale raro, abre la tabla de tasas y usa el icono "invertir" para forzar la lógica. El sistema intenta detectar automáticamente si debe multiplicar o dividir.</div>
+      </section>
 
-          <div style="margin-top:12px" class="small">Si no aparecen países, revisa que el documento esté publicado (Archivo → Publicar en la web) y que el CSV sea accesible.</div>
-        </section>
+      <!-- RIGHT: rates + diagnostics -->
+      <aside class="panel">
+        <h3 style="font-family:Orbitron,monospace;color:var(--accent);margin:0 0 12px 0">Tasas detectadas</h3>
+        <div class="table-wrap">
+          <table id="ratesTable" role="table" aria-label="Rates">
+            <thead><tr><th>Origen</th><th>Destino</th><th style="text-align:right">Tasa</th><th style="width:120px">Acción</th></tr></thead>
+            <tbody><tr><td colspan="4" class="kv" style="padding:18px">Cargando tasas desde tu sheet…</td></tr></tbody>
+          </table>
+        </div>
 
-        <!-- right: rates table -->
-        <aside class="panel side" aria-label="Tasas">
-          <h3>Tasas detectadas (Venta IMAD)</h3>
-          <div style="max-height:520px; overflow:auto;">
-            <table id="ratesTable" role="table" aria-describedby="ratesDesc">
-              <thead><tr><th>Origen</th><th>Destino</th><th style="text-align:right">Tasa</th></tr></thead>
-              <tbody><tr><td colspan="3" style="color:var(--muted);padding:18px">Cargando tasas desde sheet…</td></tr></tbody>
-            </table>
-          </div>
+        <div style="margin-top:12px">
+          <div class="small">Panel de diagnóstico: muestra fila y celda origen del valor detectado. Si la tasa aplicada debe invertirse, pulsa el botón ↺ en la fila correspondiente.</div>
+        </div>
+      </aside>
+    </main>
 
-          <div style="margin-top:12px">
-            <div class="small" id="ratesDesc">La tabla muestra pares y la tasa tomada de la fila marcada como "Venta IMAD" (valor en F o G en la fila siguiente al par).</div>
-          </div>
-        </aside>
-      </main>
-
-      <footer>
-        <div>© 2025 Blackbird — Experiencia Mach-3</div>
-      </footer>
-    </div>
+    <footer style="position:relative;z-index:2;padding:18px;text-align:center;color:var(--muted);border-top:1px solid rgba(255,255,255,0.02)">
+      © 2025 Blackbird Exchange — Concierge
+    </footer>
   </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
 /* ================= CONFIG ================= */
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3yMHp1HF-2JS1j0vNcp_snCjtTaWuF6y8AldyFGxbWvQrmhvisnagcBC1pWiskalafvz0EVY8svR6/pub?gid=983978085&single=true&output=csv';
-const TELEGRAM_LINK = 'https://t.me/+i02VPMg23TNiOWJh';
+const TELEGRAM = 'https://t.me/+i02VPMg23TNiOWJh';
+const DEBUG = false; // switch on to log extra info
 /* ========================================= */
 
-/* ---------- State ---------- */
-let rates = {};     // nested: rates[origen] = { destino: price, ... }
+/* State */
+let rates = {}; // rates[from][to] = { price, priceRow, priceCol, useDivision:boolean (true => dest = origin / price) }
 let countries = new Set();
-let rawPairs = [];  // raw pair strings (debug)
 
-/* ---------- Helpers ---------- */
-function cleanText(s){
-  if(!s && s!==0) return '';
-  return String(s).trim();
-}
-function removeDiacritics(str){ return str.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
-function normalizeKey(s){ return removeDiacritics(String(s||'')).toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,' ').trim(); }
-
+/* Helpers */
 function parsePrice(raw){
-  if(raw === undefined || raw === null) return NaN;
+  if(raw===undefined || raw===null) return NaN;
   let s = String(raw).trim();
   if(!s) return NaN;
-  s = s.replace(/\s/g,'');
-  // keep digits, dots, comma, minus
-  s = s.replace(/[^\d\.,\-]/g,'');
-  if(s.indexOf(',') !== -1 && s.indexOf('.') !== -1){
-    s = s.replace(/,/g,''); // comma likely thousands
-  } else if(s.indexOf(',') !== -1 && s.indexOf('.') === -1){
-    s = s.replace(/,/g,'.');
-  }
+  s = s.replace(/\s/g,'').replace(/[^\d\.,\-]/g,'');
+  if(s.indexOf(',') !== -1 && s.indexOf('.') !== -1) s = s.replace(/,/g,'');
+  else if(s.indexOf(',') !== -1) s = s.replace(/,/g,'.');
   const n = parseFloat(s);
   return isNaN(n) ? NaN : n;
 }
-
-/* split pair robustly: supports ' - ', ' a ', ' to ', '/', '–','—' */
+function tidy(s){ return s ? String(s).trim().replace(/\s+/g,' ') : ''; }
 function splitPair(raw){
   if(!raw) return null;
   let p = String(raw).trim();
-  // remove common labels and parentheses
-  p = p.replace(/Cotizaci(o|ó)n Mesa/ig, '');
-  p = p.replace(/Cotizacion/ig,'');
-  p = p.replace(/\(.*?\)/g,'');
-  p = p.replace(/[:]/g,'');
-  // normalize whitespace
-  p = p.replace(/\s+/g,' ').trim();
-  // separators
-  const parts = p.split(/\s*(?:[-–—\/\\]|(?:\sa\s)|(?:\sto\s)|[:])\s*/i).map(x=>x.trim()).filter(Boolean);
+  p = p.replace(/Cotizaci[oó]n Mesa/ig,'').replace(/\(.*?\)/g,'').replace(/[:]/g,'').trim();
+  p = p.replace(/\s+/g,' ');
+  const parts = p.split(/\s*(?:[-–—\/\\]|(?:\sa\s)|(?:\sto\s))\s*/i).map(x=>x.trim()).filter(Boolean);
   if(parts.length>=2) return [parts[0], parts[1]];
-  // fallback: try splitting by comma
   const alt = p.split(',').map(x=>x.trim()).filter(Boolean);
   if(alt.length>=2) return [alt[0], alt[1]];
-  // nothing
   return null;
 }
 
-/* try find numeric price near row i in columns F (5) or G (6) within offset window */
+/* Determine if price should be used as divisor or multiplier:
+   Heuristic:
+     - If price >= 10, it's probably "origin units per 1 destination" (e.g. 852 CLP per 1 USD) => useDivision = true (dest = origin / price)
+     - Else useDivision = false (dest = origin * price)
+   We allow manual override per pair.
+*/
+function inferDivision(price, origin, dest){
+  if(!isFinite(price) || price <= 0) return false;
+  // special: if origin likely low-value currency (CLP, VES) and price>5 => division
+  const lowValueHints = ['chile','clp','pes','venezuela','ves','bolivar'];
+  const id = (origin + ' ' + dest).toLowerCase();
+  for(const hint of lowValueHints){
+    if(id.includes(hint) && price > 1) return true;
+  }
+  if(price >= 10) return true;
+  return false;
+}
+
+/* find price near row idx in cols F(5) or G(6) with offsets preference */
 function findNearbyPrice(rows, idx){
-  const cols = [5,6]; // F, G indices
-  const offsets = [1, 0, -1, 2, -2]; // prefer row+1, then same row, then above
+  const cols=[5,6]; // F,G (0-based)
+  const offsets=[1,0,-1,2,-2,3,-3];
   for(const off of offsets){
     const r = rows[idx + off];
     if(!r) continue;
     for(const c of cols){
       if(r[c]!==undefined && r[c]!==null && String(r[c]).trim()!==''){
         const p = parsePrice(r[c]);
-        if(!isNaN(p) && p!==0) return {price:p, rowIndex: idx+off, col:c};
+        if(!isNaN(p) && p !== 0) return {price:p, rowIdx: idx+off + 1, colIndex:c}; // +1 for human row number
       }
     }
   }
   return null;
 }
 
-/* map short codes to nice names (extend as needed) */
-const CODE_MAP = {
-  'clp':'Chile','chi':'Chile','chl':'Chile',
-  'ars':'Argentina','arg':'Argentina',
-  'usd':'USA','usa':'USA',
-  'pen':'Peru','penp':'Peru','penp':'Perú','penp':'Peru',
-  'mxn':'Mexico','mex':'Mexico','mx':'Mexico',
-  'ves':'Venezuela','ven':'Venezuela','ve':'Venezuela',
-  'cop':'Colombia','col':'Colombia',
-  'brl':'Brazil','bra':'Brazil','br':'Brazil',
-  'eur':'España','esp':'España','espana':'España','spain':'España',
-  'cad':'Canada','can':'Canada',
-  'uyu':'Uruguay','uy':'Uruguay',
-  'ecu':'Ecuador','ec':'Ecuador',
-};
-
-/* heuristics: if token like 'CLP' or 'CHI' map to Chile, else use token */
-function canonicalizeCountry(token){
-  if(!token) return token;
-  const t = token.replace(/[^A-Za-z0-9]/g,'').trim();
-  const k = t.toLowerCase();
-  if(CODE_MAP[k]) return CODE_MAP[k];
-  // if single 3-letter uppercase currency code style (like USD) map if known
-  if(k.length===3 && CODE_MAP[k]) return CODE_MAP[k];
-  // return original, cleaned (remove extra words)
-  return token.replace(/(moneda|cotizacion|cotiz|tasa|venta|imad)/ig,'').trim();
-}
-
-/* ---------- CSV processing ---------- */
+/* Process CSV rows:
+   - Look for D cell with a pair (many formats)
+   - For each pair row i, search nearby for price (F/G)
+   - Store rates[from][to] = {price, priceRow, priceCol, useDivision}
+*/
 function processRows(rows){
-  rates = {}; countries = new Set(); rawPairs = [];
-  // iterate rows and attempt to detect D cell with pair
+  rates = {}; countries = new Set();
   for(let i=0;i<rows.length;i++){
-    const row = rows[i];
-    const rawD = row[3] ? String(row[3]).trim() : '';
+    const rawD = rows[i][3] ? String(rows[i][3]).trim() : '';
     if(!rawD) continue;
-    // Look if this cell looks like a "pair" (contains dash or ' a ' or ' to ' or '/')
-    const likelyPair = /[-–—\/\\]|(\s+a\s)|(\s+to\s)/i.test(rawD);
-    if(!likelyPair){
-      // It might still be a pair but with label like "Cotización Mesa - ...", try to clean and test
-      const cleaned = String(rawD).replace(/Cotizaci[oó]n Mesa/ig,'').trim();
-      if(!/[-–—\/\\]|(\s+a\s)|(\s+to\s)/i.test(cleaned)) continue; // not a pair
-    }
-    // Try to split
-    const parts = splitPair(rawD);
-    if(!parts || parts.length < 2) {
-      // Push raw for debug and skip
-      rawPairs.push({row:i+1, raw: rawD});
+    // quick test if likely pair
+    if(!/[-–—\/\\]|(\s+a\s)|(\s+to\s)|,/.test(rawD)) {
+      // might not be a pair; skip
       continue;
     }
-    let [leftRaw, rightRaw] = parts;
-    // canonicalize tokens (map codes to names if possible)
-    const left = canonicalizeCountry(leftRaw);
-    const right = canonicalizeCountry(rightRaw);
-    // find nearby price (prefer next row)
+    const parts = splitPair(rawD);
+    if(!parts) continue;
+    const left = tidy(parts[0]); const right = tidy(parts[1]);
     const found = findNearbyPrice(rows, i);
     if(!found) {
-      // if price not found, skip but record raw for debug
-      rawPairs.push({row:i+1, raw: rawD});
+      if(DEBUG) console.warn('No price near row', i+1, 'pair', rawD);
       continue;
     }
     const price = found.price;
-    // store nested
+    const useDivision = inferDivision(price, left, right);
+    // store
     if(!rates[left]) rates[left] = {};
-    rates[left][right] = price;
+    rates[left][right] = { price: price, priceRow: found.rowIdx, priceCol: found.colIndex, useDivision: useDivision };
     countries.add(left); countries.add(right);
   }
-  // fallback: if nothing found, try alternative strategy:
+
+  // if nothing detected, fallback sample (to keep UI usable)
   if(Object.keys(rates).length === 0){
-    // Try to look for pattern where D is empty but pair header exists at certain intervals
-    // (This fallback is conservative: if nothing found, create sample rates so UI isn't empty)
-    rates = { 'Chile': { 'Venezuela': 0.2371, 'USA': 852.75 }, 'Argentina': {'Chile':0.1483} };
-    ['Chile','Venezuela','USA','Argentina'].forEach(c=>countries.add(c));
+    rates = {'Chile': {'Venezuela': {price:0.2371, priceRow:16, priceCol:6, useDivision:false}, 'USA':{price:852.75,priceRow:7,priceCol:6,useDivision:true}}};
+    ['Chile','Venezuela','USA'].forEach(c=>countries.add(c));
     console.warn('No rates auto-detected; using fallback demo rates.');
   }
-  populateUI();
-}
 
-/* ---------- UI population ---------- */
-function populateUI(){
-  const selO = document.getElementById('selOrigen');
-  const selD = document.getElementById('selDestino');
-  // clear
-  selO.innerHTML = '<option value="">Selecciona origen...</option>';
-  selD.innerHTML = '<option value="">Selecciona destino...</option>';
-  const list = Array.from(countries).sort((a,b)=>a.localeCompare(b,'es',{sensitivity:'base'}));
-  list.forEach(c => {
-    const opt = document.createElement('option'); opt.value = c; opt.textContent = c;
-    selO.appendChild(opt);
-    selD.appendChild(opt.cloneNode(true));
-  });
+  populateUI();
   renderRatesTable();
 }
 
-/* render rates table */
+/* populate selects */
+function populateUI(){
+  const sO = document.getElementById('selOrigin'); const sD = document.getElementById('selDest');
+  sO.innerHTML = '<option value="">Selecciona origen...</option>'; sD.innerHTML = '<option value="">Selecciona destino...</option>';
+  const list = Array.from(countries).sort((a,b)=>a.localeCompare(b,'es',{sensitivity:'base'}));
+  list.forEach(c => {
+    const opt = document.createElement('option'); opt.value = c; opt.textContent = c;
+    sO.appendChild(opt); sD.appendChild(opt.cloneNode(true));
+  });
+}
+
+/* render rates table with small invert control */
 function renderRatesTable(){
   const tbody = document.querySelector('#ratesTable tbody');
   tbody.innerHTML = '';
   const rows = [];
-  Object.keys(rates).forEach(from => {
-    Object.keys(rates[from]).forEach(to => {
-      rows.push({from,to,price:rates[from][to]});
-    });
-  });
-  if(rows.length === 0){
-    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--muted);padding:16px">No hay tasas detectadas</td></tr>';
-    return;
+  for(const f of Object.keys(rates)){
+    for(const t of Object.keys(rates[f])){
+      rows.push({from:f,to:t,meta:rates[f][t]});
+    }
   }
+  if(rows.length===0){ tbody.innerHTML = '<tr><td colspan="4" class="kv" style="padding:16px">No se detectaron tasas</td></tr>'; return; }
   rows.sort((a,b)=>a.from.localeCompare(b.from) || a.to.localeCompare(b.to));
   rows.forEach(r=>{
     const tr = document.createElement('tr');
     const td1 = document.createElement('td'); td1.textContent = r.from;
     const td2 = document.createElement('td'); td2.textContent = r.to;
-    const td3 = document.createElement('td'); td3.style.textAlign='right'; td3.textContent = Number(r.price).toLocaleString(undefined,{minimumFractionDigits:4,maximumFractionDigits:4});
-    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+    const td3 = document.createElement('td'); td3.style.textAlign='right';
+    td3.textContent = Number(r.meta.price).toLocaleString(undefined,{minimumFractionDigits:4,maximumFractionDigits:4});
+    const td4 = document.createElement('td');
+    td4.style.textAlign='right';
+    // show source info and invert button
+    const info = document.createElement('div'); info.className='kv';
+    info.textContent = `fila: ${r.meta.priceRow}, col: ${String.fromCharCode(65 + r.meta.priceCol)}`;
+    const invertBtn = document.createElement('button'); invertBtn.className='btn btn-ghost btn-small';
+    invertBtn.textContent = r.meta.useDivision ? '↺ invertir (dividir)' : '↺ invertir (multiplicar)';
+    invertBtn.onclick = ()=>{
+      // toggle
+      rates[r.from][r.to].useDivision = !rates[r.from][r.to].useDivision;
+      renderRatesTable();
+    };
+    // small spacer
+    td4.appendChild(info); td4.appendChild(document.createElement('br')); td4.appendChild(invertBtn);
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4);
     tbody.appendChild(tr);
   });
 }
 
-/* find rate: exact then tolerant */
+/* lookup rate tolerant */
 function lookupRate(orig, dest){
   if(!orig || !dest) return null;
-  if(rates[orig] && rates[orig][dest] !== undefined) return {price: rates[orig][dest], key:`${orig}-${dest}`, reversed:false};
-  // tolerant: normalized match
-  const norm = s => normalizeKey(s);
-  const targetFrom = norm(orig), targetTo = norm(dest);
-  // exact normalized
+  if(rates[orig] && rates[orig][dest]) return {meta: rates[orig][dest], from: orig, to: dest, reversed:false};
+  // normalized search
+  const norm = s => (String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,'').trim());
+  const tFrom = norm(orig), tTo = norm(dest);
   for(const f of Object.keys(rates)){
     for(const t of Object.keys(rates[f])){
-      if(norm(f) === targetFrom && norm(t) === targetTo) return {price:rates[f][t], key:`${f}-${t}`, reversed:false};
+      if(norm(f) === tFrom && norm(t) === tTo) return {meta:rates[f][t], from:f, to:t, reversed:false};
     }
   }
-  // partial contains (handles 'clp' vs 'chile')
+  // contains
   for(const f of Object.keys(rates)){
     for(const t of Object.keys(rates[f])){
-      if(norm(f).includes(targetFrom) && norm(t).includes(targetTo)) return {price:rates[f][t], key:`${f}-${t}`, reversed:false};
-      if(targetFrom.includes(norm(f)) && targetTo.includes(norm(t))) return {price:rates[f][t], key:`${f}-${t}`, reversed:false};
+      if(norm(f).includes(tFrom) && norm(t).includes(tTo)) return {meta:rates[f][t], from:f, to:t, reversed:false};
     }
   }
-  // try reverse detection
+  // try reverse
   for(const f of Object.keys(rates)){
     for(const t of Object.keys(rates[f])){
-      if(norm(f) === targetTo && norm(t) === targetFrom){
-        return {price:rates[f][t], key:`${f}-${t}`, reversed:true};
-      }
+      if(norm(f) === tTo && norm(t) === tFrom) return {meta:rates[f][t], from:f, to:t, reversed:true};
     }
   }
   return null;
 }
 
-/* ---------- Events: calc, copy, telegram ---------- */
-document.getElementById('btnCalc').addEventListener('click', ()=> {
-  const orig = document.getElementById('selOrigen').value;
-  const dest = document.getElementById('selDestino').value;
-  const montoRaw = document.getElementById('monto').value;
-  const hudL = document.getElementById('hudLeft');
-  const hudR = document.getElementById('hudRight');
-  if(!orig || !dest || !montoRaw || Number(montoRaw) <= 0){
-    hudL.innerHTML = '<span style="color:#ff8a8a">Completa origen, destino y monto válido</span>'; hudR.innerText='--'; return;
-  }
+/* compute recipient amount using meta.useDivision boolean */
+function computeReceived(amount, meta){
+  const price = Number(meta.price);
+  if(meta.useDivision) return amount / price;
+  else return amount * price;
+}
+
+/* UI events */
+document.getElementById('btnCalc').addEventListener('click', ()=>{
+  const orig = document.getElementById('selOrigin').value;
+  const dest = document.getElementById('selDest').value;
+  const raw = document.getElementById('amount').value;
+  const hudL = document.getElementById('hudLeft'), hudR = document.getElementById('hudRight');
+  if(!orig || !dest || !raw || Number(raw) <= 0){ hudL.innerHTML = '<span style="color:#ff8a8a">Completa origen, destino y monto válido</span>'; hudR.innerText='--'; return; }
   if(orig === dest){ hudL.innerHTML = '<span style="color:#ff8a8a">Origen y destino deben ser distintos</span>'; hudR.innerText='--'; return; }
-  const lookup = lookupRate(orig,dest);
-  if(!lookup){ hudL.innerHTML = '<span style="color:#ff8a8a">Ruta no disponible (no se encuentra tasa)</span>'; hudR.innerText='--'; return; }
-  if(lookup.reversed){ hudL.innerHTML = `<span style="color:#ffb86b">Atención: tasa encontrada en sentido inverso (${lookup.key}). Verifica.</span>`; hudR.innerText='--'; return; }
-  const monto = Number(montoRaw);
-  const recibe = monto * Number(lookup.price);
-  // animate count-up (smooth)
-  animateCountUp(0, recibe, 700, v => { hudR.innerText = Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); });
-  hudL.innerHTML = `${Number(monto).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} (${orig}) → recibe:`;
-  // small stored info for telegram / copy
-  window._last = {orig,dest,monto,recibe,rate:lookup.price};
+  const look = lookupRate(orig,dest);
+  if(!look){ hudL.innerHTML = '<span style="color:#ff8a8a">Ruta no disponible (busca en la tabla y revisa la fila/celda)</span>'; hudR.innerText='--'; return; }
+  if(look.reversed){ hudL.innerHTML = `<span style="color:#ffb86b">Atención: tasa encontrada en sentido inverso (${look.from} → ${look.to}). Revisa la tabla.</span>`; hudR.innerText='--'; return; }
+  const amount = Number(raw);
+  const received = computeReceived(amount, look.meta);
+  // animate count-up
+  animateCountUp(0, received, 700, v => { hudR.innerText = Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + ' ' + detectCurrency(dest); });
+  hudL.innerHTML = `${Number(amount).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} ${detectCurrency(orig)} → recibe:`;
+  window._last = {orig, dest, amount, received, rate:look.meta.price, useDivision:look.meta.useDivision};
 });
 
+/* Copy & Telegram */
 document.getElementById('btnCopy').addEventListener('click', ()=>{
   const last = window._last;
   if(!last){ alert('No hay resultado para copiar. Haz un cálculo primero.'); return; }
-  const text = `Enviar ${last.monto} ${last.orig} → Recibir ${Number(last.recibe).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} ${last.dest} (Tasa: ${last.rate})`;
-  navigator.clipboard?.writeText(text).then(()=>alert('Resultado copiado al portapapeles'), ()=>alert('No se pudo copiar'));
+  const text = `Enviar ${last.amount} ${detectCurrency(last.orig)} → Recibir ${Number(last.received).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} ${detectCurrency(last.dest)} (Tasa: ${last.rate} ${last.useDivision ? '(usar división)' : '(usar multiplicación)'} )`;
+  navigator.clipboard?.writeText(text).then(()=>alert('Resultado copiado'), ()=>alert('No se pudo copiar'));
 });
 
-document.getElementById('btnTelegram').addEventListener('click', ()=>{
-  const last = window._last;
-  const selO = document.getElementById('selOrigen').value;
-  const selD = document.getElementById('selDestino').value;
-  const monto = document.getElementById('monto').value;
-  if(!selO || !selD || !monto){ alert('Completa origen, destino y monto antes de pedir el servicio.'); return; }
+document.getElementById('btnTele').addEventListener('click', ()=>{
+  const selO = document.getElementById('selOrigin').value;
+  const selD = document.getElementById('selDest').value;
+  const m = document.getElementById('amount').value;
+  if(!selO || !selD || !m){ alert('Completa origen, destino y monto antes de pedir el servicio.'); return; }
   let recibeTxt = '';
-  if(last && last.orig === selO && last.dest === selD && Number(last.monto) === Number(monto)) recibeTxt = Number(last.recibe).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+  const last = window._last;
+  if(last && last.orig === selO && last.dest === selD && Number(last.amount) === Number(m)) recibeTxt = Number(last.received).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + ' ' + detectCurrency(selD);
   else {
-    const lookup = lookupRate(selO,selD);
-    if(!lookup || lookup.reversed){ alert('No hay tasa detectada para esa ruta'); return; }
-    recibeTxt = Number(Number(monto) * lookup.price).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    const look = lookupRate(selO,selD);
+    if(!look || look.reversed){ alert('No hay tasa detectada para esa ruta'); return; }
+    recibeTxt = Number(Number(m) * (look.meta.useDivision ? (1/look.meta.price) : look.meta.price)).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + ' ' + detectCurrency(selD);
   }
-  const msg = `Hola, quiero enviar ${Number(monto).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} (${selO}) y que reciban ${recibeTxt} (${selD}). Tasa (Venta IMAD) aplicada.`;
-  const href = TELEGRAM_LINK + (TELEGRAM_LINK.includes('?') ? '&' : '?') + 'text=' + encodeURIComponent(msg);
-  window.open(href,'_blank');
+  const msg = `Hola, quiero enviar ${Number(m).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} ${detectCurrency(selO)} a ${selD}. Recibirán aprox ${recibeTxt}. Gracias.`;
+  const href = TELEGRAM + (TELEGRAM.includes('?') ? '&' : '?') + 'text=' + encodeURIComponent(msg);
+  window.open(href, '_blank');
 });
 
-/* ---------- CSV loading ---------- */
-async function loadCSV(){
-  try{
-    const r = await fetch(CSV_URL);
-    if(!r.ok) throw new Error('HTTP ' + r.status);
-    const txt = await r.text();
-    Papa.parse(txt, {
-      header:false,
-      skipEmptyLines:true,
-      complete: results => processRows(results.data)
-    });
-  } catch(e){
-    console.error('Error leyendo CSV', e);
-    // fallback sample so UI isn't empty
-    rates = { 'Chile': {'Venezuela':0.2371, 'USA':852.75}, 'Argentina': {'Chile':0.1483} };
-    ['Chile','Venezuela','USA','Argentina'].forEach(c=>countries.add(c));
-    populateUI();
-    alert('No se pudo leer sheet. Verifica que CSV público esté activo. Se cargaron tasas de ejemplo.');
-  }
+/* currency detection helper (map country -> currency code / symbol) */
+const CURRENCY_MAP = {
+  'Chile':'CLP', 'Chile (CLP)':'CLP', 'CLP':'CLP',
+  'Argentina':'ARS','Argentina (ARS)':'ARS','ARS':'ARS',
+  'USA':'USD','United States':'USD','Estados Unidos':'USD','US':'USD','USD':'USD',
+  'Peru':'PEN','Perú':'PEN','PEN':'PEN',
+  'Mexico':'MXN','México':'MXN','MEX':'MXN','MXN':'MXN',
+  'Venezuela':'VES','Venezuela (VES)':'VES','VES':'VES',
+  'Colombia':'COP','COP':'COP','Colombia (COP)':'COP',
+  'Brazil':'BRL','Brasil':'BRL','BRL':'BRL',
+  'España':'EUR','Spain':'EUR','EUR':'EUR',
+  'Canada':'CAD','CAN':'CAD','CAD':'CAD',
+  'Uruguay':'UYU','Uruguay (UYU)':'UYU','UYU':'UYU',
+  'Ecuador':'USD','Ecuador (USD)':'USD','ECU':'USD'
+};
+function detectCurrency(country){
+  if(!country) return '';
+  if(CURRENCY_MAP[country]) return CURRENCY_MAP[country];
+  // try match by token
+  const t = country.toLowerCase();
+  for(const k in CURRENCY_MAP) if(k.toLowerCase().includes(t) || t.includes(k.toLowerCase())) return CURRENCY_MAP[k];
+  // fallback: first 3 letters uppercase
+  return country.substring(0,3).toUpperCase();
 }
 
-/* ---------- small count up ---------- */
+/* small count up */
 function animateCountUp(from, to, ms, onFrame){
   const start = performance.now();
   function frame(now){
     const t = Math.min(1,(now-start)/ms);
-    const ease = 1 - Math.pow(1-t,3); // easeOutCubic
-    const cur = from + (to-from)*ease;
-    onFrame(cur);
-    if(t < 1) requestAnimationFrame(frame);
+    const ease = 1 - Math.pow(1-t,3);
+    const curr = from + (to-from)*ease;
+    onFrame(curr);
+    if(t<1) requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 }
 
-/* ---------- BG: radar & particles ---------- */
-(function bgAnim(){
-  const cvs = document.getElementById('bg');
-  if(!cvs) return;
-  const ctx = cvs.getContext('2d');
-  let W = cvs.width = window.innerWidth * devicePixelRatio;
-  let H = cvs.height = window.innerHeight * devicePixelRatio;
-  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-  let parts = [];
-  for(let i=0;i<90;i++) parts.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.6+0.6,dx:(Math.random()-0.5)*0.4,dy:(Math.random()-0.5)*0.4});
+/* Load CSV using PapaParse */
+async function loadCSV(){
+  try{
+    const res = await fetch(CSV_URL);
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const txt = await res.text();
+    Papa.parse(txt, { header:false, skipEmptyLines:true, complete: (results)=> { processRows(results.data); }});
+  }catch(e){
+    console.error('CSV error', e);
+    alert('No se pudo leer la hoja. Se cargaron tasas de ejemplo para probar. Verifica que la hoja esté publicada en la web.');
+    // fallback sample
+    rates = {'Chile': {'Venezuela': {price:0.2371,priceRow:16,priceCol:6,useDivision:false}, 'USA':{price:852.75,priceRow:7,priceCol:6,useDivision:true}}, 'Argentina': {'Chile':{price:0.1483,priceRow:25,priceCol:6,useDivision:false}}};
+    ['Chile','Venezuela','USA','Argentina'].forEach(c=>countries.add(c));
+    populateUI(); renderRatesTable();
+  }
+}
+
+/* Background radar + particles */
+(function background(){
+  const cvs = document.getElementById('bg'); if(!cvs) return;
+  const ctx = cvs.getContext('2d'); let DPR = window.devicePixelRatio || 1;
+  function resize(){ cvs.width = window.innerWidth * DPR; cvs.height = window.innerHeight * DPR; ctx.setTransform(DPR,0,0,DPR,0,0); }
+  resize(); window.addEventListener('resize', resize);
+  const parts = Array.from({length:90}, ()=>({x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight, r:Math.random()*1.6+0.6, dx:(Math.random()-0.5)*0.4, dy:(Math.random()-0.5)*0.4}));
   let t = 0;
-  function resize(){ W = cvs.width = window.innerWidth * devicePixelRatio; H = cvs.height = window.innerHeight * devicePixelRatio; ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
-  window.addEventListener('resize', resize);
   function draw(){
-    ctx.clearRect(0,0,W,H);
+    ctx.clearRect(0,0,cvs.width,cvs.height);
     // subtle gradient
-    const g = ctx.createLinearGradient(0,0,W,H); g.addColorStop(0,'rgba(0,0,0,0.2)'); g.addColorStop(1,'rgba(0,0,0,0.05)'); ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+    const g = ctx.createLinearGradient(0,0,cvs.width,cvs.height); g.addColorStop(0,'rgba(0,0,0,0.2)'); g.addColorStop(1,'rgba(0,0,0,0.05)'); ctx.fillStyle=g; ctx.fillRect(0,0,cvs.width,cvs.height);
     // rings
-    const cx = W*0.18, cy = H*0.18;
-    for(let i=0;i<5;i++){
-      ctx.beginPath(); ctx.arc(cx,cy,50+i*60 + (t%60),0,Math.PI*2); ctx.strokeStyle = `rgba(0,180,255,${0.02 + i*0.01})`; ctx.lineWidth = 1; ctx.stroke();
-    }
-    // sweep
-    ctx.beginPath();
-    const ang = (t/40)%360 * Math.PI/180;
-    ctx.moveTo(cx,cy);
-    ctx.arc(cx,cy,300, ang-0.25, ang+0.25);
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(0,180,255,0.02)'; ctx.fill();
-    // particles
-    parts.forEach((p,idx)=>{
-      ctx.beginPath(); ctx.fillStyle = 'rgba(0,180,255,0.6)'; ctx.arc(p.x/p.devicePixelRatio||p.x,p.y/p.devicePixelRatio||p.y,p.r,0,Math.PI*2); ctx.fill();
-      p.x += p.dx; p.y += p.dy;
-      if(p.x > W) p.x = 0; if(p.x < 0) p.x = W;
-      if(p.y > H) p.y = 0; if(p.y < 0) p.y = H;
-    });
-    t+=0.9;
-    requestAnimationFrame(draw);
+    const cx = window.innerWidth * 0.18, cy = window.innerHeight * 0.18;
+    for(let i=0;i<5;i++){ ctx.beginPath(); ctx.arc(cx, cy, 50 + i*60 + (t%60), 0, Math.PI*2); ctx.strokeStyle = `rgba(0,192,255,${0.02 + i*0.01})`; ctx.lineWidth = 1; ctx.stroke(); }
+    // sweep wedge
+    ctx.beginPath(); const ang = (t/40)%360 * Math.PI/180; ctx.moveTo(cx,cy); ctx.arc(cx,cy,300, ang-0.25, ang+0.25); ctx.closePath(); ctx.fillStyle = 'rgba(0,192,255,0.02)'; ctx.fill();
+    // particles and connections
+    parts.forEach((p,i)=>{ ctx.beginPath(); ctx.fillStyle='rgba(0,192,255,0.6)'; ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); p.x += p.dx; p.y += p.dy; if(p.x > window.innerWidth) p.x = 0; if(p.x < 0) p.x = window.innerWidth; if(p.y > window.innerHeight) p.y = 0; if(p.y < 0) p.y = window.innerHeight; for(let j=i+1;j<i+4 && j<parts.length;j++){ const p2=parts[j]; const dx=p.x-p2.x, dy = p.y-p2.y; const dist = Math.sqrt(dx*dx + dy*dy); if(dist < 120){ ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p2.x,p2.y); ctx.strokeStyle = `rgba(0,192,255,${1 - dist/120})`; ctx.lineWidth = 0.4; ctx.stroke(); } } });
+    t+=0.9; requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
 })();
 
-/* ---------- Init ---------- */
+/* init */
 loadCSV();
 </script>
 </body>
