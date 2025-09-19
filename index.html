@@ -27,7 +27,7 @@
       box-shadow: 0 0 6px rgba(0, 153, 119, 0.3);
       border-radius: 6px;
       padding: 0.75rem;
-      max-width: 300px;
+      max-width: 90%;
       width: 90%;
       margin: 1rem auto;
       animation: fadeIn 1s ease-out;
@@ -143,7 +143,7 @@
       height: 100%;
       background: linear-gradient(45deg, rgba(0, 153, 119, 0.06), transparent);
       will-change: transform;
-      animation: supersonicClouds 40s linear infinite;
+      animation: supersonicClouds 20s linear infinite; /* Más rápido para inmersión */
       z-index: -2;
     }
     .clouds-layer2 {
@@ -154,7 +154,7 @@
       height: 100%;
       background: linear-gradient(90deg, rgba(0, 153, 119, 0.04), transparent);
       will-change: transform;
-      animation: supersonicClouds 40s linear infinite reverse;
+      animation: supersonicClouds 20s linear infinite reverse;
       z-index: -2;
     }
     .clouds-layer3 {
@@ -165,8 +165,8 @@
       height: 100%;
       background: linear-gradient(135deg, rgba(0, 153, 119, 0.05), transparent);
       will-change: transform;
-      animation: supersonicClouds 40s linear infinite;
-      animation-delay: -20s;
+      animation: supersonicClouds 20s linear infinite;
+      animation-delay: -10s;
       z-index: -2;
     }
     .stars {
@@ -242,7 +242,7 @@
       height: 60px;
       z-index: 10;
       opacity: 0.7;
-      animation: fadeIn 1s ease-out;
+      animation: fadeIn 1s ease-out, pulseSpeed 2s infinite;
     }
     @media (min-width: 768px) {
       .speedometer {
@@ -257,6 +257,21 @@
       width: 100%;
       height: 100%;
       z-index: -3;
+    }
+    .hud-text {
+      text-shadow: 0 0 5px rgba(0, 204, 153, 0.6);
+    }
+    .radar-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, transparent 80%, rgba(0, 153, 119, 0.02) 100%);
+      z-index: -2;
+    }
+    .vibrate-container {
+      animation: vibrate 0.1s linear;
     }
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -307,6 +322,13 @@
       50% { opacity: 1; }
       100% { opacity: 0.7; }
     }
+    @keyframes vibrate {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(2px); }
+      50% { transform: translateX(-2px); }
+      75% { transform: translateX(2px); }
+      100% { transform: translateX(0); }
+    }
   </style>
 </head>
 <body>
@@ -318,7 +340,9 @@
     <div class="radar">
       <div class="radar-circle" style="width: 200px; height: 200px; --delay: 0;"></div>
       <div class="radar-circle" style="width: 300px; height: 300px; --delay: 1;"></div>
+      <div class="radar-circle" style="width: 400px; height: 400px; --delay: 2;"></div> <!-- Más para inmersión -->
     </div>
+    <div class="radar-grid"></div>
   </div>
   <canvas class="starfield" id="starfield"></canvas>
   <canvas class="speedometer" id="speedometer"></canvas>
@@ -351,7 +375,6 @@
       UYU: 'Uruguay',
       ECU: 'Ecuador'
     };
-
     // Mapeo de nombres de países en encabezados a códigos de moneda
     const countryCodeToCurrency = {
       ARG: 'ARS',
@@ -367,15 +390,12 @@
       UYU: 'UYU',
       ECU: 'ECU'
     };
-
     // URL del CSV
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Teo-_5ka3LKx7FXL3x3yV3uf4KhoI61ewnVJyJ90XRnksoObf4CDn-lJvrFKiQ/pub?gid=983978085&single=true&output=csv';
-
     // Función para formatear números
     const formatNumber = (number) => {
       return number.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
-
     // Función para cargar el CSV
     async function loadFileData() {
       try {
@@ -394,7 +414,6 @@
         throw error;
       }
     }
-
     // Mapa estelar interactivo
     function initStarfield() {
       const canvas = document.getElementById('starfield');
@@ -405,7 +424,6 @@
       const numStars = 40;
       let mouseX = canvas.width / 2;
       let mouseY = canvas.height / 2;
-
       // Crear estrellas
       for (let i = 0; i < numStars; i++) {
         stars.push({
@@ -416,8 +434,7 @@
           vy: (Math.random() - 0.5) * 0.05
         });
       }
-
-      // Actualizar posición del mouse
+      // Actualizar posición del mouse/touch
       canvas.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
@@ -426,7 +443,6 @@
         mouseX = e.touches[0].clientX;
         mouseY = e.touches[0].clientY;
       });
-
       // Animar estrellas
       let lastTime = 0;
       function animate(timestamp) {
@@ -447,18 +463,15 @@
           }
           star.x += star.vx;
           star.y += star.vy;
-
           // Rebotar en los bordes
           if (star.x < 0 || star.x > canvas.width) star.vx *= -1;
           if (star.y < 0 || star.y > canvas.height) star.vy *= -1;
-
           // Dibujar estrella
           ctx.beginPath();
           ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
           ctx.fillStyle = '#e6e6e6';
           ctx.fill();
         });
-
         // Dibujar líneas aleatorias
         ctx.strokeStyle = 'rgba(0, 153, 119, 0.1)';
         ctx.lineWidth = 0.5;
@@ -481,7 +494,6 @@
       }
       animate(0);
     }
-
     // Velocímetro gráfico
     function initSpeedometer() {
       const canvas = document.getElementById('speedometer');
@@ -490,20 +502,17 @@
       canvas.height = canvas.offsetHeight;
       let angle = 0;
       let targetAngle = 0;
-
       function drawSpeedometer() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         const radius = canvas.width * 0.4;
-
         // Dibujar arco
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius, Math.PI * 0.75, Math.PI * 2.25);
         ctx.strokeStyle = '#009977';
         ctx.lineWidth = 4;
         ctx.stroke();
-
         // Dibujar aguja
         const rad = (angle * Math.PI) / 180;
         ctx.beginPath();
@@ -512,7 +521,6 @@
         ctx.strokeStyle = '#00cc99';
         ctx.lineWidth = 2;
         ctx.stroke();
-
         // Dibujar dígitos
         ctx.fillStyle = '#e6e6e6';
         ctx.font = `${canvas.width * 0.15}px 'Exo 2'`;
@@ -521,7 +529,6 @@
         ctx.fillText('500', centerX, centerY - radius * 0.9);
         ctx.fillText('1000', centerX + radius * 0.7, centerY + radius * 1.2);
       }
-
       function animateSpeedometer() {
         if (Math.abs(angle - targetAngle) > 0.1) {
           angle += (targetAngle - angle) * 0.1;
@@ -529,14 +536,12 @@
           requestAnimationFrame(animateSpeedometer);
         }
       }
-
       drawSpeedometer();
       window.updateSpeedometer = (value) => {
         targetAngle = Math.min(value / 1000 * 270, 270);
         requestAnimationFrame(animateSpeedometer);
       };
     }
-
     // Componente principal de React
     function CurrencyCalculator() {
       const [data, setData] = React.useState(null);
@@ -545,7 +550,7 @@
       const [amount, setAmount] = React.useState('');
       const [result, setResult] = React.useState(null);
       const [error, setError] = React.useState('');
-
+      const containerRef = React.useRef(null);
       // Cargar y parsear el CSV
       React.useEffect(() => {
         loadFileData().then(csv => {
@@ -556,7 +561,7 @@
               const exchangeRates = {};
               const pairRows = [6, 15, 24, 33, 42, 51, 60, 69, 78, 87, 96, 105, 114];
               const rateRows = [7, 16, 25, 34, 43, 52, 61, 70, 79, 88, 97, 106, 115];
-              
+             
               pairRows.forEach((pairRow, index) => {
                 const row = results.data[pairRow - 1];
                 if (row && row[3]) {
@@ -567,12 +572,13 @@
                     const originCurrency = countryCodeToCurrency[origin.toUpperCase()] || origin;
                     const destinationCurrency = countryCodeToCurrency[destination.toUpperCase()] || destination;
                     const pair = `${originCurrency}/${destinationCurrency}`;
-                    
+                   
                     const rateRow = results.data[rateRows[index] - 1];
                     if (rateRow && rateRow[5]) {
                       console.log(`Fila ${rateRows[index]}: Columna FG (índice 5) = ${rateRow[5]}`);
-                      let rate = rateRow[5].replace('$', '').replace(',', '.');
-                      rate = rate.replace(/\.(?=\d{3})/g, '');
+                      let rate = rateRow[5].replace('$', '').trim();
+                      rate = rate.replace(/\./g, ''); // Eliminar separadores de miles (.)
+                      rate = rate.replace(',', '.'); // Reemplazar decimal (,) por (.)
                       const parsedRate = parseFloat(rate);
                       if (!isNaN(parsedRate)) {
                         exchangeRates[pair] = parsedRate;
@@ -603,7 +609,6 @@
           console.error('Error al cargar el CSV:', err);
         });
       }, []);
-
       // Generar estrellas y inicializar canvas
       React.useEffect(() => {
         const starsContainer = document.getElementById('stars');
@@ -617,17 +622,14 @@
           star.style.setProperty('--delay', Math.random() * 2);
           starsContainer.appendChild(star);
         }
-
         initStarfield();
         initSpeedometer();
       }, []);
-
       // Reproducir sonido
       const playClickSound = () => {
         const sound = document.getElementById('clickSound');
         sound.play().catch(() => console.log('Sound playback failed'));
       };
-
       // Manejar cálculo de conversión
       const handleCalculate = () => {
         setError('');
@@ -636,11 +638,20 @@
           setError('Por favor, selecciona los países de origen y destino.');
           return;
         }
-        if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+        // Check if the amount is a string of zeros
+        if (!amount || /^0+$/.test(amount.trim())) {
+          setAmount('0');
+          setError('Por favor, ingresa un monto válido mayor que 0.');
+          return;
+        }
+        if (isNaN(amount) || parseFloat(amount) < 0) {
           setError('Por favor, ingresa un monto válido.');
           return;
         }
         playClickSound();
+        if (navigator.vibrate) navigator.vibrate(50); // Vibración para inmersión en móvil
+        containerRef.current.classList.add('vibrate-container');
+        setTimeout(() => containerRef.current.classList.remove('vibrate-container'), 200);
         const amountValue = parseFloat(amount);
         const pair = `${originCountry}/${destinationCountry}`;
         if (!data || !data[pair]) {
@@ -657,11 +668,9 @@
           converted: convertedAmount,
           currency: destinationCountry
         });
-
         // Actualizar velocímetro
         window.updateSpeedometer(amountValue);
       };
-
       // Mostrar estado de carga
       if (!data) {
         return (
@@ -670,52 +679,51 @@
           </div>
         );
       }
-
       // Renderizar interfaz principal
       const countries = Object.keys(currencyToCountry).sort();
       return (
         <div className="min-h-screen flex items-center justify-center p-3">
-          <div className="container">
+          <div className="container" ref={containerRef}>
             <img src="logo blackbird.png" alt="Blackbird Exchange Logo" className="logo mx-auto mb-2" />
-            <h1 className="text-base font-semibold mb-2 text-center text-gray-300">Blackbird Exchange</h1>
+            <h1 className="text-base font-semibold mb-2 text-center text-gray-300 hud-text">Blackbird Exchange SR-71</h1>
             {error && (
               <div className="bg-red-900/50 text-red-300 p-1.5 rounded-lg mb-2 text-xs animate-pulse">{error}</div>
             )}
             <div className="mb-2">
-              <label className="block text-xs font-light text-gray-300 mb-1">País de Origen</label>
+              <label className="block text-xs font-light text-gray-300 mb-1 hud-text">Sector de Origen</label>
               <select
                 value={originCountry}
                 onChange={(e) => setOriginCountry(e.target.value)}
                 className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
               >
-                <option value="">Selecciona el país de origen</option>
+                <option value="">Selecciona el sector de origen</option>
                 {countries.map((currency) => (
                   <option key={currency} value={currency}>{currencyToCountry[currency]}</option>
                 ))}
               </select>
             </div>
             <div className="mb-2">
-              <label className="block text-xs font-light text-gray-300 mb-1">País de Destino</label>
+              <label className="block text-xs font-light text-gray-300 mb-1 hud-text">Vector de Destino</label>
               <select
                 value={destinationCountry}
                 onChange={(e) => setDestinationCountry(e.target.value)}
                 className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
               >
-                <option value="">Selecciona el país de destino</option>
+                <option value="">Selecciona el vector de destino</option>
                 {countries.map((currency) => (
                   <option key={currency} value={currency}>{currencyToCountry[currency]}</option>
                 ))}
               </select>
             </div>
             <div className="mb-2">
-              <label className="block text-xs font-light text-gray-300 mb-1">Monto</label>
+              <label className="block text-xs font-light text-gray-300 mb-1 hud-text">Carga de Remesa</label>
               <input
                 type="number"
                 inputmode="numeric"
                 pattern="[0-9]*"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="Ingresa el monto"
+                placeholder="Ingresa la carga"
                 className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
                 min="0"
                 step="0.01"
@@ -725,16 +733,16 @@
               onClick={handleCalculate}
               className="text-xs font-medium rounded-lg"
             >
-              Calcular
+              Lanzar Maniobra
             </button>
             {result && (
               <div className="result mt-2 p-1.5 bg-gray-800/50 rounded-lg border border-gray-600">
-                <p className="text-xs text-gray-300">
-                  {formatNumber(result.amount)} {result.from} ({originCountry}) ={' '}
+                <p className="text-xs text-gray-300 hud-text">
+                  Misión Cumplida: {formatNumber(result.amount)} {result.from} ({originCountry}) ={' '}
                   {formatNumber(result.converted)} {result.to} ({destinationCountry})
                 </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  Tasa de cambio: 1 {originCountry} = {formatNumber(result.rate)} {destinationCountry}
+                <p className="text-xs text-gray-400 mt-1 hud-text">
+                  Velocidad de Cambio: 1 {originCountry} = {formatNumber(result.rate)} {destinationCountry}
                 </p>
                 <a
                   href="https://t.me/+i02VPMg23TNiOWJh"
@@ -743,7 +751,7 @@
                   className="telegram-button mt-1.5"
                 >
                   <i className="fab fa-telegram-plane"></i>
-                  ¡Envía tu remesa ya por Telegram!
+                  ¡Desplegar Remesa por Telegram!
                 </a>
               </div>
             )}
@@ -751,7 +759,6 @@
         </div>
       );
     }
-
     // Renderizar el componente
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<CurrencyCalculator />);
