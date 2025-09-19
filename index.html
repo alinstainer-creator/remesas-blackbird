@@ -25,17 +25,17 @@
       background: rgba(10, 10, 10, 0.95);
       backdrop-filter: blur(10px);
       border: 1px solid #009977;
-      box-shadow: 0 0 10px rgba(0, 153, 119, 0.3), inset 0 0 3px rgba(0, 153, 119, 0.2);
+      box-shadow: 0 0 8px rgba(0, 153, 119, 0.3), inset 0 0 2px rgba(0, 153, 119, 0.2);
       border-radius: 6px;
       padding: 0.75rem;
-      max-width: 340px;
+      max-width: 320px;
       width: 90%;
       margin: 1rem auto;
       animation: cockpitEntry 1.5s ease-out;
     }
     @media (min-width: 768px) {
       .container {
-        max-width: 600px;
+        max-width: 580px;
         padding: 1rem;
       }
       h1 {
@@ -43,12 +43,12 @@
       }
     }
     .logo {
-      width: 56px;
-      animation: powerOn 2s ease-out;
+      width: 48px;
+      animation: powerOn 1.5s ease-out;
     }
     @media (min-width: 768px) {
       .logo {
-        width: 72px;
+        width: 64px;
       }
     }
     button {
@@ -84,6 +84,23 @@
       width: 80px;
       height: 80px;
     }
+    .telegram-button {
+      background: #00cc99;
+      color: #0a0a0a;
+      padding: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-radius: 4px;
+      text-align: center;
+      display: block;
+      transition: all 0.3s ease;
+      animation: pulseCTA 2s infinite;
+    }
+    .telegram-button:hover {
+      background: #00ffcc;
+      box-shadow: 0 0 8px rgba(0, 255, 204, 0.6);
+      transform: translateY(-2px);
+    }
     select, input {
       background: rgba(28, 37, 38, 0.9);
       border: 1px solid #009977;
@@ -113,15 +130,55 @@
       background: linear-gradient(to right, transparent, #009977, transparent);
       animation: scanLine 2.5s infinite;
     }
-    .clouds {
+    .background {
       position: fixed;
       top: 0;
       left: 0;
-      width: 200%;
+      width: 100%;
       height: 100%;
-      background: linear-gradient(to right, rgba(0, 153, 119, 0.05), transparent);
-      animation: supersonicClouds 60s linear infinite;
+      z-index: -3;
+    }
+    .clouds-layer1 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(0, 153, 119, 0.05), transparent);
       z-index: -2;
+    }
+    .clouds-layer2 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 153, 119, 0.03), transparent);
+      z-index: -2;
+    }
+    .clouds-layer3 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(0, 153, 119, 0.04), transparent);
+      z-index: -2;
+    }
+    .stars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+    }
+    .star {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      background: #e6e6e6;
+      opacity: 0.3;
     }
     .radar {
       position: fixed;
@@ -129,7 +186,6 @@
       left: 0;
       width: 100%;
       height: 100%;
-      pointer-events: none;
       z-index: -1;
     }
     .radar-circle {
@@ -139,26 +195,7 @@
       border: 1px solid rgba(0, 153, 119, 0.1);
       border-radius: 50%;
       transform: translate(-50%, -50%);
-      animation: radarPulse 6s infinite;
-      opacity: 0;
-    }
-    .particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: -1;
-    }
-    .particle {
-      position: absolute;
-      width: 1px;
-      height: 6px;
-      background: linear-gradient(#009977, transparent);
-      opacity: 0.3;
-      will-change: transform, opacity;
-      animation: jetTrail 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      opacity: 0.1;
     }
     .social-bar {
       position: fixed;
@@ -169,12 +206,12 @@
       backdrop-filter: blur(6px);
       border: 1px solid #009977;
       border-radius: 14px;
-      padding: 0.25rem 0.75rem;
+      padding: 0.2rem 0.6rem;
       animation: floatIn 1.2s ease-out;
     }
     .social-icon {
       color: #e6e6e6;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       margin: 0 0.3rem;
       transition: all 0.3s ease;
     }
@@ -186,24 +223,24 @@
       position: fixed;
       top: 0.5rem;
       right: 0.5rem;
-      width: 80px;
-      height: 40px;
+      width: 70px;
+      height: 35px;
       background: rgba(10, 10, 10, 0.9);
       border: 1px solid #009977;
       border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: #009977;
-      opacity: 0.7;
+      opacity: 0.6;
       animation: fadeIn 1s ease-out;
     }
     @media (min-width: 768px) {
       .speedometer {
-        width: 120px;
-        height: 60px;
-        font-size: 1rem;
+        width: 100px;
+        height: 50px;
+        font-size: 0.875rem;
       }
     }
     .speedometer span {
@@ -223,8 +260,8 @@
     }
     @keyframes powerOn {
       0% { filter: brightness(0) drop-shadow(0 0 0 rgba(0, 153, 119, 0)); }
-      50% { filter: brightness(1.5) drop-shadow(0 0 8px rgba(0, 153, 119, 0.7)); }
-      100% { filter: brightness(1) drop-shadow(0 0 4px rgba(0, 153, 119, 0.4)); }
+      50% { filter: brightness(1.5) drop-shadow(0 0 6px rgba(0, 153, 119, 0.7)); }
+      100% { filter: brightness(1) drop-shadow(0 0 3px rgba(0, 153, 119, 0.4)); }
     }
     @keyframes pulseBorder {
       0% { border-color: #009977; }
@@ -239,34 +276,29 @@
       0% { transform: translateY(-100%); }
       100% { transform: translateY(100%); }
     }
-    @keyframes radarPulse {
-      0% { transform: translate(-50%, -50%) scale(0); opacity: 0.3; }
-      100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
-    }
-    @keyframes jetTrail {
-      0% { transform: translate(0, 0) rotate(30deg); opacity: 0.3; }
-      50% { opacity: 0.4; }
-      100% { transform: translate(calc(15px * var(--direction-x)), calc(-100vh * var(--direction-y))) rotate(30deg); opacity: 0; }
-    }
-    @keyframes supersonicClouds {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    @keyframes floatIn {
-      from { transform: translateX(-50%) translateY(15px); opacity: 0; }
-      to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    @keyframes pulseCTA {
+      0% { box-shadow: 0 0 4px rgba(0, 204, 153, 0.4); }
+      50% { box-shadow: 0 0 8px rgba(0, 204, 153, 0.6); }
+      100% { box-shadow: 0 0 4px rgba(0, 204, 153, 0.4); }
     }
     @keyframes fadeIn {
       from { opacity: 0; }
-      to { opacity: 0.7; }
+      to { opacity: 0.6; }
     }
   </style>
 </head>
 <body>
+  <div class="background">
+    <div class="clouds-layer1"></div>
+    <div class="clouds-layer2"></div>
+    <div class="clouds-layer3"></div>
+    <div class="stars" id="stars"></div>
+    <div class="radar">
+      <div class="radar-circle" style="width: 200px; height: 200px;"></div>
+      <div class="radar-circle" style="width: 300px; height: 300px;"></div>
+    </div>
+  </div>
   <canvas class="starfield" id="starfield"></canvas>
-  <div class="clouds"></div>
-  <div class="radar" id="radar"></div>
-  <div class="particles" id="particles"></div>
   <audio id="clickSound" src="https://cdn.pixabay.com/audio/2022/03/10/audio_4e992b54b2.mp3"></audio>
   <div class="speedometer">
     <span id="speed">0 knots</span>
@@ -349,7 +381,7 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       const stars = [];
-      const numStars = 50;
+      const numStars = 40;
       let mouseX = canvas.width / 2;
       let mouseY = canvas.height / 2;
 
@@ -359,8 +391,8 @@
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
           radius: Math.random() * 1 + 0.5,
-          vx: (Math.random() - 0.5) * 0.1,
-          vy: (Math.random() - 0.5) * 0.1
+          vx: 0,
+          vy: 0
         });
       }
 
@@ -375,16 +407,25 @@
       });
 
       // Animar estrellas
-      function animate() {
+      let lastTime = 0;
+      function animate(timestamp) {
+        if (timestamp - lastTime < 100) {
+          requestAnimationFrame(animate);
+          return;
+        }
+        lastTime = timestamp;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         stars.forEach(star => {
           // Mover estrellas hacia el mouse
           const dx = mouseX - star.x;
           const dy = mouseY - star.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          if (distance < 100) {
-            star.vx += dx * 0.0002;
-            star.vy += dy * 0.0002;
+          if (distance < 80) {
+            star.vx = dx * 0.0001;
+            star.vy = dy * 0.0001;
+          } else {
+            star.vx *= 0.95;
+            star.vy *= 0.95;
           }
           star.x += star.vx;
           star.y += star.vy;
@@ -399,26 +440,9 @@
           ctx.fillStyle = '#e6e6e6';
           ctx.fill();
         });
-
-        // Dibujar líneas entre estrellas cercanas
-        ctx.strokeStyle = 'rgba(0, 153, 119, 0.2)';
-        ctx.lineWidth = 0.5;
-        for (let i = 0; i < stars.length; i++) {
-          for (let j = i + 1; j < stars.length; j++) {
-            const dx = stars[i].x - stars[j].x;
-            const dy = stars[i].y - stars[j].y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance < 60) {
-              ctx.beginPath();
-              ctx.moveTo(stars[i].x, stars[i].y);
-              ctx.lineTo(stars[j].x, stars[j].y);
-              ctx.stroke();
-            }
-          }
-        }
         requestAnimationFrame(animate);
       }
-      animate();
+      animate(0);
     }
 
     // Componente principal de React
@@ -489,27 +513,17 @@
         });
       }, []);
 
-      // Generar partículas, radar y starfield
+      // Generar estrellas y radar estático
       React.useEffect(() => {
-        const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 15; i++) {
-          const particle = document.createElement('div');
-          particle.className = 'particle';
-          particle.style.left = `${Math.random() * 100}%`;
-          particle.style.animationDelay = `${Math.random() * 12}s`;
-          particle.style.setProperty('--direction-x', Math.random() > 0.5 ? 1 : -1);
-          particle.style.setProperty('--direction-y', Math.random() > 0.5 ? 1 : -1);
-          particlesContainer.appendChild(particle);
-        }
-
-        const radarContainer = document.getElementById('radar');
-        for (let i = 0; i < 2; i++) {
-          const circle = document.createElement('div');
-          circle.className = 'radar-circle';
-          circle.style.width = `${120 + i * 80}px`;
-          circle.style.height = `${120 + i * 80}px`;
-          circle.style.animationDelay = `${i * 2}s`;
-          radarContainer.appendChild(circle);
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 50; i++) {
+          const star = document.createElement('div');
+          star.className = 'star';
+          star.style.left = `${Math.random() * 100}%`;
+          star.style.top = `${Math.random() * 100}%`;
+          star.style.width = `${Math.random() * 1 + 0.5}px`;
+          star.style.height = `${Math.random() * 1 + 0.5}px`;
+          starsContainer.appendChild(star);
         }
 
         initStarfield();
@@ -642,9 +656,9 @@
                   href="https://t.me/+i02VPMg23TNiOWJh"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block mt-1.5 w-full text-xs font-medium rounded-lg text-center"
+                  className="telegram-button mt-1.5"
                 >
-                  Iniciar Proceso en Telegram
+                  ¡Inicia tu remesa en Telegram!
                 </a>
               </div>
             )}
