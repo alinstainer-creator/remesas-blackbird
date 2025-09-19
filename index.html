@@ -3,63 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Remesas Blackbird: Tu aliado empático para enviar dinero con las mejores tasas. Calcula remesas fáciles y seguras por país. ¡Estamos aquí para ayudarte!">
-    <meta name="keywords" content="remesas, cambio moneda, tasas conversión, Blackbird, Argentina, USD, ARS, calculadora remesas">
-    <title>🎮 Remesas Blackbird - Tu Aliado Empático para Remesas Seguras</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Servicios Blackbird: Velocidad supersónica en remesas. Tasas precisas para combinaciones entre España, USA, México, Brasil, Chile, Ecuador, Perú, Argentina, Colombia y Venezuela. Calculadora de alta precisión para simular envíos seguros.">
+    <meta name="keywords" content="remesas, cambio moneda, tasas conversión, Blackbird, España, USA, México, Brasil, Chile, Ecuador, Perú, Argentina, Colombia, Venezuela, SR-71">
+    <title>🛩️ Servicios Blackbird - Remesas a Velocidad Mach 3+</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         body { 
-            font-family: 'Poppins', sans-serif; 
+            font-family: 'Roboto', sans-serif; 
             margin: 0; 
             padding: 0; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); 
-            color: #333; 
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #16213e 100%); 
+            color: #e0e0e0; 
             line-height: 1.6; 
+            overflow-x: hidden;
         }
         .container { 
-            max-width: 1000px; 
+            max-width: 1100px; 
             margin: 20px auto; 
-            background: rgba(255, 255, 255, 0.95); 
+            background: rgba(10, 15, 25, 0.95); 
             padding: 30px; 
             border-radius: 20px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
-            backdrop-filter: blur(10px); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
+            backdrop-filter: blur(15px); 
+            border: 1px solid rgba(255,255,255,0.1);
         }
         header { 
             text-align: center; 
             margin-bottom: 40px; 
-            animation: fadeInDown 1s ease-out; 
+            animation: slideInDown 1s ease-out; 
         }
         .logo { 
-            width: 120px; 
+            width: 140px; 
             height: auto; 
             border-radius: 50%; 
-            box-shadow: 0 8px 20px rgba(0,123,255,0.3); 
+            box-shadow: 0 10px 25px rgba(0,123,255,0.4); 
             margin-bottom: 15px; 
-            transition: transform 0.3s; 
+            transition: transform 0.4s; 
         }
-        .logo:hover { transform: scale(1.05); }
+        .logo:hover { transform: scale(1.08) rotate(5deg); }
         h1 { 
-            color: #007bff; 
-            font-size: 2.8em; 
-            font-weight: 700; 
+            color: #00d4ff; 
+            font-family: 'Orbitron', monospace; 
+            font-size: 3em; 
+            font-weight: 900; 
             margin: 10px 0; 
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.1); 
+            text-shadow: 0 0 10px rgba(0,212,255,0.5); 
+            letter-spacing: 2px;
         }
         .subtitle { 
-            font-size: 1.3em; 
-            color: #6c757d; 
+            font-size: 1.2em; 
+            color: #b0b0b0; 
             font-weight: 300; 
             margin-bottom: 20px; 
         }
-        .empathetic-note { 
-            background: linear-gradient(135deg, #d4edda, #c3e6cb); 
+        .brand-note { 
+            background: linear-gradient(135deg, #1a1f2e, #16213e); 
             padding: 20px; 
             border-radius: 15px; 
             margin-bottom: 30px; 
             text-align: center; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
-            font-style: italic; 
+            box-shadow: inset 0 0 20px rgba(0,212,255,0.1); 
+            border: 1px solid rgba(0,212,255,0.2);
+            font-style: normal; 
         }
         .tabs { 
             display: flex; 
@@ -70,108 +75,117 @@
         }
         .tab { 
             padding: 15px 30px; 
-            background: linear-gradient(135deg, #e9ecef, #dee2e6); 
+            background: linear-gradient(135deg, #1a1f2e, #16213e); 
             cursor: pointer; 
-            border: none; 
+            border: 1px solid rgba(0,212,255,0.3); 
             border-radius: 30px; 
             transition: all 0.4s; 
-            font-weight: 600; 
+            font-weight: 500; 
             font-size: 1.1em; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            color: #e0e0e0;
         }
         .tab:hover { 
-            background: linear-gradient(135deg, #007bff, #0056b3); 
-            color: white; 
+            background: linear-gradient(135deg, #00d4ff, #0099cc); 
+            color: #0f1419; 
             transform: translateY(-3px); 
-            box-shadow: 0 6px 15px rgba(0,123,255,0.4); 
+            box-shadow: 0 6px 20px rgba(0,212,255,0.4); 
         }
         .tab.active { 
-            background: linear-gradient(135deg, #007bff, #0056b3); 
-            color: white; 
-            box-shadow: 0 6px 15px rgba(0,123,255,0.4); 
+            background: linear-gradient(135deg, #00d4ff, #0099cc); 
+            color: #0f1419; 
+            box-shadow: 0 6px 20px rgba(0,212,255,0.4); 
         }
         .tab-content { 
             display: none; 
-            animation: fadeInUp 0.6s ease-out; 
+            animation: slideInUp 0.6s ease-out; 
         }
         .tab-content.active { display: block; }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         table { 
             width: 100%; 
             border-collapse: collapse; 
             margin-bottom: 25px; 
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
             border-radius: 15px; 
             overflow: hidden; 
+            border: 1px solid rgba(0,212,255,0.2);
         }
         th, td { 
-            border: 1px solid #e0e0e0; 
+            border: 1px solid rgba(255,255,255,0.1); 
             padding: 15px; 
             text-align: left; 
         }
         th { 
-            background: linear-gradient(135deg, #007bff, #0056b3); 
-            color: white; 
+            background: linear-gradient(135deg, #00d4ff, #0099cc); 
+            color: #0f1419; 
             font-weight: 600; 
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
-        tr:nth-child(even) { background: #f8f9fa; }
-        tr:hover { background: #e3f2fd; transform: scale(1.01); transition: 0.2s; }
+        tr:nth-child(even) { background: rgba(255,255,255,0.05); }
+        tr:hover { background: rgba(0,212,255,0.1); transform: scale(1.01); transition: 0.2s; }
         .calculator { 
-            background: linear-gradient(135deg, #e3f2fd, #f3e5f5); 
+            background: linear-gradient(135deg, #1a1f2e, #16213e); 
             padding: 25px; 
             border-radius: 15px; 
             margin-top: 25px; 
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1); 
-            border: 1px solid #dee2e6; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
+            border: 1px solid rgba(0,212,255,0.3);
         }
         .calculator h3 { 
-            color: #007bff; 
+            color: #00d4ff; 
             margin-top: 0; 
             font-size: 1.4em; 
             text-align: center; 
+            font-family: 'Orbitron', monospace; 
+            letter-spacing: 1px;
         }
         input, select, button { 
             padding: 12px; 
             margin: 8px; 
             border-radius: 8px; 
-            border: 1px solid #ccc; 
+            border: 1px solid rgba(0,212,255,0.3); 
             font-size: 1em; 
             width: calc(100% - 20px); 
             box-sizing: border-box; 
-            transition: border-color 0.3s; 
+            background: rgba(255,255,255,0.05); 
+            color: #e0e0e0; 
+            transition: border-color 0.3s, box-shadow 0.3s; 
         }
-        input:focus, select:focus { border-color: #007bff; outline: none; }
+        input:focus, select:focus { border-color: #00d4ff; outline: none; box-shadow: 0 0 10px rgba(0,212,255,0.3); }
         button { 
-            background: linear-gradient(135deg, #28a745, #20c997); 
-            color: white; 
+            background: linear-gradient(135deg, #00d4ff, #0099cc); 
+            color: #0f1419; 
             cursor: pointer; 
             border: none; 
             width: auto; 
             padding: 12px 30px; 
             font-weight: 600; 
+            font-family: 'Orbitron', monospace; 
         }
         button:hover { 
             transform: translateY(-2px); 
-            box-shadow: 0 4px 10px rgba(40,167,69,0.3); 
+            box-shadow: 0 6px 15px rgba(0,212,255,0.4); 
         }
         #resultado { 
             font-weight: 600; 
-            color: #28a745; 
+            color: #00d4ff; 
             margin-top: 15px; 
             padding: 15px; 
-            background: white; 
+            background: rgba(255,255,255,0.05); 
             border-radius: 10px; 
             text-align: center; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+            border: 1px solid rgba(0,212,255,0.3);
         }
         .emoji { font-size: 1.5em; margin: 0 5px; }
         footer { 
-            background: linear-gradient(135deg, #333, #555); 
-            color: white; 
+            background: linear-gradient(135deg, #0f1419, #1a1f2e); 
+            color: #e0e0e0; 
             text-align: center; 
             padding: 30px; 
             margin-top: 50px; 
+            border-top: 1px solid rgba(0,212,255,0.2);
         }
         .social-links { 
             display: flex; 
@@ -180,18 +194,20 @@
             margin: 15px 0; 
         }
         .social-links a { 
-            color: white; 
+            color: #00d4ff; 
             font-size: 2.2em; 
             text-decoration: none; 
             transition: all 0.3s; 
             padding: 10px; 
             border-radius: 50%; 
-            background: rgba(255,255,255,0.1); 
+            background: rgba(0,212,255,0.1); 
+            border: 1px solid rgba(0,212,255,0.3);
         }
         .social-links a:hover { 
-            color: #007bff; 
-            transform: scale(1.2); 
-            background: rgba(0,123,255,0.2); 
+            color: #e0e0e0; 
+            transform: scale(1.2) rotate(360deg); 
+            background: rgba(0,212,255,0.3); 
+            box-shadow: 0 0 20px rgba(0,212,255,0.5);
         }
         #loading, #error { 
             text-align: center; 
@@ -199,42 +215,46 @@
             padding: 25px; 
             border-radius: 10px; 
             font-weight: 500; 
+            border: 1px solid rgba(0,212,255,0.3);
         }
         #loading { 
-            background: linear-gradient(135deg, #d4edda, #c3e6cb); 
-            color: #155724; 
+            background: rgba(0,212,255,0.1); 
+            color: #00d4ff; 
         }
         #error { 
-            background: linear-gradient(135deg, #f8d7da, #f5c6cb); 
-            color: #721c24; 
+            background: rgba(220,53,69,0.1); 
+            color: #dc3545; 
         }
         .update-btn { 
-            background: linear-gradient(135deg, #ffc107, #fd7e14); 
-            color: #212529; 
+            background: linear-gradient(135deg, #00d4ff, #0099cc); 
+            color: #0f1419; 
             border: none; 
             padding: 12px 25px; 
             border-radius: 25px; 
             cursor: pointer; 
             font-weight: 600; 
+            font-family: 'Orbitron', monospace; 
             margin: 10px; 
             transition: all 0.3s; 
+            letter-spacing: 1px;
         }
         .update-btn:hover { 
             transform: translateY(-2px); 
-            box-shadow: 0 4px 10px rgba(255,193,7,0.3); 
+            box-shadow: 0 6px 15px rgba(0,212,255,0.4); 
         }
         .how-it-works { 
-            background: linear-gradient(135deg, #fff3cd, #ffeaa7); 
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(0,153,204,0.1)); 
             padding: 20px; 
             border-radius: 15px; 
             margin: 20px 0; 
             text-align: center; 
+            border: 1px solid rgba(0,212,255,0.3);
         }
         .how-it-works ul { list-style: none; padding: 0; }
         .how-it-works li { margin: 10px 0; font-size: 1.1em; }
         @media (max-width: 600px) { 
             .container { padding: 15px; margin: 10px; } 
-            h1 { font-size: 2em; } 
+            h1 { font-size: 2.2em; } 
             .tabs { flex-direction: column; align-items: center; } 
             .tab { width: 100%; max-width: 300px; } 
             table { font-size: 0.9em; } 
@@ -248,39 +268,39 @@
 <body>
     <div class="container">
         <header>
-            <img src="logo blackbird.png" alt="Logo Remesas Blackbird" class="logo" onerror="this.src='https://via.placeholder.com/120x120/007bff/ffffff?text=Blackbird';">
-            <h1>🎮 Remesas Blackbird</h1>
-            <p class="subtitle">Tu aliado empático para enviar dinero a quien más quieres. Con tasas transparentes y una calculadora que te facilita todo. ¡Estamos aquí para hacer tu vida más sencilla!</p>
-            <div class="empathetic-note">
-                💕 Sabemos que enviar remesas es más que dinero: es amor, apoyo y conexión. Por eso, te ofrecemos las mejores tasas con cero complicaciones. ¡Confía en nosotros como en un amigo!
+            <img src="logo blackbird.png" alt="Logo Servicios Blackbird SR-71" class="logo" onerror="this.src='https://via.placeholder.com/140x140/00d4ff/0f1419?text=SR-71';">
+            <h1>🛩️ Servicios Blackbird</h1>
+            <p class="subtitle">Remesas a velocidad Mach 3+. Precisión stealth para combinaciones entre España, USA, México, Brasil, Chile, Ecuador, Perú, Argentina, Colombia y Venezuela. Escaneamos las mejores tasas para ti.</p>
+            <div class="brand-note">
+                ⚡ Como el SR-71 Blackbird, operamos a altitudes imposibles: velocidad supersónica, invisibles a la competencia, con precisión de inteligencia total. Tus remesas, seguras y rápidas como un vuelo de reconocimiento.
             </div>
-            <button class="update-btn" onclick="cargarDatos()">🔄 Actualizar Tasas</button>
+            <button class="update-btn" onclick="cargarDatos()">🔄 Escanear Tasas Actuales</button>
         </header>
         
         <div class="how-it-works">
-            <h3>🌟 Cómo funciona (súper simple)</h3>
+            <h3>🎯 Protocolo de Operación (Simple y Eficiente)</h3>
             <ul>
-                <li>1. Selecciona tu país arriba 👆</li>
-                <li>2. Explora las tasas en la tabla 📊</li>
-                <li>3. Usa la calculadora para estimar tu remesa 🧮</li>
-                <li>4. Contáctanos y envía con seguridad 🚀</li>
+                <li>1. Selecciona objetivo (país) 👇</li>
+                <li>2. Analiza rutas de conversión en la matriz 📡</li>
+                <li>3. Simula trayectoria con calculadora de precisión 🧮</li>
+                <li>4. Ejecuta envío a velocidad Mach 3+ 🚀</li>
             </ul>
         </div>
         
         <div id="tabs" class="tabs"></div>
         <div id="tab-contents"></div>
         
-        <div id="loading" style="display: none;">Cargando tus tasas favoritas... ⏳ ¡Paciencia, que valdrá la pena!</div>
+        <div id="loading" style="display: none;">Escaneando rutas globales... ⚡ Radar activo.</div>
         <div id="error" style="display: none;"></div>
     </div>
 
     <footer>
-        <p>© 2025 Remesas Blackbird. Tu familia te lo agradecerá. ❤️ Envíos seguros y rápidos, siempre con empatía.</p>
+        <p>© 2025 Servicios Blackbird. Operando a Mach 3+ en remesas globales. Precisión. Velocidad. Confianza.</p>
         <div class="social-links">
-            <a href="https://wa.me/+51XXXXXXXXX" target="_blank" title="Chatea por WhatsApp">📱</a>
-            <a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank" title="Únete a nuestro canal de Telegram">✈️</a>
-            <a href="https://www.instagram.com/servicios_blackbird?igsh=MTlwZTVsaWR4dDBoMQ%3D%3D&utm_source=qr" target="_blank" title="Síguenos en Instagram">📸</a>
-            <a href="https://www.tiktok.com/@remesasblackbird?_t=ZM-8zqW0ByBXVg&_r=1" target="_blank" title="Mira videos en TikTok">🎵</a>
+            <a href="https://wa.me/+51XXXXXXXXX" target="_blank" title="WhatsApp - Contacto Rápido">📱</a>
+            <a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank" title="Canal Telegram - Alertas en Tiempo Real">✈️</a>
+            <a href="https://www.instagram.com/servicios_blackbird?igsh=MTlwZTVsaWR4dDBoMQ%3D%3D&utm_source=qr" target="_blank" title="Instagram - Estrategias y Tips">📸</a>
+            <a href="https://www.tiktok.com/@remesasblackbird?_t=ZM-8zqW0ByBXVg&_r=1" target="_blank" title="TikTok - Contenido Dinámico">🎵</a>
         </div>
     </footer>
 
@@ -288,21 +308,35 @@
         const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3yMHp1HF-2JS1j0vNcp_snCjtTaWuF6y8AldyFGxbWvQrmhvisnagcBC1pWiskalafvz0EVY8svR6/pub?gid=983978085&single=true&output=csv';
         
         let data = [];
-        let paisesUnicos = [];
+        let paisesUnicos = ['ESP', 'USA', 'MEX', 'BRA', 'CHI', 'ECU', 'PER', 'ARG', 'COL', 'VEN']; // Países fijos según especificación
 
-        // Datos de ejemplo para fallback
+        // Datos de ejemplo para fallback (tasas coherentes para combinaciones)
         const datosEjemplo = [
-            { conversion: 'ARS-USD', precio: 1000, origen: 'ARS', destino: 'USD' },
-            { conversion: 'USD-ARS', precio: 0.001, origen: 'USD', destino: 'ARS' },
-            { conversion: 'ARS-EUR', precio: 900, origen: 'ARS', destino: 'EUR' },
-            { conversion: 'EUR-ARS', precio: 0.0011, origen: 'EUR', destino: 'ARS' }
+            { conversion: 'ESP-USA', precio: 1.08, origen: 'ESP', destino: 'USA' },
+            { conversion: 'USA-ESP', precio: 0.93, origen: 'USA', destino: 'ESP' },
+            { conversion: 'MEX-USA', precio: 18.5, origen: 'MEX', destino: 'USA' },
+            { conversion: 'USA-MEX', precio: 0.054, origen: 'USA', destino: 'MEX' },
+            { conversion: 'BRA-USA', precio: 5.2, origen: 'BRA', destino: 'USA' },
+            { conversion: 'USA-BRA', precio: 0.192, origen: 'USA', destino: 'BRA' },
+            { conversion: 'CHI-USA', precio: 920, origen: 'CHI', destino: 'USA' },
+            { conversion: 'USA-CHI', precio: 0.00109, origen: 'USA', destino: 'CHI' },
+            { conversion: 'ECU-USA', precio: 1.0, origen: 'ECU', destino: 'USA' },
+            { conversion: 'USA-ECU', precio: 1.0, origen: 'USA', destino: 'ECU' },
+            { conversion: 'PER-USA', precio: 3.75, origen: 'PER', destino: 'USA' },
+            { conversion: 'USA-PER', precio: 0.267, origen: 'USA', destino: 'PER' },
+            { conversion: 'ARG-USA', precio: 950, origen: 'ARG', destino: 'USA' },
+            { conversion: 'USA-ARG', precio: 0.00105, origen: 'USA', destino: 'ARG' },
+            { conversion: 'COL-USA', precio: 4100, origen: 'COL', destino: 'USA' },
+            { conversion: 'USA-COL', precio: 0.000244, origen: 'USA', destino: 'COL' },
+            { conversion: 'VEN-USA', precio: 36, origen: 'VEN', destino: 'USA' },
+            { conversion: 'USA-VEN', precio: 0.0278, origen: 'USA', destino: 'VEN' }
         ];
 
         // Fetch CSV con PapaParse
         async function cargarDatos() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('error').style.display = 'none';
-            console.log('Cargando datos del CSV...');
+            console.log('Escaneando rutas del CSV...');
             try {
                 Papa.parse(csvUrl, {
                     download: true,
@@ -313,30 +347,31 @@
                         procesarDatos(results.data);
                     },
                     error: function(err) {
-                        throw new Error('Error al parsear CSV: ' + err);
+                        throw new Error('Error al escanear CSV: ' + err);
                     }
                 });
             } catch (err) {
                 console.error('Error al cargar CSV:', err);
                 data = datosEjemplo;
-                paisesUnicos = ['ARS', 'USD', 'EUR'];
                 crearTabs();
-                document.getElementById('error').innerHTML = `<p>¡Ups! No pudimos cargar las tasas reales justo ahora. Usando ejemplos para que sigas navegando. <button onclick="cargarDatos()">Reintentar 🔄</button></p>`;
+                document.getElementById('error').innerHTML = `<p>⚠️ Radar temporal bloqueado. Usando matriz de referencia para operaciones. <button onclick="cargarDatos()">Reescanear 🔄</button></p>`;
                 document.getElementById('error').style.display = 'block';
                 document.getElementById('loading').style.display = 'none';
             }
         }
 
-        // Procesar datos del CSV
+        // Procesar datos del CSV con coherencia para pares entre países especificados
         function procesarDatos(rows) {
             let pairs = [], rates = [], currentPair = null;
             rows.forEach((row, index) => {
                 const col9 = row[9] ? row[9].trim().replace(/"/g, '') : '';
                 if (col9 === 'PROVEDOR') {
                     let pairFull = row[1] ? row[1].trim().replace(/"/g, '') : '';
-                    let pairClean = pairFull.replace('COTIZACION MESA ', '').split(' 🇦')[0].split(' 🇨')[0].split(' 🇲')[0].split(' 🇵')[0].split(' 🇧')[0].split(' 🇻')[0].trim();
+                    let pairClean = pairFull.replace('COTIZACION MESA ', '').split(' 🇪')[0].split(' 🇺')[0].split(' 🇲')[0].split(' 🇧')[0].split(' 🇨')[0].split(' 🇪')[1].split(' 🇵')[0].split(' 🇦')[0].split(' 🇨')[1].split(' 🇻')[0].trim(); // Ajustado para emojis de países
+                    // Normalizar países a códigos: ESP, USA, MEX, BRA, CHI, ECU, PER, ARG, COL, VEN
+                    pairClean = pairClean.replace('España', 'ESP').replace('USA', 'USA').replace('México', 'MEX').replace('Brasil', 'BRA').replace('Chile', 'CHI').replace('Ecuador', 'ECU').replace('Perú', 'PER').replace('Argentina', 'ARG').replace('Colombia', 'COL').replace('Venezuela', 'VEN');
                     currentPair = pairClean;
-                    console.log('Par encontrado:', pairClean);
+                    console.log('Ruta escaneada:', pairClean);
                 } else if (col9 === 'VENTA IMAD' && currentPair) {
                     let rate = row[5] ? row[5].trim().replace(/"/g, '') : '';
                     rate = rate.replace('$', '').replace(',', '');
@@ -344,26 +379,30 @@
                     if (!isNaN(rateFloat)) {
                         pairs.push(currentPair);
                         rates.push(rateFloat);
-                        console.log('Tasa para', currentPair, ':', rateFloat);
+                        console.log('Tasa para ruta', currentPair, ':', rateFloat);
                     }
                     currentPair = null;
                 }
             });
 
             if (pairs.length === 0) {
-                console.warn('No se encontraron datos válidos, usando ejemplo');
+                console.warn('Matriz vacía, activando referencia');
                 data = datosEjemplo;
-                paisesUnicos = ['ARS', 'USD', 'EUR'];
             } else {
-                data = pairs.map((pair, i) => ({
-                    conversion: pair,
-                    precio: rates[i],
-                    origen: pair.split('-')[0].trim(),
-                    destino: pair.split('-')[1].trim()
-                }));
-                paisesUnicos = [...new Set(data.map(d => d.origen).concat(data.map(d => d.destino)))];
+                data = pairs.map((pair, i) => {
+                    const [origen, destino] = pair.split('-');
+                    return {
+                        conversion: pair,
+                        precio: rates[i],
+                        origen: origen.trim(),
+                        destino: destino.trim()
+                    };
+                });
             }
-            console.log('Países únicos:', paisesUnicos);
+            // Filtrar solo países válidos
+            data = data.filter(d => paisesUnicos.includes(d.origen) && paisesUnicos.includes(d.destino));
+            paisesUnicos = [...new Set(data.map(d => d.origen).concat(data.map(d => d.destino)))];
+            console.log('Rutas coherentes:', paisesUnicos);
             crearTabs();
             document.getElementById('loading').style.display = 'none';
         }
@@ -405,37 +444,37 @@
         function actualizarTabla(paisIndex) {
             const pais = paisesUnicos[paisIndex];
             const content = document.querySelectorAll('.tab-content')[paisIndex];
-            const salidas = data.filter(d => d.origen === pais).map(d => ({...d, direccion: `De ${pais} a`}));
-            const entradas = data.filter(d => d.destino === pais).map(d => ({...d, direccion: `A ${pais} desde`}));
+            const salidas = data.filter(d => d.origen === pais).map(d => ({...d, direccion: `De ${pais} a destino`}));
+            const entradas = data.filter(d => d.destino === pais).map(d => ({...d, direccion: `A ${pais} desde origen`}));
             const dfPais = [...salidas, ...entradas].sort((a, b) => a.direccion.localeCompare(b.direccion) || a.conversion.localeCompare(b.conversion));
 
-            let tablaHtml = `<h2>💰 Tasas para ${pais.toUpperCase()} (actualizadas con cariño)</h2><table><tr><th>Dirección</th><th>Conversión</th><th>Precio (USD)</th></tr>`;
+            let tablaHtml = `<h2>📡 Matriz de Rutas para ${pais.toUpperCase()}</h2><table><tr><th>Dirección</th><th>Conversión</th><th>Tasa (PRECISIÓN SR-71)</th></tr>`;
             dfPais.forEach(row => {
-                const precioFormateado = row.precio.toFixed(2).replace(/\.?0+$/, '');
-                tablaHtml += `<tr><td>${row.direccion}</td><td>${row.conversion}</td><td>$${precioFormateado}</td></tr>`;
+                const precioFormateado = row.precio.toFixed(4).replace(/\.?0+$/, ''); // 4 decimales para precisión
+                tablaHtml += `<tr><td>${row.direccion}</td><td>${row.conversion}</td><td>${precioFormateado}</td></tr>`;
             });
             tablaHtml += '</table>';
 
             // Calculadora
             tablaHtml += `
                 <div class="calculator">
-                    <h3>🧮 Calculadora Amigable</h3>
-                    <p style="text-align: center; font-style: italic; color: #6c757d;">Ingresa tu monto y elige la conversión. Te calculamos todo con precisión. ¡Es fácil!</p>
-                    <input type="number" id="monto-${pais}" placeholder="Ej. 1000 ARS" min="0" step="0.01">
+                    <h3>🧮 Simulador de Trayectoria</h3>
+                    <p style="text-align: center; color: #b0b0b0; font-size: 0.95em;">Ingresa monto en moneda origen. Recibe resultado en moneda destino. Precisión Mach 3+.</p>
+                    <input type="number" id="monto-${pais}" placeholder="Monto origen (ej. 1000 ESP)" min="0" step="0.01">
                     <select id="conversionSelect-${pais}">
-                        <option value="">Elige tu conversión...</option>
-                        ${dfPais.map(row => `<option value="${row.conversion}|${row.precio}|${row.origen}">${row.conversion} ($${row.precio.toFixed(2).replace(/\.?0+$/, '')})</option>`).join('')}
+                        <option value="">Selecciona ruta...</option>
+                        ${dfPais.map(row => `<option value="${row.conversion}|${row.precio}|${row.origen}">${row.conversion} (Tasa: ${row.precio.toFixed(4).replace(/\.?0+$/, '')})</option>`).join('')}
                     </select>
-                    <button onclick="calcular('${pais}')">Calcular con Amor ❤️</button>
+                    <button onclick="calcular('${pais}')">Ejecutar Simulación ⚡</button>
                     <div id="resultado-${pais}"></div>
                 </div>
             `;
 
             content.innerHTML = tablaHtml;
-            console.log(`Tabla actualizada para ${pais}, filas: ${dfPais.length}`);
+            console.log(`Matriz actualizada para ${pais}, rutas: ${dfPais.length}`);
         }
 
-        // Función calculadora
+        // Función calculadora coherente
         function calcular(pais) {
             const montoInput = document.getElementById(`monto-${pais}`);
             const select = document.getElementById(`conversionSelect-${pais}`);
@@ -443,30 +482,32 @@
             const [conv, precioStr, origen] = select.value.split('|');
             const precio = parseFloat(precioStr);
             const resultadoDiv = document.getElementById(`resultado-${pais}`);
+            const [monedaOrigen, monedaDestino] = conv.split('-');
             
             if (!monto || !conv || isNaN(precio)) {
-                resultadoDiv.innerHTML = '<span style="color: #dc3545;">¡Hey! Ingresa el monto y la conversión para ayudarte. 😊</span>';
+                resultadoDiv.innerHTML = '<span style="color: #dc3545;">Objetivo no adquirido. Verifica monto y ruta. 🔒</span>';
                 return;
             }
             
-            let resultado;
-            if (origen === pais) { // Salida: divide por tasa
-                resultado = (monto / precio).toFixed(2).replace(/\.?0+$/, '');
-                resultadoDiv.innerHTML = `<span>¡Excelente elección! De ${pais}: $${monto} → Recibes: $${resultado} en destino ${emojiParaMoneda(conv.split('-')[1])}. ¡Listo para enviar! 🚀</span>`;
-            } else { // Entrada: multiplica por tasa
-                resultado = (monto * precio).toFixed(2).replace(/\.?0+$/, '');
-                resultadoDiv.innerHTML = `<span>¡Perfecto! De origen: $${monto} → Pagas: $${resultado} en ${pais} ${emojiParaMoneda(conv.split('-')[0])}. Todo claro y seguro. 💕</span>`;
+            let resultado, unidadResultado;
+            if (origen === pais) { // Envío desde pais (origen) a destino: monto_origen / tasa = recibido_destino
+                resultado = (monto / precio).toFixed(4).replace(/\.?0+$/, '');
+                unidadResultado = monedaDestino;
+            } else { // Recepción en pais (destino) desde origen: monto_origen * tasa = pagado_destino
+                resultado = (monto * precio).toFixed(4).replace(/\.?0+$/, '');
+                unidadResultado = monedaDestino;
             }
+            resultadoDiv.innerHTML = `<span>🎯 Trayectoria confirmada: $${monto} ${emojiParaMoneda(monedaOrigen)} → Recibes: $${resultado} ${emojiParaMoneda(unidadResultado)} (Tasa aplicada: ${precio.toFixed(4)}). Envío a velocidad Mach 3+. ⚡</span>`;
         }
 
         function emojiParaMoneda(moneda) {
-            const emojis = { 'USD': '💵', 'ARS': '🇦🇷', 'EUR': '🇪🇺', 'PEN': '🇵🇪' };
+            const emojis = { 'ESP': '🇪🇸', 'USA': '🇺🇸', 'MEX': '🇲🇽', 'BRA': '🇧🇷', 'CHI': '🇨🇱', 'ECU': '🇪🇨', 'PER': '🇵🇪', 'ARG': '🇦🇷', 'COL': '🇨🇴', 'VEN': '🇻🇪' };
             return emojis[moneda] || '💱';
         }
 
         // Cargar datos al iniciar
         window.onload = () => {
-            console.log('Página cargada, iniciando fetch...');
+            console.log('Sistema Blackbird online. Iniciando escaneo...');
             cargarDatos();
         };
     </script>
