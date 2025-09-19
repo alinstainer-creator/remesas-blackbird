@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     body {
-      background: radial-gradient(circle at center, #0d0d0d 0%, #1c2526 100%);
+      background: #0a0a0a;
       color: #e6e6e6;
       font-family: 'Exo 2', sans-serif;
       overflow: hidden;
@@ -22,46 +22,51 @@
       margin: 0;
     }
     .container {
-      background: rgba(10, 10, 10, 0.9);
-      backdrop-filter: blur(12px);
-      border: 1px solid #00cc99;
-      box-shadow: 0 0 15px rgba(0, 204, 153, 0.4), inset 0 0 5px rgba(0, 204, 153, 0.2);
-      border-radius: 8px;
-      padding: 1rem;
-      max-width: 480px;
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid #009977;
+      box-shadow: 0 0 12px rgba(0, 153, 119, 0.3), inset 0 0 4px rgba(0, 153, 119, 0.2);
+      border-radius: 6px;
+      padding: 0.75rem;
+      max-width: 360px;
       width: 90%;
       margin: 1rem auto;
-      animation: fadeInScale 1.2s ease-out;
+      animation: cockpitEntry 1.5s ease-out;
     }
     @media (min-width: 768px) {
       .container {
         max-width: 640px;
-        padding: 1.5rem;
+        padding: 1rem;
       }
       h1 {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
       }
     }
     .logo {
-      width: 80px;
-      animation: hologram 2s ease-in-out infinite;
+      width: 64px;
+      animation: powerOn 2s ease-out;
+    }
+    @media (min-width: 768px) {
+      .logo {
+        width: 80px;
+      }
     }
     button {
       background: transparent;
-      border: 1px solid #00cc99;
+      border: 1px solid #009977;
       color: #e6e6e6;
       padding: 0.5rem 1rem;
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       font-weight: 400;
-      border-radius: 5px;
+      border-radius: 4px;
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
     }
     button:hover {
-      background: #00cc99;
-      color: #0d0d0d;
-      box-shadow: 0 0 10px rgba(0, 204, 153, 0.6);
+      background: #009977;
+      color: #0a0a0a;
+      box-shadow: 0 0 8px rgba(0, 153, 119, 0.5);
     }
     button::after {
       content: '';
@@ -70,31 +75,31 @@
       left: 50%;
       width: 0;
       height: 0;
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.2);
       border-radius: 50%;
       transform: translate(-50%, -50%);
-      transition: width 0.5s ease, height 0.5s ease;
+      transition: width 0.4s ease, height 0.4s ease;
     }
     button:hover::after {
-      width: 150px;
-      height: 150px;
+      width: 100px;
+      height: 100px;
     }
     select, input {
       background: rgba(28, 37, 38, 0.9);
-      border: 1px solid #00cc99;
+      border: 1px solid #009977;
       color: #e6e6e6;
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       padding: 0.5rem;
-      border-radius: 5px;
+      border-radius: 4px;
       transition: all 0.3s ease;
     }
     select:focus, input:focus {
-      box-shadow: 0 0 6px rgba(0, 204, 153, 0.5);
+      box-shadow: 0 0 5px rgba(0, 153, 119, 0.4);
       border-color: #00cc99;
-      animation: pulseBorder 1s infinite;
+      animation: pulseBorder 1.2s infinite;
     }
     .result {
-      animation: hudScan 0.6s ease-out;
+      animation: hudScan 0.7s ease-out;
       position: relative;
       overflow: hidden;
     }
@@ -104,9 +109,36 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 2px;
-      background: linear-gradient(to right, transparent, #00cc99, transparent);
-      animation: scanLine 2s infinite;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #009977, transparent);
+      animation: scanLine 2.5s infinite;
+    }
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      pointer-events: none;
+      z-index: -2;
+    }
+    .star {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      background: #e6e6e6;
+      opacity: 0.3;
+    }
+    .clouds {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(0, 153, 119, 0.05), transparent);
+      animation: supersonicClouds 60s linear infinite;
+      z-index: -1;
     }
     .radar {
       position: fixed;
@@ -121,10 +153,10 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      border: 1px solid rgba(0, 204, 153, 0.2);
+      border: 1px solid rgba(0, 153, 119, 0.1);
       border-radius: 50%;
       transform: translate(-50%, -50%);
-      animation: radarPulse 4s infinite;
+      animation: radarPulse 6s infinite;
       opacity: 0;
     }
     .particles {
@@ -138,50 +170,50 @@
     .particle {
       position: absolute;
       width: 1px;
-      height: 10px;
-      background: linear-gradient(#00cc99, transparent);
-      opacity: 0.4;
+      height: 8px;
+      background: linear-gradient(#009977, transparent);
+      opacity: 0.3;
       will-change: transform, opacity;
-      animation: jetTrail 8s infinite;
+      animation: jetTrail 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
     .social-bar {
       position: fixed;
-      bottom: 1rem;
+      bottom: 0.5rem;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(10, 10, 10, 0.8);
-      backdrop-filter: blur(8px);
-      border: 1px solid #00cc99;
-      border-radius: 20px;
-      padding: 0.5rem 1rem;
-      animation: floatIn 1s ease-out;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid #009977;
+      border-radius: 16px;
+      padding: 0.25rem 0.75rem;
+      animation: floatIn 1.2s ease-out;
     }
     .social-icon {
       color: #e6e6e6;
-      font-size: 1rem;
-      margin: 0 0.5rem;
+      font-size: 0.875rem;
+      margin: 0 0.4rem;
       transition: all 0.3s ease;
     }
     .social-icon:hover {
-      color: #00cc99;
-      transform: translateY(-2px);
+      color: #009977;
+      transform: translateY(-3px);
     }
-    @keyframes fadeInScale {
-      from { transform: scale(0.9); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+    @keyframes cockpitEntry {
+      from { transform: scale(0.9) rotate(-2deg); opacity: 0; }
+      to { transform: scale(1) rotate(0); opacity: 1; }
     }
-    @keyframes hologram {
-      0% { filter: brightness(1) drop-shadow(0 0 5px rgba(0, 204, 153, 0.3)); }
-      50% { filter: brightness(1.2) drop-shadow(0 0 10px rgba(0, 204, 153, 0.5)); }
-      100% { filter: brightness(1) drop-shadow(0 0 5px rgba(0, 204, 153, 0.3)); }
+    @keyframes powerOn {
+      0% { filter: brightness(0) drop-shadow(0 0 0 rgba(0, 153, 119, 0)); }
+      50% { filter: brightness(1.5) drop-shadow(0 0 10px rgba(0, 153, 119, 0.7)); }
+      100% { filter: brightness(1) drop-shadow(0 0 5px rgba(0, 153, 119, 0.4)); }
     }
     @keyframes pulseBorder {
-      0% { border-color: #00cc99; }
-      50% { border-color: #00ffcc; }
-      100% { border-color: #00cc99; }
+      0% { border-color: #009977; }
+      50% { border-color: #00cc99; }
+      100% { border-color: #009977; }
     }
     @keyframes hudScan {
-      from { transform: translateY(15px); opacity: 0; filter: brightness(1.3); }
+      from { transform: translateY(10px); opacity: 0; filter: brightness(1.4); }
       to { transform: translateY(0); opacity: 1; filter: brightness(1); }
     }
     @keyframes scanLine {
@@ -189,21 +221,27 @@
       100% { transform: translateY(100%); }
     }
     @keyframes radarPulse {
-      0% { transform: translate(-50%, -50%) scale(0); opacity: 0.5; }
-      100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 0.3; }
+      100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
     }
     @keyframes jetTrail {
-      0% { transform: translate(0, 0) rotate(45deg); opacity: 0.4; }
-      50% { opacity: 0.7; }
-      100% { transform: translate(calc(30px * var(--direction-x)), calc(-100vh * var(--direction-y))) rotate(45deg); opacity: 0; }
+      0% { transform: translate(0, 0) rotate(30deg); opacity: 0.3; }
+      50% { opacity: 0.5; }
+      100% { transform: translate(calc(20px * var(--direction-x)), calc(-100vh * var(--direction-y))) rotate(30deg); opacity: 0; }
+    }
+    @keyframes supersonicClouds {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
     @keyframes floatIn {
-      from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+      from { transform: translateX(-50%) translateY(15px); opacity: 0; }
       to { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
   </style>
 </head>
 <body>
+  <div class="stars" id="stars"></div>
+  <div class="clouds"></div>
   <div class="radar" id="radar"></div>
   <div class="particles" id="particles"></div>
   <audio id="clickSound" src="https://cdn.pixabay.com/audio/2022/03/10/audio_4e992b54b2.mp3"></audio>
@@ -345,26 +383,35 @@
         });
       }, []);
 
-      // Generar partículas y radar
+      // Generar estrellas y partículas
       React.useEffect(() => {
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 50; i++) {
+          const star = document.createElement('div');
+          star.className = 'star';
+          star.style.left = `${Math.random() * 100}%`;
+          star.style.top = `${Math.random() * 100}%`;
+          starsContainer.appendChild(star);
+        }
+
         const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 20; i++) {
           const particle = document.createElement('div');
           particle.className = 'particle';
           particle.style.left = `${Math.random() * 100}%`;
-          particle.style.animationDelay = `${Math.random() * 8}s`;
+          particle.style.animationDelay = `${Math.random() * 10}s`;
           particle.style.setProperty('--direction-x', Math.random() > 0.5 ? 1 : -1);
           particle.style.setProperty('--direction-y', Math.random() > 0.5 ? 1 : -1);
           particlesContainer.appendChild(particle);
         }
 
         const radarContainer = document.getElementById('radar');
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
           const circle = document.createElement('div');
           circle.className = 'radar-circle';
-          circle.style.width = `${200 + i * 100}px`;
-          circle.style.height = `${200 + i * 100}px`;
-          circle.style.animationDelay = `${i * 1.3}s`;
+          circle.style.width = `${150 + i * 100}px`;
+          circle.style.height = `${150 + i * 100}px`;
+          circle.style.animationDelay = `${i * 2}s`;
           radarContainer.appendChild(circle);
         }
       }, []);
@@ -410,7 +457,7 @@
       if (!data) {
         return (
           <div className="flex justify-center items-center h-screen text-gray-300">
-            <div className="text-sm font-medium animate-pulse">Cargando tasas de cambio...</div>
+            <div className="text-xs font-medium animate-pulse">Cargando tasas de cambio...</div>
           </div>
         );
       }
@@ -418,19 +465,19 @@
       // Renderizar interfaz principal
       const countries = Object.keys(currencyToCountry).sort();
       return (
-        <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="min-h-screen flex items-center justify-center p-3">
           <div className="container">
-            <img src="logo blackbird.png" alt="Blackbird Exchange Logo" className="logo mx-auto mb-3" />
-            <h1 className="text-lg font-semibold mb-3 text-center text-gray-300">Blackbird Exchange</h1>
+            <img src="logo blackbird.png" alt="Blackbird Exchange Logo" className="logo mx-auto mb-2" />
+            <h1 className="text-base font-semibold mb-2 text-center text-gray-300">Blackbird Exchange</h1>
             {error && (
-              <div className="bg-red-900/50 text-red-300 p-2 rounded-lg mb-3 text-xs animate-pulse">{error}</div>
+              <div className="bg-red-900/50 text-red-300 p-1.5 rounded-lg mb-2 text-xs animate-pulse">{error}</div>
             )}
             <div className="mb-2">
               <label className="block text-xs font-light text-gray-300 mb-1">País de Origen</label>
               <select
                 value={originCountry}
                 onChange={(e) => setOriginCountry(e.target.value)}
-                className="w-full p-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
               >
                 <option value="">Selecciona el país de origen</option>
                 {countries.map((currency) => (
@@ -443,7 +490,7 @@
               <select
                 value={destinationCountry}
                 onChange={(e) => setDestinationCountry(e.target.value)}
-                className="w-full p-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
               >
                 <option value="">Selecciona el país de destino</option>
                 {countries.map((currency) => (
@@ -455,10 +502,12 @@
               <label className="block text-xs font-light text-gray-300 mb-1">Monto</label>
               <input
                 type="number"
+                inputmode="numeric"
+                pattern="[0-9]*"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="Ingresa el monto"
-                className="w-full p-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
                 min="0"
                 step="0.01"
               />
@@ -470,7 +519,7 @@
               Calcular
             </button>
             {result && (
-              <div className="result mt-3 p-2 bg-gray-800/50 rounded-lg border border-gray-600">
+              <div className="result mt-2 p-1.5 bg-gray-800/50 rounded-lg border border-gray-600">
                 <p className="text-xs text-gray-300">
                   {formatNumber(result.amount)} {result.from} ({originCountry}) ={' '}
                   {formatNumber(result.converted)} {result.to} ({destinationCountry})
@@ -482,13 +531,13 @@
                   href="https://t.me/+i02VPMg23TNiOWJh"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block mt-2 w-full text-xs font-medium rounded-lg text-center"
+                  className="block mt-1.5 w-full text-xs font-medium rounded-lg text-center"
                 >
                   Iniciar Proceso en Telegram
                 </a>
               </div>
             )}
-            <footer className="mt-3 text-center text-gray-400 text-xs">
+            <footer className="mt-2 text-center text-gray-400 text-xs">
               <p>Contacta con nosotros: <a href="mailto:contact@blackbirdexchange.com" className="underline">Email</a> | <a href="https://blackbirdexchange.com" target="_blank" rel="noopener noreferrer" className="underline">Sitio Web</a></p>
             </footer>
           </div>
