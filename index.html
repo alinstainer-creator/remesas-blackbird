@@ -25,30 +25,30 @@
       background: rgba(10, 10, 10, 0.95);
       backdrop-filter: blur(10px);
       border: 1px solid #009977;
-      box-shadow: 0 0 12px rgba(0, 153, 119, 0.3), inset 0 0 4px rgba(0, 153, 119, 0.2);
+      box-shadow: 0 0 10px rgba(0, 153, 119, 0.3), inset 0 0 3px rgba(0, 153, 119, 0.2);
       border-radius: 6px;
       padding: 0.75rem;
-      max-width: 360px;
+      max-width: 340px;
       width: 90%;
       margin: 1rem auto;
       animation: cockpitEntry 1.5s ease-out;
     }
     @media (min-width: 768px) {
       .container {
-        max-width: 640px;
+        max-width: 600px;
         padding: 1rem;
       }
       h1 {
-        font-size: 1.25rem;
+        font-size: 1.125rem;
       }
     }
     .logo {
-      width: 64px;
+      width: 56px;
       animation: powerOn 2s ease-out;
     }
     @media (min-width: 768px) {
       .logo {
-        width: 80px;
+        width: 72px;
       }
     }
     button {
@@ -66,7 +66,7 @@
     button:hover {
       background: #009977;
       color: #0a0a0a;
-      box-shadow: 0 0 8px rgba(0, 153, 119, 0.5);
+      box-shadow: 0 0 6px rgba(0, 153, 119, 0.5);
     }
     button::after {
       content: '';
@@ -81,8 +81,8 @@
       transition: width 0.4s ease, height 0.4s ease;
     }
     button:hover::after {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
     }
     select, input {
       background: rgba(28, 37, 38, 0.9);
@@ -94,7 +94,7 @@
       transition: all 0.3s ease;
     }
     select:focus, input:focus {
-      box-shadow: 0 0 5px rgba(0, 153, 119, 0.4);
+      box-shadow: 0 0 4px rgba(0, 153, 119, 0.4);
       border-color: #00cc99;
       animation: pulseBorder 1.2s infinite;
     }
@@ -113,23 +113,6 @@
       background: linear-gradient(to right, transparent, #009977, transparent);
       animation: scanLine 2.5s infinite;
     }
-    .stars {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: transparent;
-      pointer-events: none;
-      z-index: -2;
-    }
-    .star {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      background: #e6e6e6;
-      opacity: 0.3;
-    }
     .clouds {
       position: fixed;
       top: 0;
@@ -138,7 +121,7 @@
       height: 100%;
       background: linear-gradient(to right, rgba(0, 153, 119, 0.05), transparent);
       animation: supersonicClouds 60s linear infinite;
-      z-index: -1;
+      z-index: -2;
     }
     .radar {
       position: fixed;
@@ -166,15 +149,16 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
+      z-index: -1;
     }
     .particle {
       position: absolute;
       width: 1px;
-      height: 8px;
+      height: 6px;
       background: linear-gradient(#009977, transparent);
       opacity: 0.3;
       will-change: transform, opacity;
-      animation: jetTrail 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      animation: jetTrail 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
     .social-bar {
       position: fixed;
@@ -184,28 +168,63 @@
       background: rgba(10, 10, 10, 0.85);
       backdrop-filter: blur(6px);
       border: 1px solid #009977;
-      border-radius: 16px;
+      border-radius: 14px;
       padding: 0.25rem 0.75rem;
       animation: floatIn 1.2s ease-out;
     }
     .social-icon {
       color: #e6e6e6;
-      font-size: 0.875rem;
-      margin: 0 0.4rem;
+      font-size: 0.75rem;
+      margin: 0 0.3rem;
       transition: all 0.3s ease;
     }
     .social-icon:hover {
       color: #009977;
-      transform: translateY(-3px);
+      transform: translateY(-2px);
+    }
+    .speedometer {
+      position: fixed;
+      top: 0.5rem;
+      right: 0.5rem;
+      width: 80px;
+      height: 40px;
+      background: rgba(10, 10, 10, 0.9);
+      border: 1px solid #009977;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: #009977;
+      opacity: 0.7;
+      animation: fadeIn 1s ease-out;
+    }
+    @media (min-width: 768px) {
+      .speedometer {
+        width: 120px;
+        height: 60px;
+        font-size: 1rem;
+      }
+    }
+    .speedometer span {
+      font-weight: 600;
+    }
+    .starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -3;
     }
     @keyframes cockpitEntry {
-      from { transform: scale(0.9) rotate(-2deg); opacity: 0; }
+      from { transform: scale(0.9) rotate(-1deg); opacity: 0; }
       to { transform: scale(1) rotate(0); opacity: 1; }
     }
     @keyframes powerOn {
       0% { filter: brightness(0) drop-shadow(0 0 0 rgba(0, 153, 119, 0)); }
-      50% { filter: brightness(1.5) drop-shadow(0 0 10px rgba(0, 153, 119, 0.7)); }
-      100% { filter: brightness(1) drop-shadow(0 0 5px rgba(0, 153, 119, 0.4)); }
+      50% { filter: brightness(1.5) drop-shadow(0 0 8px rgba(0, 153, 119, 0.7)); }
+      100% { filter: brightness(1) drop-shadow(0 0 4px rgba(0, 153, 119, 0.4)); }
     }
     @keyframes pulseBorder {
       0% { border-color: #009977; }
@@ -213,7 +232,7 @@
       100% { border-color: #009977; }
     }
     @keyframes hudScan {
-      from { transform: translateY(10px); opacity: 0; filter: brightness(1.4); }
+      from { transform: translateY(10px); opacity: 0; filter: brightness(1.3); }
       to { transform: translateY(0); opacity: 1; filter: brightness(1); }
     }
     @keyframes scanLine {
@@ -222,12 +241,12 @@
     }
     @keyframes radarPulse {
       0% { transform: translate(-50%, -50%) scale(0); opacity: 0.3; }
-      100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+      100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
     }
     @keyframes jetTrail {
       0% { transform: translate(0, 0) rotate(30deg); opacity: 0.3; }
-      50% { opacity: 0.5; }
-      100% { transform: translate(calc(20px * var(--direction-x)), calc(-100vh * var(--direction-y))) rotate(30deg); opacity: 0; }
+      50% { opacity: 0.4; }
+      100% { transform: translate(calc(15px * var(--direction-x)), calc(-100vh * var(--direction-y))) rotate(30deg); opacity: 0; }
     }
     @keyframes supersonicClouds {
       0% { transform: translateX(0); }
@@ -237,14 +256,21 @@
       from { transform: translateX(-50%) translateY(15px); opacity: 0; }
       to { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 0.7; }
+    }
   </style>
 </head>
 <body>
-  <div class="stars" id="stars"></div>
+  <canvas class="starfield" id="starfield"></canvas>
   <div class="clouds"></div>
   <div class="radar" id="radar"></div>
   <div class="particles" id="particles"></div>
   <audio id="clickSound" src="https://cdn.pixabay.com/audio/2022/03/10/audio_4e992b54b2.mp3"></audio>
+  <div class="speedometer">
+    <span id="speed">0 knots</span>
+  </div>
   <div id="root"></div>
   <div class="social-bar">
     <a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank" rel="noopener noreferrer" class="social-icon">
@@ -316,6 +342,85 @@
       }
     }
 
+    // Mapa estelar interactivo
+    function initStarfield() {
+      const canvas = document.getElementById('starfield');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const stars = [];
+      const numStars = 50;
+      let mouseX = canvas.width / 2;
+      let mouseY = canvas.height / 2;
+
+      // Crear estrellas
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1 + 0.5,
+          vx: (Math.random() - 0.5) * 0.1,
+          vy: (Math.random() - 0.5) * 0.1
+        });
+      }
+
+      // Actualizar posición del mouse
+      canvas.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+      canvas.addEventListener('touchmove', (e) => {
+        mouseX = e.touches[0].clientX;
+        mouseY = e.touches[0].clientY;
+      });
+
+      // Animar estrellas
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(star => {
+          // Mover estrellas hacia el mouse
+          const dx = mouseX - star.x;
+          const dy = mouseY - star.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 100) {
+            star.vx += dx * 0.0002;
+            star.vy += dy * 0.0002;
+          }
+          star.x += star.vx;
+          star.y += star.vy;
+
+          // Rebotar en los bordes
+          if (star.x < 0 || star.x > canvas.width) star.vx *= -1;
+          if (star.y < 0 || star.y > canvas.height) star.vy *= -1;
+
+          // Dibujar estrella
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+          ctx.fillStyle = '#e6e6e6';
+          ctx.fill();
+        });
+
+        // Dibujar líneas entre estrellas cercanas
+        ctx.strokeStyle = 'rgba(0, 153, 119, 0.2)';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < stars.length; i++) {
+          for (let j = i + 1; j < stars.length; j++) {
+            const dx = stars[i].x - stars[j].x;
+            const dy = stars[i].y - stars[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < 60) {
+              ctx.beginPath();
+              ctx.moveTo(stars[i].x, stars[i].y);
+              ctx.lineTo(stars[j].x, stars[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
     // Componente principal de React
     function CurrencyCalculator() {
       const [data, setData] = React.useState(null);
@@ -324,6 +429,7 @@
       const [amount, setAmount] = React.useState('');
       const [result, setResult] = React.useState(null);
       const [error, setError] = React.useState('');
+      const [speed, setSpeed] = React.useState(0);
 
       // Cargar y parsear el CSV
       React.useEffect(() => {
@@ -383,23 +489,14 @@
         });
       }, []);
 
-      // Generar estrellas y partículas
+      // Generar partículas, radar y starfield
       React.useEffect(() => {
-        const starsContainer = document.getElementById('stars');
-        for (let i = 0; i < 50; i++) {
-          const star = document.createElement('div');
-          star.className = 'star';
-          star.style.left = `${Math.random() * 100}%`;
-          star.style.top = `${Math.random() * 100}%`;
-          starsContainer.appendChild(star);
-        }
-
         const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 15; i++) {
           const particle = document.createElement('div');
           particle.className = 'particle';
           particle.style.left = `${Math.random() * 100}%`;
-          particle.style.animationDelay = `${Math.random() * 10}s`;
+          particle.style.animationDelay = `${Math.random() * 12}s`;
           particle.style.setProperty('--direction-x', Math.random() > 0.5 ? 1 : -1);
           particle.style.setProperty('--direction-y', Math.random() > 0.5 ? 1 : -1);
           particlesContainer.appendChild(particle);
@@ -409,14 +506,16 @@
         for (let i = 0; i < 2; i++) {
           const circle = document.createElement('div');
           circle.className = 'radar-circle';
-          circle.style.width = `${150 + i * 100}px`;
-          circle.style.height = `${150 + i * 100}px`;
+          circle.style.width = `${120 + i * 80}px`;
+          circle.style.height = `${120 + i * 80}px`;
           circle.style.animationDelay = `${i * 2}s`;
           radarContainer.appendChild(circle);
         }
+
+        initStarfield();
       }, []);
 
-      // Reproducir sonido al calcular
+      // Reproducir sonido y animar velocímetro
       const playClickSound = () => {
         const sound = document.getElementById('clickSound');
         sound.play().catch(() => console.log('Sound playback failed'));
@@ -451,6 +550,18 @@
           converted: convertedAmount,
           currency: destinationCountry
         });
+
+        // Animar velocímetro
+        let speedValue = 0;
+        const targetSpeed = Math.min(amountValue / 10, 1000);
+        const speedInterval = setInterval(() => {
+          speedValue += targetSpeed / 20;
+          if (speedValue >= targetSpeed) {
+            speedValue = targetSpeed;
+            clearInterval(speedInterval);
+          }
+          document.getElementById('speed').textContent = `${Math.round(speedValue)} knots`;
+        }, 50);
       };
 
       // Mostrar estado de carga
