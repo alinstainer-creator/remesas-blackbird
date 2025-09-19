@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blackbird Exchange — Concierge</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #1a1a1a;
+      color: #00ff00;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .container {
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #00ff00;
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    }
+    button:hover {
+      background-color: #00cc00;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    // Mapeo de códigos de moneda a nombres de países
+    const currencyToCountry = {
+      ARS: 'Argentina',
+      VES: 'Venezuela',
+      CLP: 'Chile',
+      USD: 'Estados Unidos',
+      MXN: 'México',
+      PEN: 'Perú',
+      COP: 'Colombia',
+      EUR: 'Eurozona',
+      BRL: 'Brasil',
+      UYU: 'Uruguay',
+      ECU: 'Ecuador'
+    };
+
+    // Mapeo de nombres de países en encabezados a códigos de moneda
+    const countryCodeToCurrency = {
+      ARG: 'ARS',
+      VEN: 'VES',
+      VZLA: 'VES',
+      CHILE: 'CLP',
+      USA: 'USD',
+      MEX: 'MXN',
+      PERU: 'PEN',
+      COP: 'COP',
+      EUR: 'EUR',
+      BRA: 'BRL',
+      UYU: 'UYU',
+      ECU: 'ECU'
+    };
+
+    // URL del CSV
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Teo-_5ka3LKx7FXL3x3yV3uf4KhoI61ewnVJyJ90XRnksoObf4CDn-lJvrFKiQ/pub?gid=983978085&single=true&output=csv';
+
+    // Función para cargar el CSV
+    async function loadFileData() {
+      try {
+        const response = await fetch(CSV_URL, {
+          method: 'GET',
+          headers: {
+            'Accept': 'text/csv'
+          }
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.text();
+        console.log('CSV cargado (primeros 200 caracteres):', data.substring(0, 200));
+        return data;
+      } catch (error) {
+        console.error('Error al cargar el CSV:', error);
+        throw error;
+      }
+    }
+
+    // Componente principal de React
+    function CurrencyCalculator() {
+      const [data, setData] = React.useState(null);
+      const [originCountry, setOriginCountry] = React.useState('');
+      const [destinationCountry, setDestinationCountry] = React.useState('');
+      const [amount, setAmount] = React.useState('');
+      const [result, setResult] = React.useState(null);
+      const [error, setError] = React.useState('');
+
+      // Cargar y parsear el CSV
+      React.useEffect(() => {
+        loadFileData().then(csv => {
+          Papa.parse(csv, {
+            skipEmptyLines: true,
+            transform: (value) => value.trim().replace(/^"|"$/g, ''),
+            complete: (results) => {
+              const exchangeRates = {};
+              // Filas específicas para pares y tasas
+              const pairRows = [6, 15, 24, 33, 42, 51, 60, 69, 78, 87, 96, 105, 114]; // D6, D15, D24, etc.
+              const rateRows = [4, 13, 22, 31, 40, 49, 58, 67, 76, 85, 94, 103, 112]; // FG4, FG13, FG22, etc.
+              
+              pairRows.forEach((pairRow, index) => {
+                const row = results.data[pairRow - 1]; // Ajustar a índice 0-based
+                if (row && row[3]) {
+                  const cleanPair = row[3].replace(/[\p{Emoji}]/gu, '').trim();
+                  console.log(`Fila ${pairRow}: Columna D = ${cleanPair}`);
+                  if (cleanPair.includes('/')) {
+                    const [origin, destination] = cleanPair.split('/');
+                    const originCurrency = countryCodeToCurrency[origin.toUpperCase()] || origin;
+                    const destinationCurrency = countryCodeToCurrency[destination.toUpperCase()] || destination;
+                    const pair = `${originCurrency}/${destinationCurrency}`;
+                    
+                    // Obtener la tasa de la fila correspondiente en FG
+                    const rateRow = results.data[rateRows[index] - 1];
+                    if (rateRow && rateRow[5]) {
+                      let rate = rateRow[5].replace('$', '').replace(',', '.');
+                      rate = rate.replace(/\.(?=\d{3})/g, ''); // Quitar separador de miles
+                      const parsedRate = parseFloat(rate);
+                      if (!isNaN(parsedRate)) {
+                        exchangeRates[pair] = parsedRate;
+                        console.log(`Fila ${rateRows[index]}: Asignado Par ${pair}, Tasa: ${parsedRate}`);
+                      } else {
+                        console.error(`Error: Tasa no válida en la fila ${rateRows[index]}: ${rate}`);
+                      }
+                    } else {
+                      console.error(`Error: No se encontró tasa en FG (fila ${rateRows[index]})`);
+                    }
+                  } else {
+                    console.error(`Error: Par no válido en la fila ${pairRow}: ${cleanPair}`);
+                  }
+                } else {
+                  console.error(`Error: No se encontró par en la fila ${pairRow}`);
+                }
+              });
+              console.log('Pares de monedas extraídos:', exchangeRates);
+              setData(exchangeRates);
+            },
+            error: (err) => {
+              setError('Error al parsear el CSV: ' + err.message);
+              console.error('Error al parsear el CSV:', err);
+            }
+          });
+        }).catch(err => {
+          setError('Error al cargar el archivo CSV: ' + err.message);
+          console.error('Error al cargar el CSV:', err);
+        });
+      }, []);
+
+      // Manejar cálculo de conversión
+      const handleCalculate = () => {
+        setError('');
+        setResult(null);
+        if (!originCountry || !destinationCountry) {
+          setError('Por favor, selecciona los países de origen y destino.');
+          return;
+        }
+        if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+          setError('Por favor, ingresa un monto válido.');
+          return;
+        }
+        const amountValue = parseFloat(amount);
+        const pair = `${originCountry}/${destinationCountry}`;
+        if (!data || !data[pair]) {
+          setError(`No se encontró la tasa de cambio de ${currencyToCountry[originCountry]} a ${currencyToCountry[destinationCountry]}.`);
+          return;
+        }
+        const rate = data[pair];
+        const convertedAmount = (amountValue * rate).toFixed(2);
+        setResult({
+          amount: amountValue,
+          from: currencyToCountry[originCountry],
+          to: currencyToCountry[destinationCountry],
+          rate: rate.toFixed(4),
+          converted: convertedAmount,
+          currency: destinationCountry
+        });
+      };
+
+      // Mostrar estado de carga
+      if (!data) {
+        return (
+          <div className="flex justify-center items-center h-screen bg-gray-900 text-green-500">
+            <div className="text-xl font-semibold">Cargando tasas de cambio...</div>
+          </div>
+        );
+      }
+
+      // Renderizar interfaz principal
+      const countries = Object.keys(currencyToCountry).sort();
+      return (
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+          <div className="container p-6 rounded-lg w-full max-w-md">
+            <h1 className="text-2xl font-bold mb-4 text-center text-green-500">Blackbird Exchange — Concierge</h1>
+            {error && (
+              <div className="bg-red-900 text-red-300 p-2 rounded mb-4">{error}</div>
+            )}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-green-500 mb-1">País de Origen</label>
+              <select
+                value={originCountry}
+                onChange={(e) => setOriginCountry(e.target.value)}
+                className="w-full p-2 border border-green-500 rounded bg-gray-800 text-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">Selecciona el país de origen</option>
+                {countries.map((currency) => (
+                  <option key={currency} value={currency}>{currencyToCountry[currency]}</option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-green-500 mb-1">País de Destino</label>
+              <select
+                value={destinationCountry}
+                onChange={(e) => setDestinationCountry(e.target.value)}
+                className="w-full p-2 border border-green-500 rounded bg-gray-800 text-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">Selecciona el país de destino</option>
+                {countries.map((currency) => (
+                  <option key={currency} value={currency}>{currencyToCountry[currency]}</option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-green-500 mb-1">Monto</label>
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Ingresa el monto"
+                className="w-full p-2 border border-green-500 rounded bg-gray-800 text-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                min="0"
+                step="0.01"
+              />
+            </div>
+            <button
+              onClick={handleCalculate}
+              className="w-full bg-green-500 text-black p-2 rounded hover:bg-green-600 transition"
+            >
+              Calcular
+            </button>
+            {result && (
+              <div className="mt-4 p-4 bg-gray-800 rounded border border-green-500">
+                <p className="text-lg text-green-500">
+                  {result.amount} {result.from} ({originCountry}) ={' '}
+                  {result.converted} {result.to} ({destinationCountry})
+                </p>
+                <p className="text-sm text-green-300">
+                  Tasa de cambio: 1 {originCountry} = {result.rate} {destinationCountry}
+                </p>
+              </div>
+            )}
+            <footer className="mt-4 text-center text-green-500 text-sm">
+              <p>Contacta con nosotros:</p>
+              <a href="https://t.me/yourtelegram" target="_blank" className="underline">Telegram</a> | 
+              <a href="mailto:contact@blackbirdexchange.com" className="underline">Email</a> | 
+              <a href="https://blackbirdexchange.com" target="_blank" className="underline">Sitio Web</a>
+            </footer>
+          </div>
+        </div>
+      );
+    }
+
+    // Renderizar el componente
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<CurrencyCalculator />);
+  </script>
+</body>
+</html>
