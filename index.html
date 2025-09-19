@@ -1,454 +1,458 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Blackbird SR-71 — Calculadora de Remesas (Premium)</title>
-<meta name="description" content="Calculadora Blackbird SR-71 - lectura directa desde Google Sheet (Venta IMAD), calculo y pedido por Telegram." />
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Blackbird SR-71 — Calculadora Ultrapremium</title>
+<meta name="description" content="Blackbird SR-71 - Calculadora de remesas ultrapremium (Venta IMAD - CSV)"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --accent:#00b4ff;
-    --accent-dark:#0077cc;
-    --bg:#000; 
-    --panel:#0b0b0b;
-    --muted:#9fbfdc;
-    --glass: rgba(0,180,255,0.06);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%; margin:0; background:var(--bg); color:#e6f3ff; font-family:'Roboto Condensed',sans-serif}
-  .page { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:18px; }
-  .wrap { width:100%; max-width:1100px; border-radius:14px; position:relative; overflow:hidden; padding:26px; background: linear-gradient(180deg,#070708 0%, #0b0b0c 60%); box-shadow:0 20px 60px rgba(0,0,0,0.9); border:1px solid rgba(0,180,255,0.06) }
-  /* radar canvas behind */
-  canvas#bgRadar { position:absolute; inset:0; width:100%; height:100%; z-index:0; opacity:0.12; filter:blur(0.6px); }
-  header { position:relative; z-index:2; text-align:center; padding-bottom:12px }
-  .logo { width:120px; height:120px; object-fit:cover; border-radius:50%; border:3px solid var(--accent); box-shadow:0 8px 30px rgba(0,180,255,0.12); margin:0 auto 10px }
-  h1{ margin:0; font-family:'Orbitron', monospace; color:var(--accent); font-weight:700; letter-spacing:2px; font-size:26px; text-shadow:0 0 12px rgba(0,180,255,0.12) }
-  p.lead{ margin:6px 0 0; color:var(--muted); font-size:13px }
+:root{
+  --bg:#000000;
+  --panel:#050608;
+  --glass: rgba(255,255,255,0.03);
+  --accent:#00d0ff;
+  --accent-deep:#0077cc;
+  --muted:#9fbfdc;
+  --success:#7be07b;
+  --danger:#ff7b7b;
+  --shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
 
-  /* main */
-  .grid { display:grid; grid-template-columns: 1fr 420px; gap:20px; align-items:start; position:relative; z-index:2; margin-top:16px }
-  @media(max-width:940px){ .grid{ grid-template-columns: 1fr; } }
+/* reset */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,#000 0%,#030312 60%);color:#e9fbff;font-family:'Roboto Condensed',sans-serif}
+.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.shell{width:100%;max-width:1200px;border-radius:16px;position:relative;overflow:hidden;border:1px solid rgba(0,180,255,0.04);box-shadow:var(--shadow)}
+/* background canvas */
+canvas#radarBG{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:0.12;filter:blur(0.4px)}
 
-  /* left - calculator */
-  .panel { background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:18px; border:1px solid rgba(255,255,255,0.03); box-shadow: inset 0 1px 0 rgba(255,255,255,0.02) }
-  label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; font-weight:700 }
-  .row { display:flex; gap:12px; margin-bottom:12px; }
-  .col { flex:1 }
-  select,input { width:100%; padding:12px 13px; background:#080809; color:#e6f3ff; border-radius:8px; border:1px solid rgba(255,255,255,0.03); font-size:15px }
-  select:focus, input:focus { outline:none; box-shadow:0 6px 20px rgba(0,180,255,0.08); border-color:var(--accent) }
-  .muted { color:var(--muted); font-size:13px; margin-bottom:8px }
+/* header */
+.header{position:relative;z-index:2;padding:28px 34px;display:flex;gap:20px;align-items:center;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+.logo{width:92px;height:92px;border-radius:50%;border:3px solid var(--accent);box-shadow:0 10px 40px rgba(0,208,255,0.06);object-fit:cover}
+.brand{flex:1}
+.title{font-family:'Orbitron',monospace;color:var(--accent);font-size:20px;margin:0}
+.subtitle{color:var(--muted);font-size:13px;margin-top:6px}
 
-  .actions { display:flex; gap:12px; margin-top:10px }
-  .btn { flex:1; padding:12px 14px; border-radius:10px; cursor:pointer; font-weight:800; letter-spacing:0.6px; border:none }
-  .btn-primary { background:linear-gradient(90deg,var(--accent),var(--accent-dark)); color:#02101a; box-shadow:0 8px 26px rgba(0,180,255,0.14); }
-  .btn-outline { background:transparent; border:1px solid rgba(255,255,255,0.04); color:var(--muted) }
-  .btn-primary:active{ transform:translateY(2px) }
+/* body grid */
+.body{display:grid;grid-template-columns:1fr 420px;gap:22px;padding:26px;position:relative;z-index:2}
+@media(max-width:980px){ .body{grid-template-columns:1fr} }
 
-  #resultado { margin-top:14px; padding:12px; border-radius:10px; background:var(--glass); border:1px solid rgba(0,180,255,0.08); font-weight:700; color:#e9fbff; min-height:54px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap }
-  .res-left { font-size:15px; color:#e9fbff }
-  .res-right { font-family:'Orbitron',monospace; color:var(--accent); font-size:20px }
+/* card / panel style */
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.006));border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.02)}
+label{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;font-weight:700}
 
-  /* right - table / info */
-  .side { padding:14px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); border:1px solid rgba(255,255,255,0.02) }
-  .side h3 { margin:0 0 8px 0; color:var(--accent); font-family:'Orbitron' }
-  table { width:100%; border-collapse:collapse; font-size:13px; color:#dff4ff }
-  th,td { padding:8px 10px; text-align:left }
-  th { background:linear-gradient(90deg,var(--accent),var(--accent-dark)); color:#02101a; font-weight:800; font-size:12px }
-  tbody tr:hover { background:rgba(0,180,255,0.03) }
+/* inputs */
+.row{display:flex;gap:12px}
+.col{flex:1}
+select,input{width:100%;padding:12px 14px;border-radius:10px;background:rgba(10,10,12,0.6);border:1px solid rgba(255,255,255,0.03);color:#eafcff;font-size:15px}
+select:focus,input:focus{outline:none;box-shadow:0 8px 26px rgba(0,208,255,0.06);border-color:var(--accent)}
+.small{font-size:13px;color:var(--muted);margin-top:8px}
 
-  footer { margin-top:18px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap }
-  .small { color:var(--muted); font-size:12px }
+/* buttons */
+.actions{display:flex;gap:12px;margin-top:14px}
+.btn{flex:1;padding:12px 14px;border-radius:12px;border:none;cursor:pointer;font-weight:800;letter-spacing:0.6px}
+.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-deep));color:#02131a;box-shadow:0 10px 30px rgba(0,208,255,0.12), inset 0 1px 0 rgba(255,255,255,0.06)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+.btn-primary:active{transform:translateY(2px)}
+.btn-telegram{background:linear-gradient(90deg,#2bd36b,#1ea64b);color:#02110a;}
 
-  /* subtle animations */
-  .pulse { animation:pulse 2.6s infinite; }
-  @keyframes pulse { 0%{ transform:scale(1) } 50%{ transform:scale(1.005) } 100%{ transform:scale(1) } }
+/* result box */
+.result{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(0,180,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(0,180,255,0.04)}
+.res-left{font-size:14px;color:#eafcff}
+.res-right{font-family:'Orbitron',monospace;color:var(--accent);font-size:22px}
 
-  /* mobile tweaks */
-  @media(max-width:520px){
-    h1{ font-size:20px }
-    .res-right { font-size:18px }
-    .grid{ gap:14px }
-  }
+/* right side: table */
+.side-title{font-family:'Orbitron',monospace;color:var(--accent);font-size:15px;margin-bottom:10px}
+.table-wrap{max-height:520px;overflow:auto;margin-top:8px}
+table{width:100%;border-collapse:collapse;color:#eafcff}
+th,td{padding:10px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.03)}
+th{background:linear-gradient(90deg,var(--accent),var(--accent-deep));color:#02131a;font-weight:800;font-size:12px}
+tbody tr:hover{background:rgba(0,208,255,0.02);transform:translateZ(0)}
+.td-right{text-align:right}
+
+/* footer */
+.footer{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-top:1px solid rgba(255,255,255,0.02);font-size:13px;color:var(--muted)}
+.footer .links a{color:var(--accent);text-decoration:none;margin-left:8px;font-size:18px}
+
+/* glow animations */
+.glow{box-shadow:0 6px 30px rgba(0,208,255,0.06)}
+.pulse{animation:pulseAnim 1.1s ease-out}
+@keyframes pulseAnim{0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+
+/* micro UX */
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+
+/* make it extra chula: 3D btn hover */
+.btn-primary:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 22px 60px rgba(0,208,255,0.16)}
+.btn-telegram:hover{transform:translateY(-4px);box-shadow:0 22px 60px rgba(34,200,120,0.12)}
+
+/* mobile tweaks */
+@media(max-width:520px){
+  .header{padding:16px}
+  .body{padding:16px}
+  .res-right{font-size:18px}
+}
 </style>
 </head>
 <body>
 <div class="page">
-  <div class="wrap">
-    <canvas id="bgRadar"></canvas>
+  <div class="shell">
+    <canvas id="radarBG"></canvas>
 
-    <header>
-      <img src="logo blackbird.png" alt="Blackbird logo" class="logo" onerror="this.onerror=null;this.src='https://via.placeholder.com/120/00b4ff/071017?text=SR-71'">
-      <h1>Blackbird SR-71 — Remesas (Premium)</h1>
-      <p class="lead">Rápido, móvil y seguro — selecciona país origen y destino, ingresa monto en moneda local y calcula al instante.</p>
-    </header>
+    <div class="header">
+      <img src="logo blackbird.png" alt="logo" class="logo" onerror="this.onerror=null;this.src='https://via.placeholder.com/92/00d0ff/071017?text=SR-71'">
+      <div class="brand">
+        <div class="title">BLACKBIRD SR-71 — REMESAS</div>
+        <div class="subtitle">Experiencia Mach-3 • Premium • Móvil</div>
+      </div>
+      <div style="text-align:right;color:var(--muted);font-size:12px">v2.0 ULTRA</div>
+    </div>
 
-    <div class="grid">
+    <div class="body">
       <!-- LEFT: calculator -->
-      <div class="panel">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
           <div>
-            <div style="font-size:13px;color:var(--muted);font-weight:800">Calculadora Mach 3</div>
-            <div style="font-size:12px;color:#9fbfdc;margin-top:2px">Basado en tasas VENTA IMAD (sheet)</div>
+            <div style="font-weight:800;color:var(--accent);font-size:13px">Calculadora Blackbird</div>
+            <div class="note">Selecciona país origen y país destino; usa "Calcular" para obtener el monto recibido.</div>
           </div>
-          <div style="font-size:12px;color:var(--muted)">v1.0</div>
+          <div style="font-size:12px;color:var(--muted)">Diseño: Lockheed labs</div>
         </div>
 
-        <div class="muted">Origen → Destino</div>
-        <div class="row">
-          <div class="col">
-            <label for="selOrigen">País de Origen</label>
-            <select id="selOrigen"><option value="">Cargando...</option></select>
-          </div>
-          <div style="width:12px"></div>
-          <div class="col">
-            <label for="selDestino">País de Destino</label>
-            <select id="selDestino"><option value="">Cargando...</option></select>
-          </div>
+        <div style="margin-top:8px">
+          <label for="selOrigen">País de Origen</label>
+          <select id="selOrigen"><option value="">Cargando países...</option></select>
         </div>
 
-        <div style="margin-top:6px">
-          <label for="monto">Monto (moneda local)</label>
-          <input id="monto" type="number" step="0.01" placeholder="Ej. 1000" />
+        <div style="margin-top:12px">
+          <label for="selDestino">País de Destino</label>
+          <select id="selDestino"><option value="">Cargando países...</option></select>
+        </div>
+
+        <div style="margin-top:12px">
+          <label for="monto">Monto (moneda local del origen)</label>
+          <input id="monto" type="number" placeholder="Ej. 1000.00" />
         </div>
 
         <div class="actions">
-          <button class="btn btn-primary" id="btnCalcular">Calcular</button>
-          <button class="btn btn-outline" id="btnTelegram">Pedir por Telegram</button>
+          <button id="btnCalcular" class="btn btn-primary glow">CALCULAR</button>
+          <button id="btnPedido" class="btn btn-telegram">PEDIR POR TELEGRAM</button>
         </div>
 
-        <div id="resultado">
-          <div class="res-left">Resultado aparecerá aquí</div>
+        <div id="resultado" class="result">
+          <div class="res-left">Aquí verás cuánto recibirá el destinatario</div>
           <div class="res-right">--</div>
         </div>
 
-        <div style="margin-top:12px;color:var(--muted);font-size:13px">Si tu sheet está en modo lectura pública, la web podrá leer las tasas; ocúpalo en modo solo lectura para mayor seguridad.</div>
+        <div class="small" style="margin-top:10px">Importante: tu sheet debe estar publicado en la web o con acceso de solo lectura para que la calculadora pueda leer tasas.</div>
       </div>
 
       <!-- RIGHT: table -->
-      <aside class="side">
-        <h3>Tasas (Venta IMAD)</h3>
-        <div style="max-height:420px;overflow:auto">
+      <aside class="card">
+        <div class="side-title">Tasas — Venta IMAD</div>
+        <div class="table-wrap">
           <table id="ratesTable">
-            <thead><tr><th>Origen</th><th>Destino</th><th style="text-align:right">Tasa</th></tr></thead>
-            <tbody><tr><td colspan="3" style="color:var(--muted)">Cargando...</td></tr></tbody>
+            <thead><tr><th>Origen</th><th>Destino</th><th class="td-right">Tasa</th></tr></thead>
+            <tbody><tr><td colspan="3" style="color:var(--muted);padding:18px">Cargando tasas...</td></tr></tbody>
           </table>
         </div>
 
-        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:space-between">
-          <div class="small">Contacto / Redes</div>
-          <div style="display:flex;gap:8px">
-            <a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank" style="color:var(--accent)">✈️</a>
-            <a href="https://www.instagram.com/servicios_blackbird" target="_blank" style="color:var(--accent)">📸</a>
-            <a href="https://www.tiktok.com/@remesasblackbird" target="_blank" style="color:var(--accent)">🎵</a>
-          </div>
+        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+          <div class="note">Contacto</div>
+          <div class="links"><a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank">✈️</a><a href="https://www.instagram.com/servicios_blackbird" target="_blank">📸</a><a href="https://www.tiktok.com/@remesasblackbird" target="_blank">🎵</a></div>
         </div>
       </aside>
     </div>
 
-    <footer>
-      <div class="small">© 2025 Blackbird SR-71 — Experiencia Mach 3</div>
-      <div class="small">Hecho para móviles • Fácil de usar</div>
-    </footer>
+    <div class="footer">
+      <div>© 2025 Blackbird SR-71 — Experiencia Mach-3</div>
+      <div style="color:var(--muted);font-size:12px">Hecho para móviles • Interfaz premium</div>
+    </div>
   </div>
 </div>
 
-<!-- PapaParse CDN -->
+<!-- PapaParse -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
 <script>
-/* ===========================
-   CONFIG: Cambia aquí si quieres
-   =========================== */
+/* ============ CONFIG ============ */
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3yMHp1HF-2JS1j0vNcp_snCjtTaWuF6y8AldyFGxbWvQrmhvisnagcBC1pWiskalafvz0EVY8svR6/pub?gid=983978085&single=true&output=csv';
-const TELEGRAM_LINK = 'https://t.me/+i02VPMg23TNiOWJh'; // tu chat (preserva + si corresponde)
-const RATE_ROW_MARKER = 'Venta IMAD'; // columna J indica esta etiqueta en la fila deseada
-/* =========================== */
+const TELEGRAM_LINK = 'https://t.me/+i02VPMg23TNiOWJh';
+const RATE_ROW_MARKER = 'Venta IMAD'; // matches column J value in the rows containing the price
+/* ================================ */
 
-let rates = {};            // key: "Origen|||Destino" -> numeric price
-let countrySet = new Set(); // unique countries (strings as appear in column D pairs)
+let rates = {};          // key: "From|||To" -> number
+let countries = new Set(); // unique country names
 
-/* helper: robust price parser */
+/* robust price parser */
 function parsePrice(raw){
   if(raw === null || raw === undefined) return NaN;
   let s = String(raw).trim();
   if(s === '') return NaN;
-  // remove currency symbols and spaces, but keep digits, dots and commas
-  s = s.replace(/[^\d.,\-]/g,'').trim();
-  // If contains both comma and dot, assume dot is decimal and commas are thousands -> remove commas
+  // remove currency symbols but keep digits, dots and commas and minus
+  s = s.replace(/[^\d\.,\-]/g,'').trim();
+  // if both comma and dot => assume dot decimal, commas thousands
   if(s.indexOf(',') !== -1 && s.indexOf('.') !== -1){
     s = s.replace(/,/g,'');
   } else if(s.indexOf(',') !== -1 && s.indexOf('.') === -1){
-    // only commas -> assume comma is decimal separator
+    // only comma => decimal separator
     s = s.replace(/,/g,'.');
   }
-  // remove leading/trailing non-numeric leftover
+  // remove stray non-numeric
   s = s.replace(/^[^0-9\-]+|[^0-9]+$/g,'');
   const n = parseFloat(s);
   return isNaN(n) ? NaN : n;
 }
 
-/* helper: split pair strings like "Chile - USA" or "Chile - USA " or "Chile a USA" */
+/* split various pair formats */
 function splitPair(pairRaw){
   if(!pairRaw) return null;
-  // Normalize common separators to " - "
-  const normalized = pairRaw.trim().replace(/\s+/g,' ');
-  // Split by variations: " - ", "-", "–", "—", " a ", " to "
-  const parts = normalized.split(/\s*(?:[-–—]|(?:\sa\s)|(?:\sto\s))\s*/i).map(s=>s.trim()).filter(Boolean);
-  if(parts.length >= 2) {
-    // join only first two (ignore extra)
-    return [parts[0], parts[1]];
-  }
-  // If can't split, maybe format "Chile/USA" etc.
-  const alt = normalized.split(/[\/\\]/).map(s=>s.trim()).filter(Boolean);
-  if(alt.length>=2) return [alt[0], alt[1]];
+  let p = String(pairRaw).trim();
+  // normalize common separators
+  p = p.replace(/\s+/g,' ');
+  // separators: '-', '–', '—', ' a ', ' to ', '/', ' to '
+  const parts = p.split(/\s*(?:[-–—\/]|(?:\sa\s)|(?:\sto\s))\s*/i).map(x=>x.trim()).filter(Boolean);
+  if(parts.length >= 2) return [parts[0], parts[1]];
+  // fallback split by whitespace if two words only (rare)
+  const words = p.split(' ').filter(Boolean);
+  if(words.length===2) return [words[0], words[1]];
   return null;
 }
 
-/* formatting numbers nicely */
-function fmt(n){
+/* format number nicely */
+function formatNumber(n){
   if(isNaN(n)) return '--';
-  // show with 2 decimals and thousands separators
   return Number(n).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 
 /* load CSV and parse */
-async function loadRatesFromSheet(){
+async function loadSheet(){
   try{
     const res = await fetch(CSV_URL);
-    if(!res.ok) throw new Error('No se pudo cargar CSV (status ' + res.status + ')');
-    const text = await res.text();
-    Papa.parse(text, {
-      header: false,
-      skipEmptyLines: true,
-      complete: function(results){
-        processRows(results.data);
-      }
-    });
+    if(!res.ok) throw new Error('CSV fetch failed ' + res.status);
+    const txt = await res.text();
+    Papa.parse(txt, { header:false, skipEmptyLines:true, complete: (resu)=> processRows(resu.data) });
   }catch(e){
-    console.error('Error fetching CSV:', e);
-    // fallback example rates if anything falla
+    console.error('Error loading sheet:', e);
+    // fallback demo values if sheet fails
     rates = {
       'Chile|||USA': 852.75,
       'Chile|||Mexico': 0.0171,
-      'Chile|||Venezuela': 0.2371
+      'Chile|||Venezuela': 0.2371,
+      'Spain|||Chile': 0.0012
     };
-    // ensure country set
-    countrySet = new Set(['Chile','USA','Mexico','Venezuela']);
+    countries = new Set(['Chile','USA','Mexico','Venezuela','Spain']);
     populateSelects();
-    renderRatesTable();
-    showStatus('CARGA FALLIDA. Usando tasas de ejemplo', true);
+    renderTable();
+    showToast('No se pudo leer el sheet; usando valores de ejemplo', true);
   }
 }
 
-/* process parsed rows */
+/* process rows: collect ALL pairs for country list, and find Venta IMAD rows for rates */
 function processRows(rows){
   rates = {};
-  countrySet = new Set();
-  // rows is array of arrays
-  rows.forEach((row, idx) => {
-    // col J = index 9
+  countries = new Set();
+  // First pass: collect pairs in column D for countries list (even if used in other rows)
+  rows.forEach(row=>{
+    const rawPair = row[3] ? String(row[3]).trim() : '';
+    const parsed = splitPair(rawPair);
+    if(parsed){
+      countries.add(parsed[0]);
+      countries.add(parsed[1]);
+    }
+  });
+  // Second pass: find rows where column J == 'Venta IMAD' and take price from F or G
+  rows.forEach(row=>{
     const colJ = row[9] ? String(row[9]).trim() : '';
     if(colJ && colJ.toLowerCase() === RATE_ROW_MARKER.toLowerCase()){
-      // get pair from col D index 3, price from F (5) or G (6)
       const rawPair = row[3] ? String(row[3]).trim() : '';
-      const priceCandidateF = row[5] !== undefined ? String(row[5]).trim() : '';
-      const priceCandidateG = row[6] !== undefined ? String(row[6]).trim() : '';
-      const pF = parsePrice(priceCandidateF);
-      const pG = parsePrice(priceCandidateG);
-      const price = !isNaN(pF) && pF !== 0 ? pF : (!isNaN(pG) && pG !== 0 ? pG : NaN);
-      if(rawPair && !isNaN(price)){
-        const pairParts = splitPair(rawPair);
-        if(pairParts && pairParts.length >= 2){
-          const from = pairParts[0];
-          const to = pairParts[1];
-          const key = `${from}|||${to}`;
+      const parsed = splitPair(rawPair);
+      if(parsed){
+        const priceF = parsePrice(row[5]);
+        const priceG = parsePrice(row[6]);
+        const price = (!isNaN(priceF) && priceF !== 0) ? priceF : ((!isNaN(priceG) && priceG !== 0) ? priceG : NaN);
+        if(!isNaN(price)){
+          const key = `${parsed[0]}|||${parsed[1]}`;
           rates[key] = price;
-          countrySet.add(from);
-          countrySet.add(to);
-        } else {
-          // If pair not splittable, try to parse alternative separators
-          // fallback: store full rawPair as single key (not ideal)
-          // ignore for now
         }
       }
     }
   });
 
+  // If countries empty (weird sheet), fallback to sample
+  if(countries.size === 0){
+    countries = new Set(['Chile','USA','Mexico','Venezuela','Spain','Argentina','Colombia','Peru','Ecuador','Brazil','Uruguay','Canada']);
+    showToast('No se detectaron pares en columna D — usando lista ejemplo', true);
+  }
+
+  // If no rates found, warn but still populate countries
   if(Object.keys(rates).length === 0){
-    // fallback example rates if sheet parsing returns none
-    rates = {
-      'Chile|||USA': 852.75,
-      'Chile|||Mexico': 0.0171,
-      'Chile|||Venezuela': 0.2371
-    };
-    countrySet = new Set(['Chile','USA','Mexico','Venezuela']);
-    showStatus('No se encontraron filas "Venta IMAD" válidas. Usando ejemplo de fallback', true);
+    showToast('No se detectaron filas "Venta IMAD" con precio válido. Asegúrate que la fila tenga "Venta IMAD" en columna J y precio en F o G.', true);
   } else {
-    showStatus('Tasas cargadas correctamente', false);
+    showToast('Tasas cargadas con éxito', false);
   }
 
   populateSelects();
-  renderRatesTable();
+  renderTable();
 }
 
-/* populate selects */
+/* fill selects */
 function populateSelects(){
-  const sO = document.getElementById('selOrigen');
-  const sD = document.getElementById('selDestino');
-  sO.innerHTML = '<option value="">Selecciona...</option>';
-  sD.innerHTML = '<option value="">Selecciona...</option>';
-  // sort alphabetically
-  const arr = Array.from(countrySet).sort((a,b)=>a.localeCompare(b,'es',{sensitivity:'base'}));
+  const o = document.getElementById('selOrigen');
+  const d = document.getElementById('selDestino');
+  o.innerHTML = '<option value="">Selecciona país...</option>';
+  d.innerHTML = '<option value="">Selecciona país...</option>';
+  const arr = Array.from(countries).sort((a,b)=>a.localeCompare(b,'es',{sensitivity:'base'}));
   arr.forEach(c=>{
-    const optO = document.createElement('option'); optO.value = c; optO.textContent = c;
-    const optD = optO.cloneNode(true);
-    sO.appendChild(optO);
-    sD.appendChild(optD);
+    const opt = document.createElement('option'); opt.value = c; opt.textContent = c;
+    o.appendChild(opt);
+    d.appendChild(opt.cloneNode(true));
   });
 }
 
-/* render rates table */
-function renderRatesTable(){
+/* render table */
+function renderTable(){
   const tbody = document.querySelector('#ratesTable tbody');
   tbody.innerHTML = '';
   const keys = Object.keys(rates).sort();
   if(keys.length === 0){
-    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--muted)">No hay tasas cargadas</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--muted);padding:14px">No se encontraron tasas "Venta IMAD" en el sheet</td></tr>';
     return;
   }
   keys.forEach(k=>{
-    const [from,to] = k.split('|||');
+    const [f,t] = k.split('|||');
     const tr = document.createElement('tr');
-    const td1 = document.createElement('td'); td1.textContent = from;
-    const td2 = document.createElement('td'); td2.textContent = to;
-    const td3 = document.createElement('td'); td3.style.textAlign='right'; td3.textContent = fmt(rates[k]);
-    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
-    tbody.appendChild(tr);
+    const td1 = document.createElement('td'); td1.textContent = f;
+    const td2 = document.createElement('td'); td2.textContent = t;
+    const td3 = document.createElement('td'); td3.className = 'td-right'; td3.textContent = formatNumber(rates[k]);
+    tr.append(td1,td2,td3); tbody.appendChild(tr);
   });
 }
 
-/* calculate */
-function calcular(){
+/* calculate when press button */
+function onCalculate(){
   const origen = document.getElementById('selOrigen').value;
   const destino = document.getElementById('selDestino').value;
   const montoRaw = document.getElementById('monto').value;
-  const resBox = document.getElementById('resultado');
+  const resLeft = document.querySelector('.res-left');
+  const resRight = document.querySelector('.res-right');
+
   if(!origen || !destino){
-    showResultError('Selecciona origen y destino');
-    return;
+    resLeft.innerHTML = `<span style="color:var(--danger)">Selecciona origen y destino</span>`; resRight.innerText = '--'; return;
   }
   if(origen === destino){
-    showResultError('Origen y destino deben ser diferentes');
-    return;
+    resLeft.innerHTML = `<span style="color:var(--danger)">Origen y destino deben ser distintos</span>`; resRight.innerText = '--'; return;
   }
   const monto = Number(montoRaw);
   if(isNaN(monto) || monto <= 0){
-    showResultError('Ingresa monto válido (>0)');
-    return;
+    resLeft.innerHTML = `<span style="color:var(--danger)">Ingresa monto válido (>0)</span>`; resRight.innerText = '--'; return;
   }
   const key = `${origen}|||${destino}`;
   const tasa = rates[key];
   if(tasa === undefined){
-    showResultError('Ruta no disponible para este par');
-    return;
+    resLeft.innerHTML = `<span style="color:var(--danger)">Ruta no disponible (sin tasa "Venta IMAD")</span>`; resRight.innerText = '--'; return;
   }
+
   const recibe = monto * tasa;
-  // display nicely
-  document.querySelector('#resultado .res-left').innerHTML = `${monto.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})} (${origen}) → recibe`;
-  document.querySelector('#resultado .res-right').innerText = `${fmt(recibe)} (${destino})`;
-  // small visual pulse
+  // animate count-up on resRight
+  animateCountUp(0, recibe, 700, (v)=>{
+    resRight.innerText = formatNumber(v);
+  });
+  resLeft.innerHTML = `${monto.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} (${origen}) → recibe:`;
+  // small pulse
   const box = document.getElementById('resultado');
   box.classList.add('pulse');
-  setTimeout(()=>box.classList.remove('pulse'),700);
+  setTimeout(()=>box.classList.remove('pulse'),900);
 
-  // store last calc for telegram
-  window._lastCalc = {origen, destino, monto, recibe, tasa};
+  // keep last
+  window._last = {origen,destino,monto,recibe,tasa};
 }
 
-/* show error in result */
-function showResultError(msg){
-  document.querySelector('#resultado .res-left').innerHTML = `<span style="color:#ff8a8a">${msg}</span>`;
-  document.querySelector('#resultado .res-right').innerText = '--';
+/* animate count up */
+function animateCountUp(from, to, ms, onFrame){
+  const start = performance.now();
+  function frame(now){
+    const t = Math.min(1, (now - start)/ms);
+    // easeOutQuad
+    const ease = 1 - (1 - t)*(1 - t);
+    const current = from + (to - from) * ease;
+    onFrame(current);
+    if(t < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 }
 
 /* telegram request */
-function pedirTelegram(){
-  const last = window._lastCalc;
-  const selOrigen = document.getElementById('selOrigen').value;
-  const selDestino = document.getElementById('selDestino').value;
-  const monto = document.getElementById('monto').value;
-  if(!selOrigen || !selDestino || !monto){
+function onPedido(){
+  const origen = document.getElementById('selOrigen').value;
+  const destino = document.getElementById('selDestino').value;
+  const montoRaw = document.getElementById('monto').value;
+  if(!origen || !destino || !montoRaw){
     alert('Completa origen, destino y monto antes de pedir el servicio.');
     return;
   }
-  // prefer using last computed receive value, else compute now
+  // use last compute if matches
   let recibeText = '';
-  if(last && last.origen === selOrigen && last.destino === selDestino && Number(last.monto) === Number(monto)){
-    recibeText = fmt(last.recibe);
+  if(window._last && window._last.origen === origen && window._last.destino === destino && String(window._last.monto) === String(Number(montoRaw))){
+    recibeText = formatNumber(window._last.recibe);
   } else {
-    // attempt compute ad-hoc
-    const key = `${selOrigen}|||${selDestino}`;
+    // compute on the fly
+    const key = `${origen}|||${destino}`;
     const tasa = rates[key];
     if(!tasa){ alert('Ruta no disponible'); return; }
-    const recibe = Number(monto) * tasa;
-    recibeText = fmt(recibe);
+    recibeText = formatNumber(Number(montoRaw) * tasa);
   }
-  const msg = `Hola, quiero hacer el cambio:\nEnviar: ${Number(monto).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} (${selOrigen})\nRecibir: ${recibeText} (${selDestino})\nRuta: ${selOrigen} → ${selDestino}\nTasa (Venta IMAD): ${rates[`${selOrigen}|||${selDestino}`]}\nGracias.`;
-  // open telegram (uses your chat link)
-  const href = TELEGRAM_LINK + '?text=' + encodeURIComponent(msg);
-  window.open(href, '_blank');
+  const tasaVal = rates[`${origen}|||${destino}`] !== undefined ? rates[`${origen}|||${destino}`] : 'N/A';
+  const msg = `Hola, quiero hacer el cambio:\nEnviar: ${Number(montoRaw).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})} (${origen})\nRecibir: ${recibeText} (${destino})\nRuta: ${origen} → ${destino}\nTasa (Venta IMAD): ${tasaVal}\nGracias.`;
+  window.open(TELEGRAM_LINK + '?text=' + encodeURIComponent(msg), '_blank');
 }
 
-/* simple status / toasts (console-like on top) */
-function showStatus(msg, isError=false){
-  console.log('STATUS:', msg);
-  // optional: small browser toast? For now simply log and leave table updated
-}
+/* small toast to console */
+function showToast(txt, warn=false){ console.log(warn ? 'WARN: ' + txt : 'OK: ' + txt); }
 
-/* radar canvas background (subtle) */
-(function radarAnim(){
-  const canvas = document.getElementById('bgRadar');
+/* subtle radar background */
+(function radar(){
+  const canvas = document.getElementById('radarBG');
   if(!canvas) return;
   const ctx = canvas.getContext('2d');
-  function resize(){ canvas.width = canvas.offsetWidth * devicePixelRatio; canvas.height = canvas.offsetHeight * devicePixelRatio; canvas.style.width = canvas.offsetWidth + 'px'; canvas.style.height = canvas.offsetHeight + 'px'; ctx.scale(devicePixelRatio, devicePixelRatio); }
-  resize(); window.addEventListener('resize', ()=>{ resize(); });
+  function fit(){ const dpr = devicePixelRatio || 1; canvas.width = canvas.offsetWidth * dpr; canvas.height = canvas.offsetHeight * dpr; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  fit(); window.addEventListener('resize', fit);
   let t=0;
   function draw(){
-    const w = canvas.offsetWidth;
-    const h = canvas.offsetHeight;
+    const w = canvas.offsetWidth, h = canvas.offsetHeight;
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    // center radial lines
-    const cx = w * 0.15; const cy = h * 0.2;
-    // animated sweep
+    const cx = w * 0.16, cy = h * 0.18;
+    // rings
     for(let i=0;i<6;i++){
-      const alpha = 0.03 + (i*0.01);
       ctx.beginPath();
-      ctx.strokeStyle = `rgba(0,180,255,${alpha})`;
+      ctx.strokeStyle = `rgba(0,208,255,${0.02 + i*0.005})`;
       ctx.lineWidth = 1;
-      const r = 60 + i*60 + (t%120);
+      const r = 40 + i*70 + (t%80);
       ctx.arc(cx, cy, r, 0, Math.PI*2);
       ctx.stroke();
     }
-    // sweep sector
+    // sweeping wedge
+    const ang = (t/30)%360 * Math.PI/180;
     ctx.beginPath();
-    const ang = (t/20)%360 * Math.PI/180;
     ctx.moveTo(cx,cy);
-    ctx.arc(cx,cy,220, ang - 0.25, ang + 0.25);
+    ctx.arc(cx,cy,260, ang-0.22, ang+0.22);
     ctx.closePath();
-    ctx.fillStyle = 'rgba(0,180,255,0.025)';
+    ctx.fillStyle = 'rgba(0,208,255,0.02)';
     ctx.fill();
-    t += 0.9;
+    t += 1.1;
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
 })();
 
 /* attach events */
-document.getElementById('btnCalcular').addEventListener('click', calcular);
-document.getElementById('btnTelegram').addEventListener('click', pedirTelegram);
+document.getElementById('btnCalcular').addEventListener('click', onCalculate);
+document.getElementById('btnPedido').addEventListener('click', onPedido);
 
-/* init */
-loadRatesFromSheet();
+/* init load */
+loadSheet();
 </script>
 </body>
 </html>
+
