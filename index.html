@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Servicios Blackbird: Calculadora de remesas profesional para Chile, Argentina, Perú, Colombia, México, España, USA, Venezuela, Ecuador, Brasil, Uruguay y Canadá. Tasas IMAD al público desde CSV.">
+    <meta name="description" content="Servicios Blackbird: Calculadora de remesas profesional. Tasas VENTA IMAD para todas las combinaciones de países. Resultado en moneda destino con precio al público.">
     <meta name="keywords" content="remesas, cambio moneda, tasas conversión, Blackbird, Chile, Argentina, Perú, Colombia, México, España, USA, Venezuela, Ecuador, Brasil, Uruguay, Canadá">
     <title>🛩️ Servicios Blackbird - Calculadora de Remesas</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
@@ -18,157 +18,158 @@
             overflow-x: hidden; 
         }
         .container { 
-            max-width: 1000px; 
-            margin: 30px auto; 
+            max-width: 1100px; 
+            margin: 40px auto; 
             background: linear-gradient(145deg, #0d1725, #1a2e44); 
-            padding: 40px; 
-            border-radius: 10px; 
-            box-shadow: 0 10px 40px rgba(0, 150, 255, 0.3); 
-            border: 2px solid rgba(0, 180, 255, 0.2); 
+            padding: 50px; 
+            border-radius: 12px; 
+            box-shadow: 0 15px 50px rgba(0, 150, 255, 0.4); 
+            border: 2px solid rgba(0, 180, 255, 0.25); 
             position: relative; 
             overflow: hidden; 
         }
         .container::before { 
             content: ''; 
             position: absolute; 
-            top: -50%; left: -50%; 
-            width: 200%; height: 200%; 
-            background: radial-gradient(circle, rgba(0, 180, 255, 0.1) 0%, transparent 70%); 
-            animation: pulse 15s infinite; 
+            top: -60%; left: -60%; 
+            width: 220%; height: 220%; 
+            background: radial-gradient(circle, rgba(0, 180, 255, 0.15) 0%, transparent 70%); 
+            animation: pulse 20s infinite; 
         }
         @keyframes pulse { 
-            0% { transform: scale(0.5); opacity: 0.5; }
-            100% { transform: scale(1.5); opacity: 0; }
+            0% { transform: scale(0.5); opacity: 0.6; }
+            100% { transform: scale(1.7); opacity: 0; }
         }
         header { 
             text-align: center; 
-            margin-bottom: 40px; 
+            margin-bottom: 50px; 
         }
         .logo { 
-            width: 150px; 
+            width: 180px; 
             height: auto; 
             border-radius: 50%; 
-            margin-bottom: 20px; 
-            box-shadow: 0 8px 20px rgba(0, 180, 255, 0.4); 
-            border: 2px solid #00b4ff; 
+            margin-bottom: 25px; 
+            box-shadow: 0 10px 25px rgba(0, 180, 255, 0.5); 
+            border: 3px solid #00b4ff; 
         }
         h1 { 
             color: #00b4ff; 
             font-family: 'Orbitron', monospace; 
-            font-size: 3em; 
-            margin: 10px 0; 
-            letter-spacing: 2px; 
-            text-shadow: 0 0 10px rgba(0, 180, 255, 0.5); 
+            font-size: 3.5em; 
+            margin: 15px 0; 
+            letter-spacing: 3px; 
+            text-shadow: 0 0 15px rgba(0, 180, 255, 0.7); 
         }
         .subtitle { 
-            font-size: 1.1em; 
+            font-size: 1.2em; 
             color: #a0c0e0; 
-            margin-bottom: 25px; 
+            margin-bottom: 30px; 
             font-weight: 400; 
         }
         .calculator-section { 
             background: linear-gradient(135deg, #14273a, #1f3c5a); 
-            padding: 30px; 
-            border-radius: 8px; 
-            margin-bottom: 25px; 
-            border: 1px solid rgba(0, 180, 255, 0.3); 
+            padding: 35px; 
+            border-radius: 10px; 
+            margin-bottom: 30px; 
+            border: 1px solid rgba(0, 180, 255, 0.35); 
         }
         .calculator-section h2 { 
             color: #00b4ff; 
             text-align: center; 
             font-family: 'Orbitron', monospace; 
-            margin-bottom: 25px; 
-            font-size: 1.8em; 
+            margin-bottom: 30px; 
+            font-size: 2em; 
         }
         .form-row { 
             display: flex; 
-            gap: 20px; 
-            margin-bottom: 20px; 
+            gap: 25px; 
+            margin-bottom: 25px; 
         }
         .form-group { 
             flex: 1; 
         }
         label { 
             display: block; 
-            margin-bottom: 8px; 
+            margin-bottom: 10px; 
             color: #d0e0f0; 
             font-weight: 600; 
             text-transform: uppercase; 
-            font-size: 0.9em; 
+            font-size: 1em; 
         }
         select, input { 
             width: 100%; 
-            padding: 12px; 
-            border-radius: 5px; 
-            border: 1px solid rgba(0, 180, 255, 0.3); 
-            background: rgba(255, 255, 255, 0.05); 
+            padding: 15px; 
+            border-radius: 6px; 
+            border: 1px solid rgba(0, 180, 255, 0.35); 
+            background: rgba(255, 255, 255, 0.07); 
             color: #d0e0f0; 
-            font-size: 1em; 
+            font-size: 1.1em; 
             box-sizing: border-box; 
-            transition: border-color 0.3s; 
+            transition: border-color 0.3s, box-shadow 0.3s; 
         }
         select:focus, input:focus { 
             border-color: #00b4ff; 
+            box-shadow: 0 0 10px rgba(0, 180, 255, 0.3); 
             outline: none; 
         }
         select option { background: #1a2e44; color: #d0e0f0; }
         button { 
             width: 100%; 
-            padding: 15px; 
+            padding: 18px; 
             background: linear-gradient(135deg, #00b4ff, #0077cc); 
             color: #0d1725; 
             border: none; 
-            border-radius: 5px; 
-            font-size: 1.2em; 
+            border-radius: 6px; 
+            font-size: 1.3em; 
             font-weight: 700; 
             font-family: 'Orbitron', monospace; 
             cursor: pointer; 
             transition: transform 0.2s, box-shadow 0.2s; 
-            margin-bottom: 15px; 
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); 
+            margin-bottom: 20px; 
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); 
         }
         button:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 5px 15px rgba(0, 180, 255, 0.5); 
+            transform: translateY(-4px); 
+            box-shadow: 0 8px 20px rgba(0, 180, 255, 0.6); 
         }
         .contact-button { 
             background: linear-gradient(135deg, #28a745, #1a8f5e); 
             color: #ffffff; 
         }
         .contact-button:hover { 
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.6); 
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.7); 
         }
         #resultado { 
-            margin-top: 20px; 
-            padding: 15px; 
-            background: rgba(0, 180, 255, 0.1); 
-            border-radius: 5px; 
+            margin-top: 25px; 
+            padding: 20px; 
+            background: rgba(0, 180, 255, 0.15); 
+            border-radius: 6px; 
             text-align: center; 
-            font-size: 1.3em; 
+            font-size: 1.4em; 
             font-weight: 500; 
-            border: 1px solid rgba(0, 180, 255, 0.3); 
-            box-shadow: inset 0 0 10px rgba(0, 180, 255, 0.1); 
+            border: 1px solid rgba(0, 180, 255, 0.35); 
+            box-shadow: inset 0 0 15px rgba(0, 180, 255, 0.15); 
         }
         .rates-table { 
-            margin-top: 30px; 
+            margin-top: 35px; 
         }
         .rates-table h2 { 
             color: #00b4ff; 
             text-align: center; 
             font-family: 'Orbitron', monospace; 
-            margin-bottom: 20px; 
-            font-size: 1.8em; 
+            margin-bottom: 25px; 
+            font-size: 2em; 
         }
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); 
-            border-radius: 8px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
+            border-radius: 10px; 
             overflow: hidden; 
-            border: 1px solid rgba(0, 180, 255, 0.2); 
+            border: 1px solid rgba(0, 180, 255, 0.25); 
         }
         th, td { 
-            padding: 12px; 
+            padding: 15px; 
             text-align: left; 
             border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
         }
@@ -178,20 +179,20 @@
             font-weight: 700; 
             text-transform: uppercase; 
         }
-        tr:hover { background: rgba(0, 180, 255, 0.08); }
+        tr:hover { background: rgba(0, 180, 255, 0.1); }
         #loading, #error { 
             text-align: center; 
-            padding: 15px; 
-            border-radius: 5px; 
-            margin: 20px 0; 
+            padding: 20px; 
+            border-radius: 6px; 
+            margin: 25px 0; 
         }
         #loading { 
-            background: rgba(0, 180, 255, 0.1); 
+            background: rgba(0, 180, 255, 0.15); 
             color: #00b4ff; 
             font-style: italic; 
         }
         #error { 
-            background: rgba(220, 53, 69, 0.1); 
+            background: rgba(220, 53, 69, 0.15); 
             color: #dc3545; 
             font-weight: 600; 
         }
@@ -199,32 +200,32 @@
             background: linear-gradient(135deg, #0d1725, #1a2e44); 
             color: #a0c0e0; 
             text-align: center; 
-            padding: 20px; 
-            margin-top: 40px; 
-            border-top: 1px solid rgba(0, 180, 255, 0.2); 
+            padding: 25px; 
+            margin-top: 50px; 
+            border-top: 1px solid rgba(0, 180, 255, 0.25); 
         }
         .social-links { 
             display: flex; 
             justify-content: center; 
-            gap: 25px; 
-            margin: 15px 0; 
+            gap: 30px; 
+            margin: 20px 0; 
         }
         .social-links a { 
             color: #00b4ff; 
-            font-size: 2em; 
+            font-size: 2.2em; 
             text-decoration: none; 
             transition: color 0.3s, text-shadow 0.3s; 
         }
         .social-links a:hover { 
             color: #0077cc; 
-            text-shadow: 0 0 10px rgba(0, 180, 255, 0.5); 
+            text-shadow: 0 0 15px rgba(0, 180, 255, 0.7); 
         }
         @media (max-width: 600px) { 
-            .container { padding: 20px; margin: 10px; } 
+            .container { padding: 25px; margin: 15px; } 
             .form-row { flex-direction: column; } 
-            h1 { font-size: 2.2em; } 
-            table { font-size: 0.85em; } 
-            .logo { width: 100px; } 
+            h1 { font-size: 2.5em; } 
+            table { font-size: 0.9em; } 
+            .logo { width: 120px; } 
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -232,7 +233,7 @@
 <body>
     <div class="container">
         <header>
-            <img src="logo blackbird.png" alt="Logo Servicios Blackbird" class="logo" onerror="this.src='https://via.placeholder.com/150x150/00b4ff/1a2e44?text=SR-71';">
+            <img src="logo blackbird.png" alt="Logo Servicios Blackbird" class="logo" onerror="this.src='https://via.placeholder.com/180x180/00b4ff/1a2e44?text=SR-71';">
             <h1>🛩️ Servicios Blackbird</h1>
             <p class="subtitle">Calculadora de remesas de precisión supersónica</p>
         </header>
@@ -259,6 +260,7 @@
             </div>
             <button onclick="calcularRemesa()">Calcular a Mach 3+</button>
             <button class="contact-button" onclick="solicitarRemesa()" id="solicitarBtn" style="display: none;">Solicitar Remesa</button>
+            <button class="contact-button" onclick="cotizarRemesa()" id="cotizarBtn" style="display: none;">Cotizar</button>
             <div id="resultado"></div>
         </div>
         
@@ -283,10 +285,10 @@
     <footer>
         <p>© 2025 Servicios Blackbird. Operando a velocidad supersónica.</p>
         <div class="social-links">
-            <a href="https://wa.me/+51XXXXXXXXX" target="_blank">📱</a>
-            <a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank">✈️</a>
-            <a href="https://www.instagram.com/servicios_blackbird?igsh=MTlwZTVsaWR4dDBoMQ%3D%3D&utm_source=qr" target="_blank">📸</a>
-            <a href="https://www.tiktok.com/@remesasblackbird?_t=ZM-8zqW0ByBXVg&_r=1" target="_blank">🎵</a>
+            <a href="https://wa.me/+51XXXXXXXXX" target="_blank" title="Contactar por WhatsApp">📱</a>
+            <a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank" title="Contactar por Telegram">✈️</a>
+            <a href="https://www.instagram.com/servicios_blackbird?igsh=MTlwZTVsaWR4dDBoMQ%3D%3D&utm_source=qr" target="_blank" title="Seguir en Instagram">📸</a>
+            <a href="https://www.tiktok.com/@remesasblackbird?_t=ZM-8zqW0ByBXVg&_r=1" target="_blank" title="Seguir en TikTok">🎵</a>
         </div>
     </footer>
 
@@ -309,6 +311,7 @@
             document.getElementById('error').style.display = 'none';
             try {
                 const response = await fetch(csvUrl);
+                if (!response.ok) throw new Error('Error al cargar el CSV');
                 const csvText = await response.text();
                 Papa.parse(csvText, {
                     header: false,
@@ -317,11 +320,12 @@
                         procesarDatos(results.data);
                     },
                     error: function(err) {
-                        throw new Error('Error al escanear CSV: ' + err.message);
+                        throw new Error('Error al procesar CSV: ' + err.message);
                     }
                 });
             } catch (err) {
                 console.error('Fallo en CSV:', err);
+                document.getElementById('error').innerHTML = '<p>Error al cargar datos. Usando tasas de ejemplo. Verifica la conexión o el CSV.</p>';
                 usarDatosEjemplo();
             }
         }
@@ -330,27 +334,23 @@
             let currentPair = null;
             rows.forEach(row => {
                 const colJ = row[9] ? row[9].trim().replace(/"/g, '') : '';
-                if (colJ === 'Venta IMAD') { // Indicador de precio al público
+                if (colJ === 'Venta IMAD') {
                     let pairFull = '';
-                    // Combinar B, C, D para identificar el par
                     let b = row[1] ? row[1].trim().replace(/"/g, '') : '';
                     let c = row[2] ? row[2].trim().replace(/"/g, '') : '';
                     let d = row[3] ? row[3].trim().replace(/"/g, '') : '';
-                    pairFull = [b, c, d].filter(Boolean).join(' ');
-                    if (pairFull.includes('Cotización Mesa')) {
-                        pairFull = pairFull.replace('Cotización Mesa ', '');
-                        for (let origen of paises) {
-                            for (let destino of paises) {
-                                if (origen !== destino) {
-                                    const nombrePar = `${nombresPaises[origen]} a ${nombresPaises[destino]}`;
-                                    if (pairFull.includes(nombrePar)) {
-                                        currentPair = `${origen}-${destino}`;
-                                        break;
-                                    }
+                    pairFull = [b, c, d].filter(Boolean).join(' ').replace('Cotización Mesa ', '');
+                    for (let origen of paises) {
+                        for (let destino of paises) {
+                            if (origen !== destino) {
+                                const nombrePar = `${nombresPaises[origen]} a ${nombresPaises[destino]}`;
+                                if (pairFull.includes(nombrePar)) {
+                                    currentPair = `${origen}-${destino}`;
+                                    break;
                                 }
                             }
-                            if (currentPair) break;
                         }
+                        if (currentPair) break;
                     }
                     if (currentPair) {
                         let fValue = row[6] ? row[6].trim().replace(/"/g, '') : '';
@@ -360,15 +360,23 @@
                         let fFloat = parseFloat(fValue);
                         let gFloat = parseFloat(gValue);
                         if (!isNaN(fFloat) && fFloat > 0) {
-                            rates[currentPair] = 1 / fFloat; // Tasa como inverso del precio al público
+                            rates[currentPair] = 1 / fFloat;
+                            // Añadir tasa inversa si no existe
+                            const [origen, destino] = currentPair.split('-');
+                            const reversePair = `${destino}-${origen}`;
+                            if (!rates[reversePair] && fFloat > 0) rates[reversePair] = fFloat;
                         } else if (!isNaN(gFloat) && gFloat > 0) {
-                            rates[currentPair] = 1 / gFloat; // Tasa como inverso del precio al público
+                            rates[currentPair] = 1 / gFloat;
+                            const [origen, destino] = currentPair.split('-');
+                            const reversePair = `${destino}-${origen}`;
+                            if (!rates[reversePair] && gFloat > 0) rates[reversePair] = gFloat;
                         }
                     }
                 }
             });
 
             if (Object.keys(rates).length === 0) {
+                document.getElementById('error').innerHTML = '<p>No se encontraron tasas válidas en el CSV. Usando datos de ejemplo.</p>';
                 usarDatosEjemplo();
             } else {
                 poblarSelects();
@@ -379,18 +387,21 @@
 
         function usarDatosEjemplo() {
             rates = {
-                'USA-VEN': 0.0278, // 1 / 36
-                'VEN-USA': 36,     // 1 / 0.0278
-                'CHI-USA': 0.00109, // 1 / 920
-                'USA-CHI': 920,     // 1 / 0.00109
-                'ARG-USA': 0.00105, // 1 / 950
-                'USA-ARG': 950      // 1 / 0.00105
+                'ARG-VEN': 0.1484, 'VEN-ARG': 6.74,
+                'CHI-VEN': 0.2369, 'VEN-CHI': 4.22,
+                'USA-VEN': 217.86, 'VEN-USA': 0.00459,
+                'PER-VEN': 0.2519, 'VEN-PER': 3.97,
+                'COL-VEN': 0.1923, 'VEN-COL': 5.20,
+                'MEX-VEN': 0.0538, 'VEN-MEX': 18.59,
+                'ESP-VEN': 0.0093, 'VEN-ESP': 107.53,
+                'ECU-VEN': 217.86, 'VEN-ECU': 0.00459,
+                'BRA-VEN': 0.1852, 'VEN-BRA': 5.40,
+                'URU-VEN': 0.0244, 'VEN-URU': 40.98,
+                'CAN-VEN': 0.0137, 'VEN-CAN': 73.03
             };
             poblarSelects();
             mostrarTabla();
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('error').innerHTML = '<p>Datos de ejemplo. Verifica tu CSV.</p>';
-            document.getElementById('error').style.display = 'block';
         }
 
         function poblarSelects() {
@@ -426,15 +437,18 @@
             const monto = parseFloat(document.getElementById('monto').value);
             const resultadoDiv = document.getElementById('resultado');
             const solicitarBtn = document.getElementById('solicitarBtn');
+            const cotizarBtn = document.getElementById('cotizarBtn');
 
             if (!origen || !destino || isNaN(monto) || monto <= 0) {
                 resultadoDiv.innerHTML = '<p style="color: #dc3545;">Selecciona origen, destino y monto válido.</p>';
                 solicitarBtn.style.display = 'none';
+                cotizarBtn.style.display = 'none';
                 return;
             }
             if (origen === destino) {
                 resultadoDiv.innerHTML = '<p style="color: #dc3545;">Origen y destino deben ser diferentes.</p>';
                 solicitarBtn.style.display = 'none';
+                cotizarBtn.style.display = 'none';
                 return;
             }
 
@@ -443,21 +457,37 @@
             if (!tasa) {
                 resultadoDiv.innerHTML = '<p style="color: #dc3545;">Ruta no disponible. Verifica el CSV.</p>';
                 solicitarBtn.style.display = 'none';
+                cotizarBtn.style.display = 'none';
                 return;
             }
 
             const monedaOrigen = nombresPaises[origen].match(/\((.*?)\)/)[1];
-            const resultado = (monto / tasa).toFixed(2);
+            const resultado = (monto * tasa).toFixed(2);
             const monedaDestino = nombresPaises[destino].match(/\((.*?)\)/)[1];
             resultadoDiv.innerHTML = `<p>Monto Origen: $${monto} ${monedaOrigen} → Recibes: $${resultado} ${monedaDestino} (Tasa IMAD: ${tasa.toFixed(4)})</p>`;
             solicitarBtn.style.display = 'block';
-            solicitarBtn.onclick = () => solicitarRemesa(origen, destino, monto, resultado, monedaOrigen, monedaDestino);
+            cotizarBtn.style.display = 'block';
         }
 
-        function solicitarRemesa(origen, destino, monto, resultado, monedaOrigen, monedaDestino) {
-            const nombreOrigen = nombresPaises[origen];
-            const nombreDestino = nombresPaises[destino];
-            const mensaje = `Solicitud de remesa: $${monto} ${monedaOrigen} de ${nombreOrigen} a ${nombreDestino}. Recibiré $${resultado} ${monedaDestino} (Tasa IMAD: ${rates[`${origen}-${destino}`].toFixed(4)}).`;
+        function solicitarRemesa() {
+            const origen = document.getElementById('origen').value;
+            const destino = document.getElementById('destino').value;
+            const monto = parseFloat(document.getElementById('monto').value);
+            const resultado = (monto * rates[`${origen}-${destino}`]).toFixed(2);
+            const monedaOrigen = nombresPaises[origen].match(/\((.*?)\)/)[1];
+            const monedaDestino = nombresPaises[destino].match(/\((.*?)\)/)[1];
+            const mensaje = `Solicitud de remesa: $${monto} ${monedaOrigen} de ${nombresPaises[origen]} a ${nombresPaises[destino]}. Recibiré $${resultado} ${monedaDestino} (Tasa IMAD: ${rates[`${origen}-${destino}`].toFixed(4)}).`;
+            window.open(`https://wa.me/+51XXXXXXXXX?text=${encodeURIComponent(mensaje)}`, '_blank');
+        }
+
+        function cotizarRemesa() {
+            const origen = document.getElementById('origen').value;
+            const destino = document.getElementById('destino').value;
+            const monto = parseFloat(document.getElementById('monto').value);
+            const resultado = (monto * rates[`${origen}-${destino}`]).toFixed(2);
+            const monedaOrigen = nombresPaises[origen].match(/\((.*?)\)/)[1];
+            const monedaDestino = nombresPaises[destino].match(/\((.*?)\)/)[1];
+            const mensaje = `Cotización de remesa: $${monto} ${monedaOrigen} de ${nombresPaises[origen]} a ${nombresPaises[destino]}. Recibirás $${resultado} ${monedaDestino} (Tasa IMAD: ${rates[`${origen}-${destino}`].toFixed(4)}).`;
             window.open(`https://wa.me/+51XXXXXXXXX?text=${encodeURIComponent(mensaje)}`, '_blank');
         }
 
