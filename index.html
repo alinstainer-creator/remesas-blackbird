@@ -232,9 +232,32 @@
             const errorDiv = document.getElementById('errorMessage');
             const successDiv = document.getElementById('successMessage');
             
+            // Mapeo de siglas de monedas a nombres de países
+            const monedasAPaises = {
+                'USD': 'Estados Unidos',
+                'EUR': 'Europa',
+                'GBP': 'Reino Unido',
+                'ARS': 'Argentina',
+                'BRL': 'Brasil',
+                'CLP': 'Chile',
+                'COP': 'Colombia',
+                'MXN': 'México',
+                'PEN': 'Perú',
+                'VES': 'Venezuela',
+                'DOP': 'República Dominicana',
+                'GTQ': 'Guatemala',
+                'HNL': 'Honduras',
+                'NIO': 'Nicaragua',
+                'PYG': 'Paraguay',
+                'UYU': 'Uruguay',
+                'CRC': 'Costa Rica',
+                'PAB': 'Panamá',
+                'BOB': 'Bolivia',
+                'CAD': 'Canadá'
+            };
+            
             // Variables globales
             let datosRemesas = [];
-            let paisesDisponibles = new Set();
             let paresDisponibles = {};
             
             // Cargar datos desde Google Sheets
@@ -265,8 +288,8 @@
                 const filas = csvData.split('\n');
                 datosRemesas = filas.map(fila => fila.split(',').map(c => c.trim().replace(/^"|"$/g, '')));
                 
-                // Extraer países y pares disponibles
-                extraerPaisesYPares();
+                // Extraer pares disponibles basados en las celdas D6, D15, D24, etc.
+                extraerParesDisponibles();
                 
                 // Llenar los selectores de países
                 llenarSelectoresPaises();
@@ -274,36 +297,39 @@
                 mostrarMensajeExito('Datos cargados correctamente. Selecciona países y monto para calcular.');
             }
             
-            // Extraer países y pares disponibles de los datos
-            function extraerPaisesYPares() {
-                paisesDisponibles.clear();
+            // Extraer pares disponibles de las celdas específicas
+            function extraerParesDisponibles() {
                 paresDisponibles = {};
                 
-                // Buscar en todas las filas los patrones de "cotizacion mesa [PAÍS]-[PAÍS]"
-                for (let i = 0; i < datosRemesas.length; i++) {
-                    for (let j = 0; j < datosRemesas[i].length; j++) {
-                        const valor = datosRemesas[i][j];
+                // Patrón de filas donde se encuentran los pares (D6, D15, D24, D33, ...)
+                for (let fila = 5; fila < datosRemesas.length; fila += 9) {
+                    if (fila >= datosRemesas.length) break;
+                    
+                    // La columna D es el índice 3 en el array (A=0, B=1, C=2, D=3)
+                    if (datosRemesas[fila].length > 3) {
+                        const valorCeldaD = datosRemesas[fila][3];
                         
-                        if (valor && valor.includes('cotizacion mesa')) {
-                            // Extraer los países del texto
-                            const regex = /cotizacion mesa\s+([A-Za-z]+)-([A-Za-z]+)/i;
-                            const coincidencia = valor.match(regex);
+                        // Buscar siglas de monedas en el formato XXX/XXX
+                        const regex = /([A-Z]{3})\/([A-Z]{3})/;
+                        const coincidencia = valorCeldaD.match(regex);
+                        
+                        if (coincidencia && coincidencia.length === 3) {
+                            const monedaOrigen = coincidencia[1];
+                            const monedaDestino = coincidencia[2];
                             
-                            if (coincidencia && coincidencia.length === 3) {
-                                const paisOrigen = coincidencia[1].toUpperCase();
-                                const paisDestino = coincidencia[2].toUpperCase();
-                                
-                                // Agregar a la lista de países disponibles
-                                paisesDisponibles.add(paisOrigen);
-                                paisesDisponibles.add(paisDestino);
-                                
-                                // Guardar información del par
-                                const parKey = `${paisOrigen}-${paisDestino}`;
-                                paresDisponibles[parKey] = {
-                                    fila: i,
-                                    columna: j
-                                };
-                            }
+                            // Obtener nombres de países basados en las siglas de monedas
+                            const paisOrigen = monedasAPaises[monedaOrigen] || monedaOrigen;
+                            const paisDestino = monedasAPaises[monedaDestino] || monedaDestino;
+                            
+                            // Guardar información del par
+                            const parKey = `${paisOrigen}-${paisDestino}`;
+                            paresDisponibles[parKey] = {
+                                fila: fila,
+                                monedaOrigen: monedaOrigen,
+                                monedaDestino: monedaDestino,
+                                paisOrigen: paisOrigen,
+                                paisDestino: paisDestino
+                            };
                         }
                     }
                 }
@@ -315,8 +341,17 @@
                 selectOrigen.innerHTML = '<option value="">Selecciona un país</option>';
                 selectDestino.innerHTML = '<option value="">Selecciona un país</option>';
                 
+                // Recopilar todos los países únicos disponibles
+                const paisesUnicos = new Set();
+                
+                for (const parKey in paresDisponibles) {
+                    const par = paresDisponibles[parKey];
+                    paisesUnicos.add(par.paisOrigen);
+                    paisesUnicos.add(par.paisDestino);
+                }
+                
                 // Ordenar países alfabéticamente
-                const paisesOrdenados = Array.from(paisesDisponibles).sort();
+                const paisesOrdenados = Array.from(paisesUnicos).sort();
                 
                 // Agregar opciones
                 paisesOrdenados.forEach(pais => {
@@ -335,33 +370,34 @@
             
             // Buscar la tasa para el par de países seleccionado
             function buscarTasa(origen, destino) {
-                const parKey = `${origen}-${destino}`;
+                // Buscar el par en nuestros datos
+                let parEncontrado = null;
                 
-                // Verificar si el par existe
-                if (!paresDisponibles[parKey]) {
+                for (const parKey in paresDisponibles) {
+                    const par = paresDisponibles[parKey];
+                    if (par.paisOrigen === origen && par.paisDestino === destino) {
+                        parEncontrado = par;
+                        break;
+                    }
+                }
+                
+                if (!parEncontrado) {
                     return null;
                 }
                 
-                const infoPar = paresDisponibles[parKey];
-                const fila = infoPar.fila;
-                const columna = infoPar.columna;
+                const fila = parEncontrado.fila;
                 
-                // Según la estructura que mencionas, la tasa está en la columna F (índice 5)
-                // y en una fila específica relativa a la celda de "cotizacion mesa"
-                // Normalmente está 2 filas abajo y misma columna
-                const filaTasa = fila + 2;
-                
-                if (filaTasa >= datosRemesas.length) {
-                    return null;
-                }
-                
-                // Obtener la tasa (columna F es índice 5 en array base 0)
-                if (datosRemesas[filaTasa].length > 5) {
-                    const tasaStr = datosRemesas[filaTasa][5];
+                // La tasa está en la columna F (índice 5) de la misma fila
+                if (datosRemesas[fila].length > 5) {
+                    const tasaStr = datosRemesas[fila][5];
                     const tasa = parseFloat(tasaStr);
                     
                     if (!isNaN(tasa) && tasa > 0) {
-                        return tasa;
+                        return {
+                            valor: tasa,
+                            monedaOrigen: parEncontrado.monedaOrigen,
+                            monedaDestino: parEncontrado.monedaDestino
+                        };
                     }
                 }
                 
@@ -391,20 +427,20 @@
                 }
                 
                 // Buscar la tasa
-                const tasa = buscarTasa(origen, destino);
+                const tasaInfo = buscarTasa(origen, destino);
                 
-                if (tasa === null) {
+                if (tasaInfo === null) {
                     mostrarError('No se encontró una tasa de cambio para el par de países seleccionado');
                     return;
                 }
                 
                 // Calcular resultado
-                const resultado = monto * tasa;
+                const resultado = monto * tasaInfo.valor;
                 
                 // Mostrar resultado
                 resultValue.textContent = resultado.toFixed(2);
-                tasaAplicada.textContent = tasa.toFixed(4);
-                parCambiario.textContent = `${origen}-${destino}`;
+                tasaAplicada.textContent = tasaInfo.valor.toFixed(4);
+                parCambiario.textContent = `${origen} (${tasaInfo.monedaOrigen}) - ${destino} (${tasaInfo.monedaDestino})`;
                 resultDiv.style.display = 'block';
                 errorDiv.style.display = 'none';
             }
