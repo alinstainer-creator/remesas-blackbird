@@ -167,6 +167,19 @@
       "URY": {name: "Uruguay", currency: "UYU"}
     };
 
+    const normalizationMap = {
+      'CHILE': 'CHL',
+      'VZLA': 'VEN',
+      'ARG': 'ARG',
+      'USA': 'USA',
+      'BRA': 'BRA',
+      'MEX': 'MEX',
+      'COL': 'COL',
+      'PER': 'PER',
+      'URY': 'URY',
+      'ECU': 'ECU'
+    };
+
     let ratesData = [];
 
     async function loadSheetData() {
@@ -181,30 +194,31 @@
         for (let i = 0; i < rows.length; i++) {
           if (rows[i][1] && rows[i][1].includes('COTIZACION MESA')) {
             const header = rows[i][1];
-            const parts = header.split(' ');
-            const countryAbbr = parts[2].split('-')[0];
+            let parts = header.split(' ');
+            let countryStr = parts[2].split('-')[0];
+            const countryAbbr = normalizationMap[countryStr] || countryStr;
+
             if (!abbrToCountry[countryAbbr]) continue;
 
             const tasaRow = rows[i + 1];
-            const rateStr = tasaRow[5] || tasaRow[6]; // F16 = tasaRow[5]
+            const rateStr = tasaRow[5] || tasaRow[6]; // Columna F
             const rate = parseFloat(rateStr.replace('$', '').replace(',', '.')) || 0;
 
-            const parRow = rows[i + 2];
-            const pairCell = parRow[1] || parRow[2] || parRow[3]; // B, C, D for par
-            const pairParts = pairCell ? pairCell.split('/').map(p => p.trim()) : [];
-            const originCurr = abbrToCountry[countryAbbr].currency;
-            const destAbbr = parts[2].split('-')[1];
+            let destStr = parts[2].split('-')[1];
+            const destAbbr = normalizationMap[destStr] || destStr;
             const destCurr = abbrToCountry[destAbbr] ? abbrToCountry[destAbbr].currency : '';
 
-            ratesData.push({
-              countryAbbr,
-              countryName: abbrToCountry[countryAbbr].name,
-              originCurr,
-              destAbbr,
-              destCurr,
-              rate,
-              cell: `Fila ${i + 2}, Celda F`
-            });
+            if (destAbbr && rate > 0) {
+              ratesData.push({
+                countryAbbr,
+                countryName: abbrToCountry[countryAbbr].name,
+                originCurr: abbrToCountry[countryAbbr].currency,
+                destAbbr,
+                destCurr,
+                rate,
+                cell: `Fila ${i + 2}, Celda F`
+              });
+            }
           }
         }
 
