@@ -12,6 +12,8 @@
             --background-color: #f8f9fa;
             --text-color: #333;
             --border-color: #ddd;
+            --success-color: #28a745;
+            --error-color: #dc3545;
         }
         
         * {
@@ -37,21 +39,25 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
-        h1 {
+        header {
             text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
             color: var(--primary-color);
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         
         .description {
-            text-align: center;
-            margin-bottom: 30px;
             color: #666;
+            margin-bottom: 20px;
         }
         
         .calculator-form {
             display: grid;
             grid-gap: 20px;
+            margin-bottom: 30px;
         }
         
         .form-group {
@@ -93,12 +99,17 @@
             background-color: var(--secondary-color);
         }
         
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
         .result {
-            margin-top: 30px;
             padding: 20px;
             background-color: #f0f7ff;
             border-radius: 5px;
             border-left: 4px solid var(--accent-color);
+            display: none;
         }
         
         .result h3 {
@@ -119,12 +130,29 @@
         }
         
         .error {
-            color: #d9534f;
+            color: var(--error-color);
             padding: 10px;
             background-color: #f8d7da;
             border-radius: 5px;
-            margin-top: 20px;
+            margin-bottom: 20px;
             display: none;
+        }
+        
+        .success {
+            color: var(--success-color);
+            padding: 10px;
+            background-color: #d4edda;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .info-panel {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 14px;
         }
         
         @media (min-width: 768px) {
@@ -140,10 +168,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>Calculadora de Remesas</h1>
-        <p class="description">Calcula el monto que recibirás al enviar dinero al extranjero</p>
+        <header>
+            <h1>Calculadora de Remesas</h1>
+            <p class="description">Calcula el monto que recibirás al enviar dinero al extranjero</p>
+        </header>
         
         <div class="error" id="errorMessage"></div>
+        <div class="success" id="successMessage"></div>
         
         <div class="calculator-form">
             <div class="form-group">
@@ -170,12 +201,19 @@
             </div>
         </div>
         
-        <div class="loading" id="loading">Cargando datos...</div>
+        <div class="loading" id="loading">
+            <p>Cargando datos de tasas de cambio...</p>
+        </div>
         
-        <div class="result" id="result" style="display: none;">
+        <div class="result" id="result">
             <h3>Resultado:</h3>
             <p>Recibirás: <span class="result-value" id="resultValue">0.00</span></p>
             <p>Tasa aplicada: <span id="tasaAplicada">0.00</span></p>
+            <p>Par cambiario: <span id="parCambiario"></span></p>
+        </div>
+        
+        <div class="info-panel">
+            <p><strong>Nota:</strong> Las tasas de cambio se actualizan regularmente desde nuestra fuente oficial.</p>
         </div>
     </div>
 
@@ -189,12 +227,15 @@
             const resultDiv = document.getElementById('result');
             const resultValue = document.getElementById('resultValue');
             const tasaAplicada = document.getElementById('tasaAplicada');
+            const parCambiario = document.getElementById('parCambiario');
             const loadingDiv = document.getElementById('loading');
             const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
             
             // Variables globales
             let datosRemesas = [];
-            let paisesDisponibles = [];
+            let paisesDisponibles = new Set();
+            let paresDisponibles = {};
             
             // Cargar datos desde Google Sheets
             async function cargarDatos() {
@@ -222,45 +263,50 @@
             // Procesar datos CSV
             function procesarDatosCSV(csvData) {
                 const filas = csvData.split('\n');
-                datosRemesas = [];
+                datosRemesas = filas.map(fila => fila.split(',').map(c => c.trim().replace(/^"|"$/g, '')));
                 
-                // Encontrar índices de las columnas importantes
-                const headers = filas[0].split(',');
-                const paisIndex = headers.findIndex(h => h.trim() === 'País');
-                
-                if (paisIndex === -1) {
-                    mostrarError('No se pudo encontrar la columna "País" en los datos');
-                    return;
-                }
-                
-                // Procesar cada fila de datos
-                for (let i = 1; i < filas.length; i++) {
-                    if (!filas[i].trim()) continue;
-                    
-                    const celdas = filas[i].split(',');
-                    if (celdas.length < paisIndex + 1) continue;
-                    
-                    const pais = celdas[paisIndex].trim();
-                    if (!pais) continue;
-                    
-                    // Almacenar datos
-                    datosRemesas.push({
-                        pais: pais,
-                        fila: i,
-                        celdas: celdas
-                    });
-                    
-                    // Agregar a la lista de países disponibles
-                    if (pais && !paisesDisponibles.includes(pais)) {
-                        paisesDisponibles.push(pais);
-                    }
-                }
-                
-                // Ordenar países alfabéticamente
-                paisesDisponibles.sort();
+                // Extraer países y pares disponibles
+                extraerPaisesYPares();
                 
                 // Llenar los selectores de países
                 llenarSelectoresPaises();
+                
+                mostrarMensajeExito('Datos cargados correctamente. Selecciona países y monto para calcular.');
+            }
+            
+            // Extraer países y pares disponibles de los datos
+            function extraerPaisesYPares() {
+                paisesDisponibles.clear();
+                paresDisponibles = {};
+                
+                // Buscar en todas las filas los patrones de "cotizacion mesa [PAÍS]-[PAÍS]"
+                for (let i = 0; i < datosRemesas.length; i++) {
+                    for (let j = 0; j < datosRemesas[i].length; j++) {
+                        const valor = datosRemesas[i][j];
+                        
+                        if (valor && valor.includes('cotizacion mesa')) {
+                            // Extraer los países del texto
+                            const regex = /cotizacion mesa\s+([A-Za-z]+)-([A-Za-z]+)/i;
+                            const coincidencia = valor.match(regex);
+                            
+                            if (coincidencia && coincidencia.length === 3) {
+                                const paisOrigen = coincidencia[1].toUpperCase();
+                                const paisDestino = coincidencia[2].toUpperCase();
+                                
+                                // Agregar a la lista de países disponibles
+                                paisesDisponibles.add(paisOrigen);
+                                paisesDisponibles.add(paisDestino);
+                                
+                                // Guardar información del par
+                                const parKey = `${paisOrigen}-${paisDestino}`;
+                                paresDisponibles[parKey] = {
+                                    fila: i,
+                                    columna: j
+                                };
+                            }
+                        }
+                    }
+                }
             }
             
             // Llenar los selectores de países
@@ -269,8 +315,11 @@
                 selectOrigen.innerHTML = '<option value="">Selecciona un país</option>';
                 selectDestino.innerHTML = '<option value="">Selecciona un país</option>';
                 
+                // Ordenar países alfabéticamente
+                const paisesOrdenados = Array.from(paisesDisponibles).sort();
+                
                 // Agregar opciones
-                paisesDisponibles.forEach(pais => {
+                paisesOrdenados.forEach(pais => {
                     const optionOrigen = document.createElement('option');
                     optionOrigen.value = pais;
                     optionOrigen.textContent = pais;
@@ -286,36 +335,33 @@
             
             // Buscar la tasa para el par de países seleccionado
             function buscarTasa(origen, destino) {
-                // Buscar la fila del país destino
-                const datosDestino = datosRemesas.find(d => d.pais === destino);
-                if (!datosDestino) return null;
+                const parKey = `${origen}-${destino}`;
                 
-                // Calcular el índice de la columna F para la tasa
-                // Según la estructura que mencionas: D6, D15, D24...
-                // Las tasas están en columnas F (FG7, FG16, FG25...)
-                const fila = datosDestino.fila;
+                // Verificar si el par existe
+                if (!paresDisponibles[parKey]) {
+                    return null;
+                }
                 
-                // Determinar el patrón de fila (6, 15, 24, ...)
-                // Estas filas corresponden a diferentes pares de divisas
-                // Necesitamos encontrar cuál corresponde al país de origen
+                const infoPar = paresDisponibles[parKey];
+                const fila = infoPar.fila;
+                const columna = infoPar.columna;
                 
-                // En tu estructura, cada bloque de 9 filas representa un país destino
-                // Y dentro de cada bloque, las filas 6, 15, 24... contienen tasas para diferentes orígenes
+                // Según la estructura que mencionas, la tasa está en la columna F (índice 5)
+                // y en una fila específica relativa a la celda de "cotizacion mesa"
+                // Normalmente está 2 filas abajo y misma columna
+                const filaTasa = fila + 2;
                 
-                // Para simplificar, buscaremos en la fila del país destino
-                // la celda que contiene el país de origen en la columna D
-                // y tomaremos el valor de la columna F correspondiente
+                if (filaTasa >= datosRemesas.length) {
+                    return null;
+                }
                 
-                // Buscar en todas las filas que pertenecen al mismo grupo (mismo país destino)
-                const grupoInicio = Math.floor((fila - 1) / 9) * 9 + 1;
-                
-                for (let i = grupoInicio; i < grupoInicio + 9 && i < datosRemesas.length; i++) {
-                    const datosFila = datosRemesas.find(d => d.fila === i);
-                    if (datosFila && datosFila.celdas[3] && datosFila.celdas[3].trim() === origen) {
-                        // Encontramos el par - la tasa está en la columna F (índice 5)
-                        if (datosFila.celdas[5] && !isNaN(parseFloat(datosFila.celdas[5]))) {
-                            return parseFloat(datosFila.celdas[5]);
-                        }
+                // Obtener la tasa (columna F es índice 5 en array base 0)
+                if (datosRemesas[filaTasa].length > 5) {
+                    const tasaStr = datosRemesas[filaTasa][5];
+                    const tasa = parseFloat(tasaStr);
+                    
+                    if (!isNaN(tasa) && tasa > 0) {
+                        return tasa;
                     }
                 }
                 
@@ -358,6 +404,7 @@
                 // Mostrar resultado
                 resultValue.textContent = resultado.toFixed(2);
                 tasaAplicada.textContent = tasa.toFixed(4);
+                parCambiario.textContent = `${origen}-${destino}`;
                 resultDiv.style.display = 'block';
                 errorDiv.style.display = 'none';
             }
@@ -366,7 +413,15 @@
             function mostrarError(mensaje) {
                 errorDiv.textContent = mensaje;
                 errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
                 resultDiv.style.display = 'none';
+            }
+            
+            // Mostrar mensaje de éxito
+            function mostrarMensajeExito(mensaje) {
+                successDiv.textContent = mensaje;
+                successDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
             }
             
             // Event Listeners
