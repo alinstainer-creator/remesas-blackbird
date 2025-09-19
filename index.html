@@ -208,7 +208,7 @@
             const destAbbr = normalizationMap[destStr] || destStr;
             const destCurr = abbrToCountry[destAbbr] ? abbrToCountry[destAbbr].currency : '';
 
-            if (destAbbr && rate > 0) {
+            if (destAbbr && rate > 0 && abbrToCountry[destAbbr]) {
               ratesData.push({
                 countryAbbr,
                 countryName: abbrToCountry[countryAbbr].name,
@@ -245,12 +245,19 @@
       destinationSelect.innerHTML = '<option value="">Selecciona destino...</option>';
 
       if (originAbbr) {
-        const availableDests = ratesData.filter(d => d.countryAbbr === originAbbr).map(d => d.destAbbr);
-        Object.entries(abbrToCountry).forEach(([abbr, country]) => {
-          if (availableDests.includes(abbr)) {
+        const availableDests = [...new Set(ratesData.filter(d => d.countryAbbr === originAbbr).map(d => d.destAbbr))];
+        if (availableDests.length === 0) {
+          // Fallback a todos los países si no hay datos
+          Object.entries(abbrToCountry).forEach(([abbr, country]) => {
             destinationSelect.innerHTML += `<option value="${abbr}">${country.name}</option>`;
-          }
-        });
+          });
+        } else {
+          availableDests.forEach(abbr => {
+            if (abbrToCountry[abbr]) {
+              destinationSelect.innerHTML += `<option value="${abbr}">${abbrToCountry[abbr].name}</option>`;
+            }
+          });
+        }
       } else {
         Object.entries(abbrToCountry).forEach(([abbr, country]) => {
           destinationSelect.innerHTML += `<option value="${abbr}">${country.name}</option>`;
