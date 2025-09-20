@@ -315,7 +315,7 @@
       text-shadow: 0 0 5px rgba(0, 204, 153, 0.6);
     }
     h1, h2 {
-      text-shadow: 0 0 6px rgba(0,255,204,0.08), 0 0 14px rgba(0,153,119,0.06);
+      text辦公室: 0 0 6px rgba(0,255,204,0.08), 0 0 14px rgba(0,153,119,0.06);
     }
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -409,8 +409,9 @@
   </div>
   <canvas class="starfield" id="starfield"></canvas>
   <canvas class="speedometer" id="speedometer"></canvas>
-  <audio id="clickSound" src="https://cdn.pixabay.com/audio/2022/03/10/audio_4e992b54b2.mp3"></audio>
-  <audio id="jetSound" src="https://cdn.pixabay.com/audio/2023/08/07/audio_2b8b8b8b8b.mp3"></audio>
+  <!-- Comentado temporalmente debido a errores 403 -->
+  <!-- <audio id="clickSound" src="https://cdn.pixabay.com/audio/2022/03/10/audio_4e992b54b2.mp3"></audio> -->
+  <!-- <audio id="jetSound" src="https://cdn.pixabay.com/audio/2023/08/07/audio_2b8b8b8b8b.mp3"></audio> -->
   <div id="root"></div>
   <div class="social-contact">¡Contáctanos en Telegram o nuestras redes sociales!</div>
   <div class="social-bar">
@@ -425,6 +426,11 @@
     </a>
   </div>
   <script type="text/babel">
+    // NOTA: Para producción, considera:
+    // 1. Instalar TailwindCSS localmente: https://tailwindcss.com/docs/installation
+    // 2. Precompilar el JavaScript con Babel: https://babeljs.io/docs/setup/
+    // 3. Alojar archivos de audio localmente o en un servidor que permita CORS
+
     // Mapeo de códigos de moneda a nombres de países
     const currencyToCountry = {
       ARS: 'Argentina',
@@ -505,7 +511,6 @@
       const numStars = 150;
       let mouseX = canvas.width / 2;
       let mouseY = canvas.height / 2;
-      // Crear estrellas
       for (let i = 0; i < numStars; i++) {
         stars.push({
           x: Math.random() * canvas.width,
@@ -515,7 +520,6 @@
           vy: (Math.random() - 0.5) * 0.1
         });
       }
-      // Actualizar posición del mouse/touch
       canvas.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
@@ -524,17 +528,15 @@
         mouseX = e.touches[0].clientX;
         mouseY = e.touches[0].clientY;
       });
-      // Animar estrellas
       let lastTime = 0;
       function animate(timestamp) {
-        if (timestamp - lastTime < 16.67) { // Limitar a 60fps
+        if (timestamp - lastTime < 16.67) {
           requestAnimationFrame(animate);
           return;
         }
         lastTime = timestamp;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         stars.forEach(star => {
-          // Mover estrellas hacia el mouse/touch
           const dx = mouseX - star.x;
           const dy = mouseY - star.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
@@ -544,16 +546,13 @@
           }
           star.x += star.vx;
           star.y += star.vy;
-          // Rebotar en los bordes
           if (star.x < 0 || star.x > canvas.width) star.vx *= -1;
           if (star.y < 0 || star.y > canvas.height) star.vy *= -1;
-          // Dibujar estrella
           ctx.beginPath();
           ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
           ctx.fillStyle = '#e6e6e6';
           ctx.fill();
         });
-        // Dibujar líneas de conexión
         ctx.strokeStyle = 'rgba(0, 153, 119, 0.25)';
         ctx.lineWidth = 0.8;
         for (let i = 0; i < stars.length; i++) {
@@ -602,13 +601,11 @@
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         const radius = canvas.width * 0.4;
-        // Dibujar arco
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius, Math.PI * 0.75, Math.PI * 2.25);
         ctx.strokeStyle = '#009977';
         ctx.lineWidth = 4;
         ctx.stroke();
-        // Dibujar aguja
         const rad = (angle * Math.PI) / 180;
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
@@ -616,7 +613,6 @@
         ctx.strokeStyle = '#00cc99';
         ctx.lineWidth = 2;
         ctx.stroke();
-        // Dibujar dígitos
         ctx.fillStyle = '#e6e6e6';
         ctx.font = `${canvas.width * 0.15}px 'Exo 2'`;
         ctx.textAlign = 'center';
@@ -775,14 +771,16 @@
         initSpeedometer();
       }, []);
 
-      // Reproducir sonidos
+      // Reproducir sonidos (deshabilitado temporalmente)
       const playClickSound = () => {
-        const sound = document.getElementById('clickSound');
-        sound.play().catch(() => console.log('Click sound playback failed'));
+        // const sound = document.getElementById('clickSound');
+        // sound.play().catch(() => console.log('Click sound playback failed'));
+        console.log('Click sound deshabilitado (reemplaza con audio válido)');
       };
       const playJetSound = () => {
-        const sound = document.getElementById('jetSound');
-        sound.play().catch(() => console.log('Jet sound playback failed'));
+        // const sound = document.getElementById('jetSound');
+        // sound.play().catch(() => console.log('Jet sound playback failed'));
+        console.log('Jet sound deshabilitado (reemplaza con audio válido)');
       };
 
       // Manejar cálculo de conversión
@@ -897,7 +895,7 @@
               >
                 <option value="">Selecciona el país de destino</option>
                 {countries.map((currency) => (
-                  <option key={currency) value={currency}>{currencyToCountry[currency]}</option>
+                  <option key={currency} value={currency}>{currencyToCountry[currency]}</option>
                 ))}
               </select>
             </div>
@@ -905,7 +903,7 @@
               <label className="block text-xs font-light text-gray-300 mb-1 hud-text">Monto</label>
               <input
                 type="number"
-                inputmode="numeric"
+                inputMode="numeric"
                 pattern="[0-9]*"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
