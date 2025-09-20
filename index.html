@@ -1,990 +1,606 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blackbird Exchange</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blackbird Exchange — SR71</title>
+
+  <!-- Libraries (production note in console only) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
   <style>
-    /* ---------------------- */
-    /* Your original styles (kept as you had them) */
-    /* I added a subtle background animation and glow to titles only */
-    body {
-      background: #0a0a0a;
-      color: #e6e6e6;
-      font-family: 'Exo 2', sans-serif;
-      overflow: hidden;
-      position: relative;
-      margin: 0;
-      animation: backgroundPulse 10s infinite ease-in-out;
-      /* subtle radial animated shift */
-      background-image: radial-gradient(circle at 30% 10%, rgba(0,153,119,0.02), transparent 15%),
-                        radial-gradient(circle at 80% 70%, rgba(0,153,119,0.015), transparent 20%);
-      background-size: 200% 200%;
-      animation: bgShift 30s linear infinite;
+    /* --- Estilos generales --- */
+    :root {
+      --bg: #050606;
+      --panel: rgba(6, 10, 10, 0.95);
+      --accent: #00caa0;
+      --muted: #9aa7a1;
+      --glass: rgba(10, 10, 10, 0.6);
+    }
+    html,body{height:100%;margin:0;font-family:'Exo 2',sans-serif;background:var(--bg);color:#e8f6f2;}
+    .app-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;}
+    .container{
+      background: linear-gradient(180deg, rgba(7,10,12,0.95), rgba(6,8,9,0.98));
+      border:1px solid rgba(0,200,160,0.08);
+      width:96%;
+      max-width:880px;
+      border-radius:10px;
+      padding:1rem;
+      box-shadow:0 10px 40px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.02);
+      position:relative;
+      overflow:hidden;
+    }
+    header.app-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+    .logo{width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,#002b22,#004d3a);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(0,200,160,0.08);font-weight:800}
+    h1.title{font-size:1.05rem;margin:0;color:#dffbf1;text-shadow:0 0 18px rgba(0,200,160,0.06)}
+    .subtitle{font-size:0.78rem;color:var(--muted);margin-left:6px}
+
+    /* Controls */
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    label{font-size:0.7rem;color:var(--muted)}
+    select,input{padding:10px;border-radius:8px;border:1px solid rgba(0,200,160,0.08);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));color:#e6f8f0;font-size:0.95rem}
+    .actions{display:flex;gap:8px;align-items:center;margin-top:10px}
+    button.btn{padding:10px 14px;border-radius:8px;border:1px solid rgba(0,200,160,0.12);background:transparent;color:#e6f8f0;font-weight:700;cursor:pointer}
+    button.btn.primary{background:linear-gradient(90deg,var(--accent),#00f0c0);color:#04211a}
+    .info{font-size:0.85rem;color:var(--muted);margin-top:8px}
+
+    /* Result */
+    .card{margin-top:10px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+    .card p{margin:0;font-size:0.9rem}
+    .card .sub{font-size:0.8rem;color:var(--muted);margin-top:6px}
+
+    /* Background subtle visuals */
+    .bg-animated{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:0.08}
+    .glow{position:absolute;width:500px;height:500px;border-radius:50%;filter:blur(40px);top:-20%;right:-10%;background:radial-gradient(circle,#00f0c0 0%, transparent 60%);opacity:0.14}
+    .glow-2{position:absolute;width:300px;height:300px;border-radius:50%;filter:blur(20px);bottom:-10%;left:-8%;background:radial-gradient(circle,#0099ff 0%, transparent 60%);opacity:0.06}
+    .stars-small{position:absolute;inset:0;background-image:radial-gradient(#ffffff 1px, transparent 1px);background-size:20px 20px;opacity:0.02}
+
+    /* small responsive */
+    @media (max-width:720px){
+      .grid{grid-template-columns:1fr}
+      .logo{width:44px;height:44px}
     }
 
-    @keyframes bgShift {
-      0% { background-position: 0% 0%, 100% 100%; }
-      50% { background-position: 50% 50%, 50% 0%; }
-      100% { background-position: 100% 100%, 0% 50%; }
-    }
+    /* Console-like logs for debugging (hidden by default but useful while debugging) */
+    .debug{font-family:monospace;font-size:11px;color:#a3f7df;line-height:1.3;white-space:pre-wrap;max-height:220px;overflow:auto;padding:6px;background:rgba(0,0,0,0.25);border-radius:6px;margin-top:8px;border:1px solid rgba(0,200,160,0.03)}
 
-    .container {
-      background: rgba(10, 10, 10, 0.98);
-      border: 1px solid #009977;
-      box-shadow: 0 0 6px rgba(0, 153, 119, 0.3);
-      border-radius: 6px;
-      padding: 0.75rem;
-      max-width: 96%;
-      width: 96%;
-      margin: 1rem auto;
-      animation: fadeIn 1s ease-out;
-    }
-    @media (min-width: 768px) {
-      .container {
-        max-width: 560px;
-        padding: 1rem;
-      }
-      h1 {
-        font-size: 1.125rem;
-      }
-    }
-    .logo {
-      width: 48px;
-      animation: powerOn 1.5s ease-out;
-    }
-    @media (min-width: 768px) {
-      .logo {
-        width: 64px;
-      }
-    }
-    button {
-      background: transparent;
-      border: 1px solid #009977;
-      color: #e6e6e6;
-      padding: 1rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      border-radius: 6px;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      width: auto;
-      display: inline-block;
-      margin: 0.5rem;
-    }
-    button:hover {
-      background: #009977;
-      color: #0a0a0a;
-      box-shadow: 0 0 6px rgba(0, 153, 119, 0.5);
-    }
-    button::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: width 0.4s ease, height 0.4s ease;
-    }
-    button:hover::after {
-      width: 120px;
-      height: 120px;
-    }
-    .telegram-button {
-      background: #00cc99;
-      color: #0a0a0a;
-      padding: 1rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      border-radius: 6px;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      transition: all 0.3s ease;
-      animation: pulseCTA 1.5s infinite, bounceCTA 3s infinite;
-    }
-    .telegram-button:hover {
-      background: #00ffcc;
-      box-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
-      transform: translateY(-3px);
-    }
-    select, input {
-      background: rgba(28, 37, 38, 0.9);
-      border: 1px solid #009977;
-      color: #e6e6e6;
-      font-size: 0.9rem;
-      padding: 0.5rem;
-      border-radius: 4px;
-      transition: all 0.3s ease;
-    }
-    select:focus, input:focus {
-      box-shadow: 0 0 4px rgba(0, 153, 119, 0.4);
-      border-color: #00cc99;
-      animation: pulseBorder 1.2s infinite;
-    }
-    .result {
-      animation: hudScan 0.7s ease-out;
-      position: relative;
-      overflow: hidden;
-    }
-    .result::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 1px;
-      background: linear-gradient(to right, transparent, #009977, transparent);
-      animation: scanLine 2s infinite;
-    }
-    .clouds-layer1 {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 200%;
-      height: 100%;
-      background: linear-gradient(45deg, rgba(0, 153, 119, 0.06), transparent);
-      will-change: transform;
-      animation: supersonicClouds 15s linear infinite;
-      z-index: -2;
-    }
-    .clouds-layer2 {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 200%;
-      height: 100%;
-      background: linear-gradient(90deg, rgba(0, 153, 119, 0.04), transparent);
-      will-change: transform;
-      animation: supersonicClouds 15s linear infinite reverse;
-      z-index: -2;
-    }
-    .clouds-layer3 {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 200%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(0, 153, 119, 0.05), transparent);
-      will-change: transform;
-      animation: supersonicClouds 15s linear infinite;
-      animation-delay: -7.5s;
-      z-index: -2;
-    }
-    .clouds-layer4 {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 200%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(0, 153, 119, 0.03), transparent);
-      will-change: transform;
-      animation: supersonicClouds 15s linear infinite reverse;
-      animation-delay: -3s;
-      z-index: -2;
-    }
-    .stars {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-    }
-    .star {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      background: #e6e6e6;
-      opacity: 0.3;
-      animation: pulseStar calc(1s + var(--delay) * 1s) infinite;
-    }
-    .radar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-    }
-    .radar-circle {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      border: 1px solid rgba(0, 153, 119, 0.08);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      animation: radarPulse 4s infinite;
-      animation-delay: calc(var(--delay) * 1s);
-      opacity: 0;
-    }
-    .social-bar {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(10, 10, 10, 0.85);
-      border: 1px solid #009977;
-      border-radius: 14px;
-      padding: 0.2rem 0.6rem;
-      animation: fadeIn 1.2s ease-out;
-    }
-    .social-contact {
-      position: fixed;
-      bottom: 3.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #e6e6e6;
-      font-size: 0.7rem;
-      text-align: center;
-    }
-    .social-icon {
-      color: #e6e6e6;
-      font-size: 0.7rem;
-      margin: 0 0.3rem;
-      transition: all 0.3s ease;
-    }
-    .social-icon:hover {
-      color: #009977;
-      transform: translateY(-2px);
-    }
-    .speedometer {
-      position: fixed;
-      top: 0.5rem;
-      right: 0.5rem;
-      width: 60px;
-      height: 60px;
-      z-index: 10;
-      opacity: 0.7;
-      animation: fadeIn 1s ease-out, pulseSpeed 2s infinite;
-    }
-    @media (min-width: 768px) {
-      .speedometer {
-        width: 80px;
-        height: 80px;
-      }
-    }
-    .starfield {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -3;
-    }
-    .radar-grid {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle, transparent 80%, rgba(0, 153, 119, 0.02) 100%);
-      background-image: linear-gradient(rgba(0, 153, 119, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 153, 119, 0.05) 1px, transparent 1px);
-      background-size: 50px 50px;
-      z-index: -2;
-      animation: gridFlicker 3s infinite;
-    }
-    .particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-    }
-    .particle {
-      position: absolute;
-      width: 3px;
-      height: 3px;
-      background: rgba(0, 153, 119, 0.6);
-      animation: flyParticle calc(1.5s + var(--delay) * 1s) linear infinite;
-    }
-    .vibrate-container {
-      animation: vibrate 0.2s linear;
-    }
-    .hud-text {
-      text-shadow: 0 0 5px rgba(0, 204, 153, 0.6);
-    }
-    /* subtle glow for headings (added) */
-    h1, h2 {
-      text-shadow: 0 0 6px rgba(0,255,204,0.08), 0 0 14px rgba(0,153,119,0.06);
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes powerOn {
-      0% { filter: brightness(0) drop-shadow(0 0 0 rgba(0, 153, 119, 0)); }
-      50% { filter: brightness(1.5) drop-shadow(0 0 6px rgba(0, 153, 119, 0.7)); }
-      100% { filter: brightness(1) drop-shadow(0 0 3px rgba(0, 153, 119, 0.4)); }
-    }
-    @keyframes pulseBorder {
-      0% { border-color: #009977; }
-      50% { border-color: #00cc99; }
-      100% { border-color: #009977; }
-    }
-    @keyframes hudScan {
-      from { transform: translateY(10px); opacity: 0; filter: brightness(1.3); }
-      to { transform: translateY(0); opacity: 1; filter: brightness(1); }
-    }
-    @keyframes scanLine {
-      0% { transform: translateY(-100%); }
-      100% { transform: translateY(100%); }
-    }
-    @keyframes pulseCTA {
-      0% { box-shadow: 0 0 4px rgba(0, 204, 153, 0.4); }
-      50% { box-shadow: 0 0 10px rgba(0, 204, 153, 0.7); }
-      100% { box-shadow: 0 0 4px rgba(0, 204, 153, 0.4); }
-    }
-    @keyframes bounceCTA {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
-    @keyframes pulseStar {
-      0% { opacity: 0.3; }
-      50% { opacity: 0.7; }
-      100% { opacity: 0.3; }
-    }
-    @keyframes supersonicClouds {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    @keyframes radarPulse {
-      0% { transform: translate(-50%, -50%) scale(0); opacity: 0.15; }
-      100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
-    }
-    @keyframes pulseSpeed {
-      0% { opacity: 0.7; }
-      50% { opacity: 1; }
-      100% { opacity: 0.7; }
-    }
-    @keyframes vibrate {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(3px); }
-      50% { transform: translateX(-3px); }
-      75% { transform: translateX(3px); }
-      100% { transform: translateX(0); }
-    }
-    @keyframes gridFlicker {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
-    }
-    @keyframes flyParticle {
-      0% { transform: translate(100vw, -100vh); opacity: 0.6; }
-      50% { opacity: 0.8; }
-      100% { transform: translate(-100vw, 100vh); opacity: 0; }
-    }
-    @keyframes backgroundPulse {
-      0% { background-color: #0a0a0a; }
-      50% { background-color: #0f1a1a; }
-      100% { background-color: #0a0a0a; }
-    }
+    /* small helper */
+    .muted{color:var(--muted)}
   </style>
 </head>
 <body>
-  <div class="background">
-    <div class="clouds-layer1"></div>
-    <div class="clouds-layer2"></div>
-    <div class="clouds-layer3"></div>
-    <div class="clouds-layer4"></div>
-    <div class="stars" id="stars"></div>
-    <div class="radar">
-      <div class="radar-circle" style="width: 200px; height: 200px; --delay: 0;"></div>
-      <div class="radar-circle" style="width: 300px; height: 300px; --delay: 1;"></div>
-      <div class="radar-circle" style="width: 400px; height: 400px; --delay: 2;"></div>
-      <div class="radar-circle" style="width: 500px; height: 500px; --delay: 3;"></div>
-      <div class="radar-circle" style="width: 600px; height: 600px; --delay: 4;"></div>
-      <div class="radar-circle" style="width: 700px; height: 700px; --delay: 5;"></div>
+  <div class="app-wrap">
+    <div class="container" id="appContainer">
+      <div class="bg-animated" aria-hidden="true">
+        <div class="glow"></div>
+        <div class="glow-2"></div>
+        <div class="stars-small"></div>
+      </div>
+
+      <header class="app-header">
+        <div class="logo">BB</div>
+        <div>
+          <h1 class="title">Blackbird Exchange — SR71</h1>
+          <div class="subtitle">Calculadora de remesas — lectura robusta desde Excel/CSV compartido</div>
+        </div>
+      </header>
+
+      <div id="root"></div>
+
+      <footer style="margin-top:12px;font-size:12px;color:var(--muted)">
+        Actualiza el archivo en Google Sheets y se refrescará al recargar la página. Parser robusto para celdas tipo:
+        <span class="muted">"COTIZACION MESA ARG-VEN 🇦🇷🇻🇪" → ARS/VES</span>
+      </footer>
     </div>
-    <div class="radar-grid"></div>
-    <div class="particles" id="particles"></div>
   </div>
-  <canvas class="starfield" id="starfield"></canvas>
-  <canvas class="speedometer" id="speedometer"></canvas>
-  <audio id="clickSound" src="https://cdn.pixabay.com/audio/2022/03/10/audio_4e992b54b2.mp3"></audio>
-  <audio id="jetSound" src="https://cdn.pixabay.com/audio/2023/08/07/audio_2b8b8b8b8b.mp3"></audio>
-  <div id="root"></div>
-  <div class="social-contact">¡Contáctanos en Telegram o nuestras redes sociales!</div>
-  <div class="social-bar">
-    <a href="https://t.me/+i02VPMg23TNiOWJh" target="_blank" rel="noopener noreferrer" class="social-icon">
-      <i class="fab fa-telegram-plane"></i>
-    </a>
-    <a href="https://www.instagram.com/servicios_blackbird?igsh=MTlwZTVsaWR4dDBoMQ%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" class="social-icon">
-      <i class="fab fa-instagram"></i>
-    </a>
-    <a href="https://www.tiktok.com/@remesasblackbird?_t=ZM-8zqW0ByBXVg&_r=1" target="_blank" rel="noopener noreferrer" class="social-icon">
-      <i class="fab fa-tiktok"></i>
-    </a>
-  </div>
+
+  <!-- App script (Babel in-browser for simplicity) -->
   <script type="text/babel">
-    // Mapeo de códigos de moneda a nombres de países
-    const currencyToCountry = {
-      ARS: 'Argentina',
-      VES: 'Venezuela',
-      CLP: 'Chile',
-      USD: 'Estados Unidos',
-      MXN: 'México',
-      PEN: 'Perú',
-      COP: 'Colombia',
-      EUR: 'Eurozona',
-      BRL: 'Brasil',
-      UYU: 'Uruguay',
-      ECU: 'Ecuador'
-    };
-    // Mapeo de nombres de países en encabezados a códigos de moneda
-    const countryCodeToCurrency = {
-      ARG: 'ARS',
-      VEN: 'VES',
-      VZLA: 'VES',
-      CHILE: 'CLP',
-      USA: 'USD',
-      MEX: 'MXN',
-      PERU: 'PEN',
-      COP: 'COP',
-      EUR: 'EUR',
-      BRA: 'BRL',
-      UYU: 'UYU',
-      ECU: 'ECU'
-    };
-    // URL del CSV
+    // -------------------------
+    // CONFIG
+    // -------------------------
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Teo-_5ka3LKx7FXL3x3yV3uf4KhoI61ewnVJyJ90XRnksoObf4CDn-lJvrFKiQ/pub?gid=983978085&single=true&output=csv';
-    // Función para formatear números con 4 decimales
-    const formatNumber = (number) => {
-      return number.toLocaleString('es-CL', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+
+    // Diccionario amplio de equivalencias y sinónimos a ISO de moneda (expandible)
+    const countryToISO = {
+      ARG: 'ARS', AR: 'ARS', ARGENTINA: 'ARS',
+      VEN: 'VES', VZLA: 'VES', VENEZUELA: 'VES', VE: 'VES',
+      CHILE: 'CLP', CL: 'CLP', CHL: 'CLP',
+      USA: 'USD', EEUU: 'USD', US: 'USD', UNITEDSTATES: 'USD', UNITED_STATES: 'USD',
+      MEX: 'MXN', MEXICO: 'MXN', MX: 'MXN',
+      PERU: 'PEN', PER: 'PEN', PE: 'PEN',
+      COP: 'COP', CO: 'COP', COLOMBIA: 'COP',
+      EUR: 'EUR', EURO: 'EUR',
+      BRA: 'BRL', BRASIL: 'BRL', BR: 'BRL',
+      UYU: 'UYU', URUGUAY: 'UYU',
+      ECU: 'ECU', ECUADOR: 'ECU',
+      BRL: 'BRL', ARS: 'ARS', MXN: 'MXN', PEN: 'PEN', USD: 'USD',
+      VES: 'VES', CLP: 'CLP'
     };
-    // Función para cargar el CSV
-    async function loadFileData() {
-      try {
-        const response = await fetch(CSV_URL, {
-          method: 'GET',
-          headers: { 'Accept': 'text/csv' }
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+
+    // Mapeo para mostrar nombre país por código de moneda
+    const currencyToCountry = {
+      ARS: 'Argentina', VES: 'Venezuela', CLP: 'Chile', USD: 'Estados Unidos',
+      MXN: 'México', PEN: 'Perú', COP: 'Colombia', EUR: 'Eurozona',
+      BRL: 'Brasil', UYU: 'Uruguay', ECU: 'Ecuador'
+    };
+
+    // -------------------------
+    // UTILITIES
+    // -------------------------
+    function debugLog(...args) {
+      if (window.console && console.log) console.log(...args);
+    }
+
+    // Limpia emojis y símbolos extraños
+    function stripEmojisAndExtras(text) {
+      if (!text) return '';
+      // remove emojis (unicode ranges) and weird punctuation
+      return text.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '')
+                 .replace(/[^\p{L}\p{N}\-\/\s]/gu, '') // leave letters, numbers, dash, slash and spaces
+                 .replace(/\s{2,}/g, ' ')
+                 .trim();
+    }
+
+    // Extrae tokens alfanuméricos (palabras) de una cadena, separando por - / y espacios
+    function extractCountryTokens(raw) {
+      if (!raw) return [];
+      // normalize hyphens and slashes
+      const normalized = raw.replace(/—/g,'-').replace(/–/g,'-').replace(/\u00A0/g,' ').toUpperCase();
+      // Remove leading words like COTIZACION, MESA, COTI etc
+      const removed = normalized.replace(/\bCOTIZACION\b/gi,'')
+                                .replace(/\bCOTI\b/gi,'')
+                                .replace(/\bMESA\b/gi,'')
+                                .replace(/\bCOTI FINAL\b/gi,'')
+                                .replace(/\bCOTI FINAL\b/gi,'')
+                                .replace(/\bCOTIZACION MESA\b/gi,'')
+                                .replace(/[,()]/g,' ')
+                                .trim();
+      // If contains slash pair like ARS/VES, return that pair
+      const slashMatch = removed.match(/([A-Z]{2,5})\s*\/\s*([A-Z]{2,5})/);
+      if (slashMatch) return [slashMatch[1], slashMatch[2]];
+
+      // If contains hyphen like ARG-VEN or ARG - VEN etc.
+      const hyphenMatch = removed.match(/([A-Z]{2,6})\s*-\s*([A-Z]{2,6})/);
+      if (hyphenMatch) return [hyphenMatch[1], hyphenMatch[2]];
+
+      // Fallback: split by spaces and look for plausible tokens (3-letter or known)
+      const parts = removed.split(/\s+/).filter(Boolean);
+      // keep tokens that are letters-only
+      const candidates = parts.map(p => p.replace(/[^A-Z]/g,'')).filter(Boolean);
+      // try to find two consecutive plausible tokens
+      for (let i=0;i<candidates.length-1;i++){
+        if (candidates[i].length>=2 && candidates[i+1].length>=2) {
+          return [candidates[i], candidates[i+1]];
         }
-        const data = await response.text();
-        console.log('CSV cargado (primeros 200 caracteres):', data.substring(0, 200));
-        return data;
-      } catch (error) {
-        console.error('Error al cargar el CSV:', error);
-        throw error;
+      }
+      // last resort: return first two alpha tokens
+      return candidates.slice(0,2);
+    }
+
+    // Mapea un token a la moneda ISO si existe
+    function tokenToISO(token) {
+      if (!token) return null;
+      const t = token.toUpperCase().replace(/\./g,'').replace(/[^A-Z0-9]/g,'');
+      if (countryToISO[t]) return countryToISO[t];
+      // certain tokens might be currency code already
+      if (['ARS','VES','CLP','USD','MXN','PEN','COP','EUR','BRL','UYU','ECU'].includes(t)) return t;
+      return null;
+    }
+
+    // Normaliza números con $ . y , (ej: "$1.234,56" -> 1234.56) y porcentajes
+    function parseNumberString(s) {
+      if (s === undefined || s === null) return NaN;
+      let text = String(s).trim();
+      // remove surrounding quotes
+      text = text.replace(/^"|"$/g,'').trim();
+      // ignore cells like "PROVEDOR" or plain text
+      // remove currency symbol and percentage signs
+      text = text.replace(/[%$]/g,'').trim();
+      // sometimes thousands use dot and decimal uses comma -> detect
+      // if contains both '.' and ',' and comma to the right of dot, assume dot thousands and comma decimal
+      if (/[0-9]+\.[0-9]{3},[0-9]+/.test(text)) {
+        text = text.replace(/\./g,'').replace(/,/g,'.');
+      } else {
+        // if contains dots only and dot appears multiple times and no comma -> remove dots
+        if (text.indexOf('.') !== -1 && text.indexOf(',') === -1) {
+          // ambiguous: could be "1.234" meaning 1234 or 1.234 -> we'll remove dots if more than one or if rightmost group length is 3
+          const parts = text.split('.');
+          if (parts.length>1 && parts[parts.length-1].length===3) {
+            text = text.replace(/\./g,'');
+          } // else keep dot as decimal
+        }
+        // if comma used as decimal (e.g., 0,156), convert to dot
+        if (text.indexOf(',') !== -1 && text.indexOf('.') === -1) {
+          text = text.replace(/,/g,'.');
+        } else if (text.indexOf(',') !== -1 && text.indexOf('.') !== -1) {
+          // if both exist but pattern not matched earlier, assume dots thousands, commas decimals
+          text = text.replace(/\./g,'').replace(/,/g,'.');
+        }
+      }
+      // remove any non-number leftover
+      text = text.replace(/[^\d\.\-]/g,'');
+      const parsed = parseFloat(text);
+      return parsed;
+    }
+
+    // Busca en una fila (array de celdas) el primer valor no vacío que parezca ser un par (ej: contiene '-' o '/')
+    function findPairCellInRow(row) {
+      if (!row || !row.length) return null;
+      for (let i=0;i<row.length;i++){
+        const cell = (row[i]||'').toString().trim();
+        if (!cell) continue;
+        const stripped = stripEmojisAndExtras(cell).toUpperCase();
+        // heurística: si contiene '/' con currency-like tokens o '-' with tokens or contains "COTIZACION"
+        if (/[A-Z]{2,6}\s*\/\s*[A-Z]{2,6}/.test(stripped) ||
+            /[A-Z]{2,6}\s*-\s*[A-Z]{2,6}/.test(stripped) ||
+            /COTIZACION/.test(stripped) || /COTI/.test(stripped)) {
+          return { index:i, raw:cell };
+        }
+      }
+      // fallback: return first non-empty
+      for (let i=0;i<row.length;i++){
+        const cell = (row[i]||'').toString().trim();
+        if (cell) return {index:i, raw:cell};
+      }
+      return null;
+    }
+
+    // Busca un número en una fila (array de celdas) tomando el primer valor numerico plausible
+    function findNumberInRow(row) {
+      if (!row || !row.length) return null;
+      for (let i=0;i<row.length;i++){
+        const c = row[i];
+        if (c === undefined || c === null) continue;
+        const txt = c.toString().trim();
+        if (!txt) continue;
+        const parsed = parseNumberString(txt);
+        if (!isNaN(parsed)) return { index:i, raw:txt, value: parsed };
+      }
+      return null;
+    }
+
+    // -------------------------
+    // CSV LOADER
+    // -------------------------
+    async function loadCSVText(url) {
+      try {
+        const resp = await fetch(url, { method:'GET', headers:{'Accept':'text/csv'}});
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const text = await resp.text();
+        debugLog('CSV cargado (primeros 200 chars):', text.slice(0,200));
+        return text;
+      } catch (err) {
+        debugLog('Error cargando CSV:', err);
+        throw err;
       }
     }
-    // Mapa estelar interactivo
-    function initStarfield() {
-      const canvas = document.getElementById('starfield');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      const stars = [];
-      const numStars = 150;
-      let mouseX = canvas.width / 2;
-      let mouseY = canvas.height / 2;
-      // Crear estrellas
-      for (let i = 0; i < numStars; i++) {
-        stars.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          radius: Math.random() * 1 + 0.5,
-          vx: (Math.random() - 0.5) * 0.1,
-          vy: (Math.random() - 0.5) * 0.1
-        });
-      }
-      // Actualizar posición del mouse/touch
-      canvas.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-      });
-      canvas.addEventListener('touchmove', (e) => {
-        mouseX = e.touches[0].clientX;
-        mouseY = e.touches[0].clientY;
-      });
-      // Animar estrellas
-      let lastTime = 0;
-      function animate(timestamp) {
-        if (timestamp - lastTime < 16.67) { // Limitar a 60fps
-          requestAnimationFrame(animate);
-          return;
+
+    // -------------------------
+    // PARSER PRINCIPAL
+    // -------------------------
+    /**
+     * Estrategia:
+     * - Buscar pares en filas que empiezan en 4, 13, 22, ... (es decir fila index 3 + 9*n)
+     * - Para cada parRow, tomar rateRow = pairRow + 3 (ej: bcd4 -> fg7)
+     * - Para cada pairRow: buscar celda que contenga "COTIZACION" o '-' o '/' o tokens country-like.
+     * - Extraer tokens, mapear a ISO. Construir par ISO1/ISO2.
+     * - Para rateRow: buscar primera celda numérica plausible.
+     * - Si no se encuentra, aplicar heurística alternativa: buscar en filas cercanas +/-2 filas.
+     */
+    function parseExchangePairsFromPapaResults(results) {
+      const data = results.data || [];
+      const numRows = data.length;
+      const exchange = {}; // map pair -> rate (float)
+      const debugEntries = [];
+
+      // We will start scanning from row index 3 (which is "fila 4" human)
+      const startIndex = 3;
+      const step = 9; // pattern observed: every 9 rows
+      for (let r = startIndex; r < numRows; r += step) {
+        const pairRowIndex = r; // 0-based
+        const rateRowIndex = r + 3; // three rows down
+
+        const pairRow = data[pairRowIndex];
+        if (!pairRow) {
+          debugEntries.push(`Fila ${pairRowIndex+1} vacía, se salta.`);
+          continue;
         }
-        lastTime = timestamp;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        stars.forEach(star => {
-          // Mover estrellas hacia el mouse/touch
-          const dx = mouseX - star.x;
-          const dy = mouseY - star.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          if (distance < 100) {
-            star.vx += dx * 0.0003;
-            star.vy += dy * 0.0003;
-          }
-          star.x += star.vx;
-          star.y += star.vy;
-          // Rebotar en los bordes
-          if (star.x < 0 || star.x > canvas.width) star.vx *= -1;
-          if (star.y < 0 || star.y > canvas.height) star.vy *= -1;
-          // Dibujar estrella
-          ctx.beginPath();
-          ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-          ctx.fillStyle = '#e6e6e6';
-          ctx.fill();
-        });
-        // Dibujar líneas de conexión
-        ctx.strokeStyle = 'rgba(0, 153, 119, 0.25)';
-        ctx.lineWidth = 0.8;
-        for (let i = 0; i < stars.length; i++) {
-          for (let j = i + 1; j < stars.length; j++) {
-            if (Math.random() < 0.04) {
-              const dx = stars[i].x - stars[j].x;
-              const dy = stars[i].y - stars[j].y;
-              const distance = Math.sqrt(dx * dx + dy * dy);
-              if (distance < 100) {
-                ctx.beginPath();
-                ctx.moveTo(stars[i].x, stars[i].y);
-                ctx.lineTo(stars[j].x, stars[j].y);
-                ctx.stroke();
+
+        // Buscar la celda con la info del par
+        const foundPairCell = findPairCellInRow(pairRow);
+        const rawPairText = foundPairCell ? foundPairCell.raw : null;
+        debugEntries.push(`Fila ${pairRowIndex+1} (BCD): "${rawPairText ? rawPairText : ''}"`);
+
+        // Heurístico para extraer tokens
+        let tokens = extractCountryTokens(stripEmojisAndExtras(rawPairText || '') || '');
+        // If tokens are not good, try alternative: check next row, previous row, or the row that lists explicit pairs like "ARS/USDT,USDT/VES,ARS/VES"
+        if (!tokens || tokens.length < 2 || !tokens[0] || !tokens[1]) {
+          // look in same row for slash patterns inside any cell (e.g., a CSV cell contains "ARS/USDT,USDT/VES,ARS/VES")
+          for (let ci=0; ci < (pairRow||[]).length; ci++) {
+            const ctext = (pairRow[ci]||'').toString();
+            if (/[A-Z]{2,5}\/[A-Z]{2,5}/i.test(ctext)) {
+              const match = ctext.match(/([A-Z]{2,5})\/([A-Z]{2,5})/i);
+              if (match) {
+                tokens = [match[1].toUpperCase(), match[2].toUpperCase()];
+                debugEntries.push(`Heurístico adicional (slash en fila ${pairRowIndex+1}, col ${ci+1}) -> ${tokens.join('/')}`);
+                break;
               }
             }
           }
         }
-        requestAnimationFrame(animate);
-      }
-      animate(0);
-    }
-    // Partículas de vuelo
-    function initParticles() {
-      const particlesContainer = document.getElementById('particles');
-      for (let i = 0; i < 30; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.top = `${Math.random() * 100}%`;
-        particle.style.setProperty('--delay', Math.random() * 1);
-        particlesContainer.appendChild(particle);
-      }
-    }
-    // Velocímetro gráfico
-    function initSpeedometer() {
-      const canvas = document.getElementById('speedometer');
-      const ctx = canvas.getContext('2d');
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      let angle = 0;
-      let targetAngle = 0;
-      function drawSpeedometer() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const radius = canvas.width * 0.4;
-        // Dibujar arco
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, Math.PI * 0.75, Math.PI * 2.25);
-        ctx.strokeStyle = '#009977';
-        ctx.lineWidth = 4;
-        ctx.stroke();
-        // Dibujar aguja
-        const rad = (angle * Math.PI) / 180;
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(centerX + radius * Math.cos(rad + Math.PI * 0.75), centerY + radius * Math.sin(rad + Math.PI * 0.75));
-        ctx.strokeStyle = '#00cc99';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        // Dibujar dígitos
-        ctx.fillStyle = '#e6e6e6';
-        ctx.font = `${canvas.width * 0.15}px 'Exo 2'`;
-        ctx.textAlign = 'center';
-        ctx.fillText('0', centerX - radius * 0.7, centerY + radius * 1.2);
-        ctx.fillText('500', centerX, centerY - radius * 0.9);
-        ctx.fillText('1000', centerX + radius * 0.7, centerY + radius * 1.2);
-      }
-      function animateSpeedometer() {
-        if (Math.abs(angle - targetAngle) > 0.1) {
-          angle += (targetAngle - angle) * 0.1;
-          drawSpeedometer();
-          requestAnimationFrame(animateSpeedometer);
+
+        // If still not two tokens, try scanning nearby rows for a clearer cell
+        if (!tokens || tokens.length < 2 || !tokens[0] || !tokens[1]) {
+          for (let offset = -2; offset <= 2; offset++) {
+            if (offset === 0) continue;
+            const rr = pairRowIndex + offset;
+            if (rr < 0 || rr >= numRows) continue;
+            const altFound = findPairCellInRow(data[rr]);
+            if (altFound) {
+              const altTokens = extractCountryTokens(stripEmojisAndExtras(altFound.raw||''));
+              if (altTokens && altTokens.length>=2) {
+                tokens = altTokens;
+                debugEntries.push(`Heurístico cercano: fila ${rr+1} -> ${tokens.join('/')}`);
+                break;
+              }
+            }
+          }
         }
-      }
-      drawSpeedometer();
-      window.updateSpeedometer = (value) => {
-        targetAngle = Math.min(value / 1000 * 270, 270);
-        requestAnimationFrame(animateSpeedometer);
-      };
+
+        // Map tokens to ISO
+        const isoA = tokenToISO(tokens && tokens[0] ? tokens[0] : null);
+        const isoB = tokenToISO(tokens && tokens[1] ? tokens[1] : null);
+
+        if (!isoA || !isoB) {
+          debugEntries.push(`Fila ${pairRowIndex+1} no pudo mapear tokens a ISO: tokens=${JSON.stringify(tokens)} -> isoA=${isoA} isoB=${isoB}`);
+          // continue scanning (we still attempt to get a rate heuristically if tokens missing)
+        } else {
+          const pairKey = `${isoA}/${isoB}`;
+          // find rate in rateRow
+          let rateValue = NaN;
+          let rateSourceInfo = null;
+          // attempt direct rateRow
+          if (rateRowIndex < numRows && rateRowIndex >=0) {
+            const rateRow = data[rateRowIndex];
+            const foundNumber = findNumberInRow(rateRow);
+            if (foundNumber) {
+              rateValue = foundNumber.value;
+              rateSourceInfo = `fila ${rateRowIndex+1} col ${foundNumber.index+1}`;
+              debugEntries.push(`Fila tasa ${rateRowIndex+1}: Asignado ${pairKey} = ${rateValue} (${rateSourceInfo})`);
+            } else {
+              // maybe the rate is stored in the same row as pairRow but in a column further (some sheets)
+              const fallback = findNumberInRow(pairRow);
+              if (fallback) {
+                rateValue = fallback.value;
+                rateSourceInfo = `fila ${pairRowIndex+1} col ${fallback.index+1} (fallback)`;
+                debugEntries.push(`Fallback: fila ${pairRowIndex+1} encontró número ${rateValue} (${rateSourceInfo})`);
+              }
+            }
+          }
+          // If not found, search within a small window forward/backwards (up to 5 rows)
+          if (isNaN(rateValue)) {
+            for (let off= -2; off<=5; off++) {
+              const rr = rateRowIndex + off;
+              if (rr < 0 || rr >= numRows) continue;
+              const candidate = findNumberInRow(data[rr]);
+              if (candidate) {
+                rateValue = candidate.value;
+                rateSourceInfo = `fila ${rr+1} col ${candidate.index+1} (heurístico off ${off})`;
+                debugEntries.push(`Heurístico tasa: fila ${rr+1} -> ${rateValue}`);
+                break;
+              }
+            }
+          }
+
+          // If we found a rate, assign. If rate looks absurd we keep it but log.
+          if (!isNaN(rateValue)) {
+            exchange[pairKey] = rateValue;
+          } else {
+            debugEntries.push(`No se encontró tasa para ${pairKey} en ventana esperada (fila ${rateRowIndex+1}).`);
+          }
+        }
+      } // end for
+
+      return { exchange, debugEntries };
     }
-    // Componente principal de React
+
+    // -------------------------
+    // REACT COMPONENT
+    // -------------------------
     function CurrencyCalculator() {
-      const [data, setData] = React.useState(null);
-      const [originCountry, setOriginCountry] = React.useState('');
-      const [destinationCountry, setDestinationCountry] = React.useState('');
+      const [dataMap, setDataMap] = React.useState(null);
+      const [loading, setLoading] = React.useState(true);
+      const [error, setError] = React.useState('');
+      const [origin, setOrigin] = React.useState('');
+      const [dest, setDest] = React.useState('');
       const [amount, setAmount] = React.useState('');
       const [result, setResult] = React.useState(null);
-      const [error, setError] = React.useState('');
-      const [rateDisplay, setRateDisplay] = React.useState(null);
+      const [rateView, setRateView] = React.useState(null);
+      const [debugText, setDebugText] = React.useState('');
       const containerRef = React.useRef(null);
-      // Cargar y parsear el CSV
-      React.useEffect(() => {
-        loadFileData().then(csv => {
-          Papa.parse(csv, {
-            skipEmptyLines: true,
-            transform: (value) => value.trim().replace(/^"|"$/g, ''),
+
+      // Load and parse CSV once on mount
+      React.useEffect(()=> {
+        setLoading(true);
+        loadCSVText(CSV_URL).then(csvText => {
+          Papa.parse(csvText, {
+            skipEmptyLines: false, // we need relative row positions
+            transform: (v) => (typeof v === 'string') ? v.trim().replace(/^"|"$/g,'') : v,
             complete: (results) => {
-              const exchangeRates = {};
-              // ---------- REEMPLAZO: parseo por B+C+D y tasa en FG fila +3 ----------
-              // Tomamos filas de par en: 4,13,22,... => índices base0: 3,12,21,... -> patrón: (index - 3) % 9 === 0
-              results.data.forEach((row, index) => {
-                try {
-                  if ((index - 3) % 9 === 0 && index >= 3) {
-                    // creamos texto desde BCD (índices 1,2,3)
-                    const b = row[1] ? String(row[1]).trim() : '';
-                    const c = row[2] ? String(row[2]).trim() : '';
-                    const d = row[3] ? String(row[3]).trim() : '';
-                    const combined = `${b} ${c} ${d}`.replace(/\u00A0/g, ' ').trim();
-                    const cleanCombined = combined.replace(/[\u{1F300}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim() || combined;
-                    console.log(`Fila ${index+1} (BCD): "${cleanCombined}"`);
-                    if (cleanCombined && cleanCombined.includes('/')) {
-                      // Primero intento split directo si hay formato ARG/VEN o ARG-VEN
-                      const pairText = cleanCombined.replace('-', '/').replace('–', '/').replace('_', '/');
-                      const parts = pairText.split('/').map(s => s.trim().toUpperCase()).filter(Boolean);
-                      if (parts.length >= 2) {
-                        const origin = parts[0];
-                        const dest = parts[1];
-                        const originCurrency = countryCodeToCurrency[origin] || countryCodeToCurrency[origin.replace(/\W/g,'')] || origin;
-                        const destCurrency = countryCodeToCurrency[dest] || countryCodeToCurrency[dest.replace(/\W/g,'')] || dest;
-                        const pairKey = `${originCurrency}/${destCurrency}`;
-                        // tasa: fila index+3, columna F (5) preferida, G (6) fallback
-                        const rateRow = results.data[index + 3];
-                        if (rateRow) {
-                          let raw = rateRow[5] || rateRow[6] || '';
-                          if (raw) {
-                            raw = String(raw).replace('$', '').trim();
-                            // robust numeric: remove thousand dots and replace comma decimal
-                            let cleaned = raw.replace(/\./g, '');
-                            cleaned = cleaned.replace(',', '.');
-                            const parsedRate = parseFloat(cleaned);
-                            if (!isNaN(parsedRate)) {
-                              exchangeRates[pairKey] = parsedRate;
-                              console.log(`Fila tasa ${index+4}: Asignado ${pairKey} = ${parsedRate}`);
-                            } else {
-                              console.warn(`Fila tasa ${index+4}: valor no numérico '${raw}' para par ${pairKey}`);
-                            }
-                          } else {
-                            console.warn(`Fila tasa ${index+4} vacía para par ${pairKey}`);
-                          }
-                        } else {
-                          console.warn(`No existe fila de tasa en index ${index+3} para par ${pairKey}`);
-                        }
-                      } else {
-                        // si no splitea, intentar buscar tokens en el texto (ej. "COTIZACION MESA ARG-VEN 🇦🇷🇻🇪")
-                        const textUpper = cleanCombined.toUpperCase();
-                        const knownCodes = Object.keys(countryCodeToCurrency);
-                        const found = [];
-                        for (const code of knownCodes) {
-                          if (textUpper.includes(code)) found.push(code);
-                          if (found.length >= 2) break;
-                        }
-                        if (found.length >= 2) {
-                          const originToken = found[0];
-                          const destToken = found[1];
-                          const originCurrency = countryCodeToCurrency[originToken] || originToken;
-                          const destCurrency = countryCodeToCurrency[destToken] || destToken;
-                          const pairKey = `${originCurrency}/${destCurrency}`;
-                          const rateRow = results.data[index + 3];
-                          if (rateRow) {
-                            let raw = rateRow[5] || rateRow[6] || '';
-                            if (raw) {
-                              raw = String(raw).replace('$', '').trim();
-                              let cleaned = raw.replace(/\./g, '');
-                              cleaned = cleaned.replace(',', '.');
-                              const parsedRate = parseFloat(cleaned);
-                              if (!isNaN(parsedRate)) {
-                                exchangeRates[pairKey] = parsedRate;
-                                console.log(`Fila tasa ${index+4}: Asignado (heurístico) ${pairKey} = ${parsedRate}`);
-                              } else {
-                                console.warn(`Fila tasa ${index+4}: valor no numérico '${raw}' heurístico para par ${pairKey}`);
-                              }
-                            } else {
-                              console.warn(`Fila tasa ${index+4} vacía heurístico para par ${pairKey}`);
-                            }
-                          } else {
-                            console.warn(`No existe fila de tasa (heurístico) en index ${index+3} para par ${pairKey}`);
-                          }
-                        } else {
-                          console.warn(`Fila ${index+1} BCD no contiene par reconocible: "${cleanCombined}"`);
-                        }
-                      }
-                    } else {
-                      // Si la cadena no contiene '/', tratar de extraer con heurística (ej "COTIZACION MESA ARG-VEN ...")
-                      const textUpper = cleanCombined.toUpperCase();
-                      const knownCodes = Object.keys(countryCodeToCurrency);
-                      const found = [];
-                      for (const code of knownCodes) {
-                        if (textUpper.includes(code)) {
-                          found.push(code);
-                          if (found.length >= 2) break;
-                        }
-                      }
-                      if (found.length >= 2) {
-                        const originCurrency = countryCodeToCurrency[found[0]];
-                        const destCurrency = countryCodeToCurrency[found[1]];
-                        const pairKey = `${originCurrency}/${destCurrency}`;
-                        const rateRow = results.data[index + 3];
-                        if (rateRow) {
-                          let raw = rateRow[5] || rateRow[6] || '';
-                          if (raw) {
-                            raw = String(raw).replace('$', '').trim();
-                            let cleaned = raw.replace(/\./g, '');
-                            cleaned = cleaned.replace(',', '.');
-                            const parsedRate = parseFloat(cleaned);
-                            if (!isNaN(parsedRate)) {
-                              exchangeRates[pairKey] = parsedRate;
-                              console.log(`Fila tasa ${index+4}: Asignado (heurístico 2) ${pairKey} = ${parsedRate}`);
-                            } else {
-                              console.warn(`Fila tasa ${index+4}: valor no numérico '${raw}' heurístico2 para par ${pairKey}`);
-                            }
-                          } else {
-                            console.warn(`Fila tasa ${index+4} vacía heurístico2 para par ${pairKey}`);
-                          }
-                        } else {
-                          console.warn(`No existe fila de tasa (heurístico2) en index ${index+3} para par ${pairKey}`);
-                        }
-                      } else {
-                        console.warn(`Fila ${index+1} no contiene par ni tokens suficientes: "${cleanCombined}"`);
-                      }
-                    }
-                  }
-                } catch (e) {
-                  console.error('Error parseando fila index', index, e);
-                }
-              });
-              console.log('Pares de monedas extraídos:', exchangeRates);
-              setData(exchangeRates);
+              try {
+                const parsed = parseExchangePairsFromPapaResults(results);
+                setDataMap(parsed.exchange);
+                setDebugText(parsed.debugEntries.join('\n'));
+                setLoading(false);
+                setError('');
+                debugLog('Pares de monedas extraídos:', parsed.exchange);
+              } catch (err) {
+                setError('Error procesando CSV: ' + err.message);
+                setLoading(false);
+                debugLog(err);
+              }
             },
             error: (err) => {
-              setError('Error al parsear el CSV: ' + err.message);
-              console.error('Error al parsear el CSV:', err);
+              setError('Error al parsear CSV: ' + err.message);
+              setLoading(false);
+              debugLog(err);
             }
           });
         }).catch(err => {
-          setError('Error al cargar el archivo CSV: ' + err.message);
-          console.error('Error al cargar el CSV:', err);
+          setError('Error cargando CSV: ' + (err.message||err));
+          setLoading(false);
         });
       }, []);
-      // Generar estrellas, partículas y inicializar canvas
-      React.useEffect(() => {
-        const starsContainer = document.getElementById('stars');
-        for (let i = 0; i < 150; i++) {
-          const star = document.createElement('div');
-          star.className = 'star';
-          star.style.left = `${Math.random() * 100}%`;
-          star.style.top = `${Math.random() * 100}%`;
-          star.style.width = `${Math.random() * 1 + 0.5}px`;
-          star.style.height = `${Math.random() * 1 + 0.5}px`;
-          star.style.setProperty('--delay', Math.random() * 1);
-          starsContainer.appendChild(star);
+
+      // small UX helpers
+      const playClick = () => {
+        try {
+          navigator.vibrate && navigator.vibrate(30);
+        } catch(e){}
+      };
+
+      const formatNumber = (num) => {
+        if (num === null || num === undefined || isNaN(num)) return '-';
+        try {
+          return Number(num).toLocaleString('es-CL', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+        } catch(e) {
+          return num;
         }
-        initStarfield();
-        initParticles();
-        initSpeedometer();
-      }, []);
-      // Reproducir sonidos
-      const playClickSound = () => {
-        const sound = document.getElementById('clickSound');
-        sound.play().catch(() => console.log('Click sound playback failed'));
       };
-      const playJetSound = () => {
-        const sound = document.getElementById('jetSound');
-        sound.play().catch(() => console.log('Jet sound playback failed'));
-      };
-      // Manejar cálculo de conversión
-      const handleCalculate = () => {
+
+      function handleCalculate() {
         setError('');
         setResult(null);
-        setRateDisplay(null);
-        if (!originCountry || !destinationCountry) {
-          setError('Por favor, selecciona los países de origen y destino.');
+        setRateView(null);
+        if (!origin || !dest) {
+          setError('Selecciona país origen y destino.');
           return;
         }
-        if (!amount || /^0+$/.test(amount.trim())) {
-          setAmount('0');
-          setError('Por favor, ingresa un monto válido mayor que 0.');
+        if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+          setError('Ingresa un monto válido mayor a 0.');
           return;
         }
-        if (isNaN(amount) || parseFloat(amount) <= 0) {
-          setError('Por favor, ingresa un monto válido.');
+        playClick();
+        const pair = `${origin}/${dest}`;
+        if (!dataMap || !dataMap[pair]) {
+          setError(`No se encontró la tasa de cambio para ${currencyToCountry[origin] || origin} → ${currencyToCountry[dest] || dest}.`);
           return;
         }
-        playClickSound();
-        playJetSound();
-        if (navigator.vibrate) navigator.vibrate(50);
-        containerRef.current.classList.add('vibrate-container');
-        setTimeout(() => containerRef.current.classList.remove('vibrate-container'), 200);
-        const amountValue = parseFloat(amount);
-        const pair = `${originCountry}/${destinationCountry}`;
-        if (!data || !data[pair]) {
-          setError(`No se encontró la tasa de cambio de ${currencyToCountry[originCountry]} a ${currencyToCountry[destinationCountry]}.`);
-          return;
-        }
-        const rate = data[pair];
-        const convertedAmount = amountValue * rate;
+        const rate = dataMap[pair];
+        const converted = parseFloat(amount) * rate;
         setResult({
-          amount: amountValue,
-          from: currencyToCountry[originCountry],
-          to: currencyToCountry[destinationCountry],
-          rate: rate,
-          converted: convertedAmount,
-          currency: destinationCountry
+          fromIso: origin, toIso: dest, rate, amount: parseFloat(amount), converted
         });
-        window.updateSpeedometer(amountValue);
-      };
-      // Manejar visualización de tasa
-      const handleViewRate = () => {
+      }
+
+      function handleViewRate() {
         setError('');
         setResult(null);
-        setRateDisplay(null);
-        if (!originCountry || !destinationCountry) {
-          setError('Por favor, selecciona los países de origen y destino.');
+        if (!origin || !dest) {
+          setError('Selecciona país origen y destino.');
           return;
         }
-        playClickSound();
-        playJetSound();
-        if (navigator.vibrate) navigator.vibrate(50);
-        containerRef.current.classList.add('vibrate-container');
-        setTimeout(() => containerRef.current.classList.remove('vibrate-container'), 200);
-        const pair = `${originCountry}/${destinationCountry}`;
-        if (!data || !data[pair]) {
-          setError(`No se encontró la tasa de cambio de ${currencyToCountry[originCountry]} a ${currencyToCountry[destinationCountry]}.`);
+        playClick();
+        const pair = `${origin}/${dest}`;
+        if (!dataMap || !dataMap[pair]) {
+          setError(`No se encontró la tasa de cambio para ${currencyToCountry[origin] || origin} → ${currencyToCountry[dest] || dest}.`);
           return;
         }
-        const rate = data[pair];
-        setRateDisplay({
-          from: currencyToCountry[originCountry],
-          to: currencyToCountry[destinationCountry],
-          rate: rate,
-          originCurrency: originCountry,
-          destinationCurrency: destinationCountry
-        });
-      };
-      // Mostrar estado de carga
-      if (!data) {
+        const rate = dataMap[pair];
+        setRateView({ from: origin, to: dest, rate });
+      }
+
+      // Countries dropdown from currencyToCountry mapping
+      const countries = Object.keys(currencyToCountry).sort();
+
+      if (loading) {
         return (
-          <div className="flex justify-center items-center h-screen text-gray-300">
-            <div className="text-xs font-medium animate-pulse">Cargando tasas de cambio...</div>
-          </div>
+          <div style={{padding:'20px'}} className="muted">Cargando tasas de cambio... (parser robusto)</div>
         );
       }
-      // Renderizar interfaz principal
-      const countries = Object.keys(currencyToCountry).sort();
+
       return (
-        <div className="min-h-screen flex items-center justify-center p-3">
-          <div className="container" ref={containerRef}>
-            <img src="logo blackbird.png" alt="Blackbird Exchange Logo" className="logo mx-auto mb-2" />
-            <h1 className="text-base font-semibold mb-2 text-center text-gray-300 hud-text">Blackbird Exchange</h1>
-            {error && (
-              <div className="bg-red-900/50 text-red-300 p-1.5 rounded-lg mb-2 text-xs animate-pulse">{error}</div>
-            )}
-            <div className="mb-2">
-              <label className="block text-xs font-light text-gray-300 mb-1 hud-text">País de Origen</label>
-              <select
-                value={originCountry}
-                onChange={(e) => setOriginCountry(e.target.value)}
-                className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
-              >
-                <option value="">Selecciona el país de origen</option>
-                {countries.map((currency) => (
-                  <option key={currency} value={currency}>{currencyToCountry[currency]}</option>
-                ))}
+        <div>
+          {error && <div className="card" style={{borderColor:'rgba(255,0,0,0.06)',background:'rgba(255,0,0,0.02)'}}>{error}</div>}
+          <div className="grid">
+            <div className="field">
+              <label>País / Moneda Origen</label>
+              <select value={origin} onChange={(e)=>setOrigin(e.target.value)}>
+                <option value="">Selecciona país origen</option>
+                {countries.map(c => <option key={c} value={c}>{currencyToCountry[c]}</option>)}
               </select>
             </div>
-            <div className="mb-2">
-              <label className="block text-xs font-light text-gray-300 mb-1 hud-text">País de Destino</label>
-              <select
-                value={destinationCountry}
-                onChange={(e) => setDestinationCountry(e.target.value)}
-                className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
-              >
-                <option value="">Selecciona el país de destino</option>
-                {countries.map((currency) => (
-                  <option key={currency} value={currency}>{currencyToCountry[currency]}</option>
-                ))}
+            <div className="field">
+              <label>País / Moneda Destino</label>
+              <select value={dest} onChange={(e)=>setDest(e.target.value)}>
+                <option value="">Selecciona país destino</option>
+                {countries.map(c => <option key={c} value={c}>{currencyToCountry[c]}</option>)}
               </select>
             </div>
-            <div className="mb-2">
-              <label className="block text-xs font-light text-gray-300 mb-1 hud-text">Monto</label>
-              <input
-                type="number"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="Ingresa el monto"
-                className="w-full p-1.5 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
-                min="0"
-                step="0.0001"
-              />
+            <div className="field">
+              <label>Monto</label>
+              <input type="number" inputMode="numeric" step="0.0001" min="0" value={amount} onChange={(e)=>setAmount(e.target.value)} placeholder="Ingresa monto"/>
             </div>
-            <div className="flex justify-center gap-2">
-              {originCountry && destinationCountry && (
-                <button
-                  onClick={handleViewRate}
-                  className="text-xs font-medium rounded-lg"
-                >
-                  Ver Tasa
-                </button>
-              )}
-              <button
-                onClick={handleCalculate}
-                className="text-xs font-medium rounded-lg"
-              >
-                Calcular
-              </button>
+            <div className="field">
+              <label>Acciones</label>
+              <div style={{display:'flex',gap:8}}>
+                <button className="btn" onClick={()=>{ setAmount(''); setOrigin(''); setDest(''); setResult(null); setRateView(null); setError(''); }}>Limpiar</button>
+                <button className="btn primary" onClick={handleCalculate}>Calcular</button>
+                <button className="btn" onClick={handleViewRate}>Ver Tasa</button>
+              </div>
             </div>
-            {rateDisplay && (
-              <div className="result mt-2 p-1.5 bg-gray-800/50 rounded-lg border border-gray-600">
-                <p className="text-xs text-gray-300 hud-text">
-                  Tasa de Cambio: 1 {rateDisplay.originCurrency} ({rateDisplay.from}) = {formatNumber(rateDisplay.rate)} {rateDisplay.destinationCurrency} ({rateDisplay.to})
-                </p>
-              </div>
-            )}
-            {result && (
-              <div className="result mt-2 p-1.5 bg-gray-800/50 rounded-lg border border-gray-600">
-                <p className="text-xs text-gray-300 hud-text">
-                  Resultado de la Conversión: {formatNumber(result.amount)} {result.from} ({originCountry}) ={' '}
-                  {formatNumber(result.converted)} {result.to} ({destinationCountry})
-                </p>
-                <p className="text-xs text-gray-400 mt-1 hud-text">
-                  Tasa de Cambio: 1 {originCountry} = {formatNumber(result.rate)} {destinationCountry}
-                </p>
-                <a
-                  href="https://t.me/+i02VPMg23TNiOWJh"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="telegram-button mt-1.5"
-                >
-                  <i className="fab fa-telegram-plane"></i>
-                  ¡Envía tu remesa por Telegram!
-                </a>
-              </div>
-            )}
           </div>
+
+          <div className="info">Fuente: CSV compartido. Parser preparado para leer pares en filas tipo BCD4, BCD13, BCD22 ... (y buscar la tasa en FG3 filas más abajo)</div>
+
+          {/* Rate display */}
+          {rateView && (
+            <div className="card">
+              <p><strong>Tasa de Cambio</strong></p>
+              <div className="sub">1 {rateView.from} ({currencyToCountry[rateView.from] || rateView.from}) = {formatNumber(rateView.rate)} {rateView.to} ({currencyToCountry[rateView.to] || rateView.to})</div>
+            </div>
+          )}
+
+          {/* Result */}
+          {result && (
+            <div className="card" style={{marginTop:12}}>
+              <p><strong>Resultado de la Conversión</strong></p>
+              <div className="sub">{formatNumber(result.amount)} {currencyToCountry[result.fromIso] || result.fromIso} = <strong>{formatNumber(result.converted)}</strong> {currencyToCountry[result.toIso] || result.toIso}</div>
+              <div className="sub" style={{marginTop:6}}>Tasa utilizada: 1 {result.fromIso} = {formatNumber(result.rate)} {result.toIso}</div>
+            </div>
+          )}
+
+          {/* Debug area (collapsible style) */}
+          <div style={{marginTop:10}}>
+            <details>
+              <summary style={{cursor:'pointer', color:'var(--muted)'}}>Mostrar debug del parser</summary>
+              <pre className="debug">{debugText || 'Sin debug'}</pre>
+            </details>
+          </div>
+
         </div>
       );
     }
-    // Renderizar el componente
+
+    // Render
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<CurrencyCalculator />);
+
+    // -------------------------
+    // Nota: Si quieres más animación/immersión:
+    // - puedo añadir más partículas y movimiento del fondo.
+    // - por ahora he dejado efectos suaves (glow + stars) para no romper la UI.
+    // -------------------------
   </script>
 </body>
 </html>
