@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    /* Tu CSS original, sin cambios */
+    /* CSS sin cambios, igual al código anterior */
     body {
       background: #0a0a0a;
       color: #e6e6e6;
@@ -315,7 +315,7 @@
       text-shadow: 0 0 5px rgba(0, 204, 153, 0.6);
     }
     h1, h2 {
-      text辦公室: 0 0 6px rgba(0,255,204,0.08), 0 0 14px rgba(0,153,119,0.06);
+      text-shadow: 0 0 6px rgba(0,255,204,0.08), 0 0 14px rgba(0,153,119,0.06);
     }
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -461,11 +461,11 @@
       // México
       'MEX': 'MXN', 'MÉXICO': 'MXN', 'MEXICO': 'MXN', 'PESO MEX': 'MXN', 'PESO MEXICANO': 'MXN', 'MX$': 'MXN',
       // Perú
-      'PERU': 'PEN', 'PERÚ': 'PEN', 'PER': 'PEN', 'SOL': 'PEN', 'SOLES': 'PEN', 'PEN$': 'PEN',
+      'PERU': 'PEN', 'PERÚ': 'PEN', 'PER': 'PEN', 'SOLES': 'PEN', 'PEN$': 'PEN',
       // Colombia
       'COP': 'COP', 'COL': 'COP', 'COLOMBIA': 'COP', 'PESO COL': 'COP', 'PESO COLOMBIANO': 'COP', 'COL$': 'COP',
       // Eurozona
-      'EUR': 'EUR', 'EURO': 'EUR', 'EUROPA': 'EUR', 'EUROZONA': 'EUR', '€': 'EUR',
+      'EUR': 'EUR', 'EURO': 'EUR', 'EUROPA': 'EUR', 'EUROZONA': 'EUR', '€': 'EUR', 'ESP': 'EUR', 'ESPAÑA': 'EUR',
       // Brasil
       'BRA': 'BRL', 'BRASIL': 'BRL', 'BR': 'BRL', 'REAL': 'BRL', 'REALES': 'BRL', 'BRL$': 'BRL',
       // Uruguay
@@ -480,6 +480,15 @@
     // Función para formatear números con 4 decimales
     const formatNumber = (number) => {
       return number.toLocaleString('es-CL', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+    };
+
+    // Función para limpiar valores de tasa
+    const cleanRate = (raw) => {
+      if (!raw || typeof raw !== 'string') return null;
+      let cleaned = raw.replace(/[$BsCOPARSCLPMXN€S\/.]/g, '').replace(/\s/g, '').trim();
+      cleaned = cleaned.replace(/,/g, '.');
+      const parsed = parseFloat(cleaned);
+      return isNaN(parsed) ? null : parsed;
     };
 
     // Función para cargar el CSV
@@ -655,84 +664,53 @@
               const exchangeRates = {};
               results.data.forEach((row, index) => {
                 try {
+                  // Identificar filas de nombres de pares (BCD4, BCD13, BCD22, ...)
                   if ((index - 3) % 9 === 0 && index >= 3) {
                     const b = row[1] ? String(row[1]).trim() : '';
                     const c = row[2] ? String(row[2]).trim() : '';
                     const d = row[3] ? String(row[3]).trim() : '';
                     const combined = `${b} ${c} ${d}`.replace(/\u00A0/g, ' ').trim();
-                    const cleanCombined = combined.replace(/[\u{1F300}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim() || combined;
+                    const cleanCombined = combined.replace(/[\u{1F300}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
                     console.log(`Fila ${index+1} (BCD): "${cleanCombined}"`);
-                    if (cleanCombined && cleanCombined.includes('/')) {
-                      const pairText = cleanCombined.replace('-', '/').replace('–', '/').replace('_', '/');
-                      const parts = pairText.split('/').map(s => s.trim().toUpperCase()).filter(Boolean);
-                      if (parts.length >= 2) {
-                        const origin = parts[0];
-                        const dest = parts[1];
-                        const originCurrency = countryCodeToCurrency[origin] || countryCodeToCurrency[origin.replace(/\W/g,'')] || origin;
-                        const destCurrency = countryCodeToCurrency[dest] || countryCodeToCurrency[dest.replace(/\W/g,'')] || dest;
-                        const pairKey = `${originCurrency}/${destCurrency}`;
-                        const rateRow = results.data[index + 3];
-                        if (rateRow) {
-                          let raw = rateRow[5] || rateRow[6] || '';
-                          if (raw) {
-                            raw = String(raw).replace('$', '').trim();
-                            let cleaned = raw.replace(/\./g, '');
-                            cleaned = cleaned.replace(',', '.');
-                            const parsedRate = parseFloat(cleaned);
-                            if (!isNaN(parsedRate)) {
-                              exchangeRates[pairKey] = parsedRate;
-                              console.log(`Fila tasa ${index+4}: Asignado ${pairKey} = ${parsedRate}`);
-                            } else {
-                              console.warn(`Fila tasa ${index+4}: valor no numérico '${raw}' para par ${pairKey}`);
-                            }
-                          } else {
-                            console.warn(`Fila tasa ${index+4} vacía para par ${pairKey}`);
-                          }
+                    
+                    // Extraer el par (ej. "ARG-VEN" de "COTIZACION MESA ARG-VEN")
+                    const pairText = cleanCombined.replace('COTIZACION MESA ', '').trim();
+                    const parts = pairText.split('-').map(s => s.trim().toUpperCase()).filter(Boolean);
+                    
+                    if (parts.length >= 2) {
+                      let origin = parts[0];
+                      let dest = parts[1];
+                      // Manejar casos especiales (ej. "USA-VZLA" → "USD-VES")
+                      origin = origin === 'USA' ? 'USD' : origin;
+                      dest = dest === 'VZLA' ? 'VES' : dest;
+                      dest = dest === 'MEXICO' ? 'MXN' : dest;
+                      dest = dest === 'PERU' ? 'PEN' : dest;
+
+                      // Mapear a códigos de moneda
+                      const originCurrency = countryCodeToCurrency[origin] || countryCodeToCurrency[origin.replace(/\W/g, '')] || origin;
+                      const destCurrency = countryCodeToCurrency[dest] || countryCodeToCurrency[dest.replace(/\W/g, '')] || dest;
+                      const pairKey = `${originCurrency}/${destCurrency}`;
+                      
+                      // Buscar la tasa en la fila correspondiente (index + 3, columnas F o G)
+                      const rateRow = results.data[index + 3];
+                      if (rateRow) {
+                        const rawRate = rateRow[5] || rateRow[6] || ''; // Columna F o G
+                        const parsedRate = cleanRate(rawRate);
+                        if (parsedRate !== null) {
+                          exchangeRates[pairKey] = parsedRate;
+                          console.log(`Fila tasa ${index+4}: Asignado ${pairKey} = ${parsedRate}`);
                         } else {
-                          console.warn(`No existe fila de tasa en index ${index+3} para par ${pairKey}`);
+                          console.warn(`Fila tasa ${index+4}: Valor no numérico o vacío '${rawRate}' para par ${pairKey}`);
                         }
                       } else {
-                        console.warn(`Fila ${index+1} BCD no contiene par reconocible: "${cleanCombined}"`);
+                        console.warn(`No existe fila de tasa en index ${index+3} para par ${pairKey}`);
                       }
                     } else {
-                      const textUpper = cleanCombined.toUpperCase();
-                      const knownCodes = Object.keys(countryCodeToCurrency);
-                      const found = [];
-                      for (const code of knownCodes) {
-                        if (textUpper.includes(code)) found.push(code);
-                        if (found.length >= 2) break;
-                      }
-                      if (found.length >= 2) {
-                        const originCurrency = countryCodeToCurrency[found[0]];
-                        const destCurrency = countryCodeToCurrency[found[1]];
-                        const pairKey = `${originCurrency}/${destCurrency}`;
-                        const rateRow = results.data[index + 3];
-                        if (rateRow) {
-                          let raw = rateRow[5] || rateRow[6] || '';
-                          if (raw) {
-                            raw = String(raw).replace('$', '').trim();
-                            let cleaned = raw.replace(/\./g, '');
-                            cleaned = cleaned.replace(',', '.');
-                            const parsedRate = parseFloat(cleaned);
-                            if (!isNaN(parsedRate)) {
-                              exchangeRates[pairKey] = parsedRate;
-                              console.log(`Fila tasa ${index+4}: Asignado (heurístico) ${pairKey} = ${parsedRate}`);
-                            } else {
-                              console.warn(`Fila tasa ${index+4}: valor no numérico '${raw}' heurístico para par ${pairKey}`);
-                            }
-                          } else {
-                            console.warn(`Fila tasa ${index+4} vacía heurístico para par ${pairKey}`);
-                          }
-                        } else {
-                          console.warn(`No existe fila de tasa (heurístico) en index ${index+3} para par ${pairKey}`);
-                        }
-                      } else {
-                        console.warn(`Fila ${index+1} no contiene par ni tokens suficientes: "${cleanCombined}"`);
-                      }
+                      console.warn(`Fila ${index+1}: No se pudo extraer par válido de "${cleanCombined}"`);
                     }
                   }
                 } catch (e) {
-                  console.error('Error parseando fila index', index, e);
+                  console.error(`Error parseando fila ${index+1}:`, e);
                 }
               });
               console.log('Pares de monedas extraídos:', exchangeRates);
@@ -773,13 +751,9 @@
 
       // Reproducir sonidos (deshabilitado temporalmente)
       const playClickSound = () => {
-        // const sound = document.getElementById('clickSound');
-        // sound.play().catch(() => console.log('Click sound playback failed'));
         console.log('Click sound deshabilitado (reemplaza con audio válido)');
       };
       const playJetSound = () => {
-        // const sound = document.getElementById('jetSound');
-        // sound.play().catch(() => console.log('Jet sound playback failed'));
         console.log('Jet sound deshabilitado (reemplaza con audio válido)');
       };
 
