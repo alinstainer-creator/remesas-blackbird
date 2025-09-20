@@ -426,27 +426,30 @@
       UYU: 'Uruguay',
       ECU: 'Ecuador'
     };
-    // Mapeo de nombres de países en encabezados a códigos de moneda
+
+    // Mapeo ampliado de nombres/abreviaturas a códigos de moneda
     const countryCodeToCurrency = {
-      ARG: 'ARS',
-      VEN: 'VES',
-      VZLA: 'VES',
-      CHILE: 'CLP',
-      USA: 'USD',
-      MEX: 'MXN',
-      PERU: 'PEN',
-      COP: 'COP',
+      ARG: 'ARS', ARS: 'ARS', AR: 'ARS',
+      VEN: 'VES', VZLA: 'VES', VES: 'VES',
+      CHILE: 'CLP', CHL: 'CLP', CLP: 'CLP', CL: 'CLP',
+      USA: 'USD', US: 'USD', USD: 'USD',
+      MEX: 'MXN', MX: 'MXN', MXN: 'MXN',
+      PERU: 'PEN', PE: 'PEN', PEN: 'PEN',
+      COL: 'COP', CO: 'COP', COP: 'COP',
       EUR: 'EUR',
-      BRA: 'BRL',
-      UYU: 'UYU',
-      ECU: 'ECU'
+      BRA: 'BRL', BRL: 'BRL', BR: 'BRL',
+      UYU: 'UYU', URU: 'UYU',
+      ECU: 'ECU', EC: 'ECU'
     };
+
     // URL del CSV
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Teo-_5ka3LKx7FXL3x3yV3uf4KhoI61ewnVJyJ90XRnksoObf4CDn-lJvrFKiQ/pub?gid=983978085&single=true&output=csv';
+
     // Función para formatear números con 4 decimales
     const formatNumber = (number) => {
       return number.toLocaleString('es-CL', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
     };
+
     // Función para cargar el CSV
     async function loadFileData() {
       try {
@@ -465,7 +468,8 @@
         throw error;
       }
     }
-    // Mapa estelar interactivo
+
+    // Mapa estelar interactivo (sin cambios)
     function initStarfield() {
       const canvas = document.getElementById('starfield');
       const ctx = canvas.getContext('2d');
@@ -475,7 +479,6 @@
       const numStars = 150;
       let mouseX = canvas.width / 2;
       let mouseY = canvas.height / 2;
-      // Crear estrellas
       for (let i = 0; i < numStars; i++) {
         stars.push({
           x: Math.random() * canvas.width,
@@ -485,7 +488,6 @@
           vy: (Math.random() - 0.5) * 0.1
         });
       }
-      // Actualizar posición del mouse/touch
       canvas.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
@@ -494,17 +496,15 @@
         mouseX = e.touches[0].clientX;
         mouseY = e.touches[0].clientY;
       });
-      // Animar estrellas
       let lastTime = 0;
       function animate(timestamp) {
-        if (timestamp - lastTime < 16.67) { // Limitar a 60fps
+        if (timestamp - lastTime < 16.67) {
           requestAnimationFrame(animate);
           return;
         }
         lastTime = timestamp;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         stars.forEach(star => {
-          // Mover estrellas hacia el mouse/touch
           const dx = mouseX - star.x;
           const dy = mouseY - star.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
@@ -514,16 +514,13 @@
           }
           star.x += star.vx;
           star.y += star.vy;
-          // Rebotar en los bordes
           if (star.x < 0 || star.x > canvas.width) star.vx *= -1;
           if (star.y < 0 || star.y > canvas.height) star.vy *= -1;
-          // Dibujar estrella
           ctx.beginPath();
           ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
           ctx.fillStyle = '#e6e6e6';
           ctx.fill();
         });
-        // Dibujar líneas de conexión
         ctx.strokeStyle = 'rgba(0, 153, 119, 0.25)';
         ctx.lineWidth = 0.8;
         for (let i = 0; i < stars.length; i++) {
@@ -545,7 +542,8 @@
       }
       animate(0);
     }
-    // Partículas de vuelo
+
+    // Partículas y velocímetro (sin cambios)
     function initParticles() {
       const particlesContainer = document.getElementById('particles');
       for (let i = 0; i < 30; i++) {
@@ -557,7 +555,6 @@
         particlesContainer.appendChild(particle);
       }
     }
-    // Velocímetro gráfico
     function initSpeedometer() {
       const canvas = document.getElementById('speedometer');
       const ctx = canvas.getContext('2d');
@@ -570,13 +567,11 @@
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         const radius = canvas.width * 0.4;
-        // Dibujar arco
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius, Math.PI * 0.75, Math.PI * 2.25);
         ctx.strokeStyle = '#009977';
         ctx.lineWidth = 4;
         ctx.stroke();
-        // Dibujar aguja
         const rad = (angle * Math.PI) / 180;
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
@@ -584,7 +579,6 @@
         ctx.strokeStyle = '#00cc99';
         ctx.lineWidth = 2;
         ctx.stroke();
-        // Dibujar dígitos
         ctx.fillStyle = '#e6e6e6';
         ctx.font = `${canvas.width * 0.15}px 'Exo 2'`;
         ctx.textAlign = 'center';
@@ -605,6 +599,7 @@
         requestAnimationFrame(animateSpeedometer);
       };
     }
+
     // Componente principal de React
     function CurrencyCalculator() {
       const [data, setData] = React.useState(null);
@@ -615,51 +610,127 @@
       const [error, setError] = React.useState('');
       const [rateDisplay, setRateDisplay] = React.useState(null);
       const containerRef = React.useRef(null);
-      // Cargar y parsear el CSV
+
+      // -----------------------------
+      // NUEVA LÓGICA ROBUSTA DE PARSEO
+      // -----------------------------
       React.useEffect(() => {
         loadFileData().then(csv => {
           Papa.parse(csv, {
             skipEmptyLines: true,
-            transform: (value) => value.trim().replace(/^"|"$/g, ''),
+            transform: (value) => (typeof value === 'string' ? value.trim().replace(/^"|"$/g, '') : value),
             complete: (results) => {
               const exchangeRates = {};
-              const pairRows = [6, 15, 24, 33, 42, 51, 60, 69, 78, 87, 96, 105, 114];
-              const rateRows = [7, 16, 25, 34, 43, 52, 61, 70, 79, 88, 97, 106, 115];
-             
-              pairRows.forEach((pairRow, index) => {
-                const row = results.data[pairRow - 1];
-                if (row && row[3]) {
-                  const cleanPair = row[3].replace(/[\p{Emoji}]/gu, '').trim();
-                  console.log(`Fila ${pairRow}: Columna D = ${cleanPair}`);
-                  if (cleanPair.includes('/')) {
-                    const [origin, destination] = cleanPair.split('/');
-                    const originCurrency = countryCodeToCurrency[origin.toUpperCase()] || origin;
-                    const destinationCurrency = countryCodeToCurrency[destination.toUpperCase()] || destination;
-                    const pair = `${originCurrency}/${destinationCurrency}`;
-                   
-                    const rateRow = results.data[rateRows[index] - 1];
-                    if (rateRow && rateRow[5]) {
-                      console.log(`Fila ${rateRows[index]}: Columna FG (índice 5) = ${rateRow[5]}`);
-                      let rate = rateRow[5].replace('$', '').trim();
-                      rate = rate.replace(/\./g, '');
-                      rate = rate.replace(',', '.');
-                      const parsedRate = parseFloat(rate);
-                      if (!isNaN(parsedRate)) {
-                        exchangeRates[pair] = parsedRate;
-                        console.log(`Fila ${rateRows[index]}: Asignado Par ${pair}, Tasa: ${parsedRate}`);
-                      } else {
-                        console.error(`Error: Tasa no válida en la fila ${rateRows[index]}: ${rate}`);
-                      }
-                    } else {
-                      console.error(`Error: No se encontró tasa en FG (fila ${rateRows[index]})`);
-                    }
-                  } else {
-                    console.error(`Error: Par no válido en la fila ${pairRow}: ${cleanPair}`);
-                  }
-                } else {
-                  console.error(`Error: No se encontró par en la fila ${pairRow}`);
+              const rows = results.data || [];
+
+              // limpia texto de pares (quita emojis, NBSP, trim)
+              const cleanCell = (v) => {
+                if (v === undefined || v === null) return '';
+                try {
+                  return String(v).replace(/\u00A0/g, ' ').replace(/[\p{Emoji}\uFE0F]/gu, '').trim();
+                } catch (e) {
+                  // si el navegador no soporta \p{Emoji}, fallback simple
+                  return String(v).replace(/\u00A0/g, ' ').replace(/[^\x20-\x7E]/g, '').trim();
                 }
-              });
+              };
+
+              // parsea string numérica tolerante: maneja "1.234,56", "1234,56", "1234.56", "$1.234"
+              const parseNumericRate = (v) => {
+                if (v === undefined || v === null) return NaN;
+                let s = String(v).trim();
+                if (s === '') return NaN;
+                // eliminar etiquetas de moneda y letras
+                s = s.replace(/\s+/g, '');
+                s = s.replace(/\$/g, '');
+                // quitar letras (ej. "VES")
+                s = s.replace(/[A-Za-z\u00C0-\u017F]/g, '');
+                // Si tiene ',' y '.' -> asumir '.' miles y ',' decimales: eliminar '.' y convertir ','->'.'
+                if (s.indexOf(',') !== -1 && s.indexOf('.') !== -1) {
+                  s = s.replace(/\./g, '').replace(/,/g, '.');
+                } else if (s.indexOf(',') !== -1 && s.indexOf('.') === -1) {
+                  // solo coma => coma decimal
+                  s = s.replace(/,/g, '.');
+                } else {
+                  // solo punto(s) o ninguno -> dejar puntos como decimales (podría ser "1234.56")
+                  // pero si tiene varios puntos (raro) quitarlos excepto último:
+                  const parts = s.split('.');
+                  if (parts.length > 2) {
+                    const last = parts.pop();
+                    s = parts.join('') + '.' + last;
+                  }
+                }
+                // quitar todo lo que no sea dígito, punto o signo menos
+                s = s.replace(/[^0-9\.\-]/g, '');
+                const num = parseFloat(s);
+                return isNaN(num) ? NaN : num;
+              };
+
+              // regex para detectar par en columna D (acepta letras y números hasta 6 chars)
+              const pairRegex = /([A-Za-z0-9]{2,6})\s*\/\s*([A-Za-z0-9]{2,6})/;
+
+              for (let i = 0; i < rows.length; i++) {
+                const row = rows[i] || [];
+                const dCell = cleanCell(row[3]); // columna D (índice 3)
+                if (!dCell) continue;
+                const match = dCell.match(pairRegex);
+                if (!match) continue;
+
+                const originRaw = match[1].toUpperCase();
+                const destRaw = match[2].toUpperCase();
+                const originCurrency = countryCodeToCurrency[originRaw] || originRaw;
+                const destCurrency = countryCodeToCurrency[destRaw] || destRaw;
+                const pairKey = `${originCurrency}/${destCurrency}`;
+
+                // Buscar tasa: prioridad en fila siguiente, columnas F (5) y G (6)
+                const nextRow = rows[i + 1] || [];
+                let parsedRate = NaN;
+                const preferredCols = [5, 6, 4, 7, 8]; // F, G, E, H, I (fallbacks)
+
+                for (const c of preferredCols) {
+                  if (nextRow[c] !== undefined && nextRow[c] !== null && String(nextRow[c]).trim() !== '') {
+                    const p = parseNumericRate(nextRow[c]);
+                    if (!isNaN(p)) {
+                      parsedRate = p;
+                      break;
+                    }
+                  }
+                }
+
+                // fallback: tal vez la tasa esté en la misma fila (col F/G)
+                if (isNaN(parsedRate)) {
+                  for (let c = 4; c <= 8 && c < row.length; c++) {
+                    if (row[c] !== undefined && row[c] !== null && String(row[c]).trim() !== '') {
+                      const p = parseNumericRate(row[c]);
+                      if (!isNaN(p)) {
+                        parsedRate = p;
+                        break;
+                      }
+                    }
+                  }
+                }
+
+                // último fallback: buscar en toda la fila siguiente la PRIMERA cosa numérica parseable
+                if (isNaN(parsedRate)) {
+                  for (let c = 0; c < nextRow.length; c++) {
+                    if (nextRow[c] !== undefined && nextRow[c] !== null && String(nextRow[c]).trim() !== '') {
+                      const p = parseNumericRate(nextRow[c]);
+                      if (!isNaN(p)) {
+                        parsedRate = p;
+                        break;
+                      }
+                    }
+                  }
+                }
+
+                if (!isNaN(parsedRate)) {
+                  exchangeRates[pairKey] = parsedRate;
+                  console.log(`CARGADO: ${pairKey} = ${parsedRate} (pair en fila ${i+1})`);
+                } else {
+                  // aviso para debug si no se encontró tasa para ese par
+                  console.warn(`SIN TASA: ${pairKey} (pair en fila ${i+1}). nextRow sample: ${JSON.stringify((rows[i+1]||[]).slice(0,10))}`);
+                }
+              }
+
               console.log('Pares de monedas extraídos:', exchangeRates);
               setData(exchangeRates);
             },
@@ -673,7 +744,10 @@
           console.error('Error al cargar el CSV:', err);
         });
       }, []);
-      // Generar estrellas, partículas y inicializar canvas
+
+      // -----------------------------
+      // Resto del componente (sin cambios lógicos)
+      // -----------------------------
       React.useEffect(() => {
         const starsContainer = document.getElementById('stars');
         for (let i = 0; i < 150; i++) {
@@ -690,7 +764,7 @@
         initParticles();
         initSpeedometer();
       }, []);
-      // Reproducir sonidos
+
       const playClickSound = () => {
         const sound = document.getElementById('clickSound');
         sound.play().catch(() => console.log('Click sound playback failed'));
@@ -699,7 +773,7 @@
         const sound = document.getElementById('jetSound');
         sound.play().catch(() => console.log('Jet sound playback failed'));
       };
-      // Manejar cálculo de conversión
+
       const handleCalculate = () => {
         setError('');
         setResult(null);
@@ -740,7 +814,7 @@
         });
         window.updateSpeedometer(amountValue);
       };
-      // Manejar visualización de tasa
+
       const handleViewRate = () => {
         setError('');
         setResult(null);
@@ -768,7 +842,7 @@
           destinationCurrency: destinationCountry
         });
       };
-      // Mostrar estado de carga
+
       if (!data) {
         return (
           <div className="flex justify-center items-center h-screen text-gray-300">
@@ -776,7 +850,7 @@
           </div>
         );
       }
-      // Renderizar interfaz principal
+
       const countries = Object.keys(currencyToCountry).sort();
       return (
         <div className="min-h-screen flex items-center justify-center p-3">
@@ -873,6 +947,7 @@
         </div>
       );
     }
+
     // Renderizar el componente
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<CurrencyCalculator />);
