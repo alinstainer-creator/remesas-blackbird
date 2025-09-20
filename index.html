@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    /* CSS sin cambios, igual al código anterior */
+    /* CSS original, sin cambios */
     body {
       background: #0a0a0a;
       color: #e6e6e6;
@@ -446,32 +446,32 @@
       ECU: 'Ecuador'
     };
 
-    // Mapeo ampliado de nombres y códigos a monedas
+    // Mapeo ampliado de nombres y códigos a monedas (incluimos los códigos de monedas para fallback)
     const countryCodeToCurrency = {
       // Argentina
       'ARG': 'ARS', 'AR': 'ARS', 'ARGENTINA': 'ARS', 'ARGEN': 'ARS', 'ARGNT': 'ARS',
-      'PESO ARG': 'ARS', 'PESO ARGENTINO': 'ARS', 'ARG$': 'ARS',
+      'PESO ARG': 'ARS', 'PESO ARGENTINO': 'ARS', 'ARG$': 'ARS', 'ARS': 'ARS',
       // Venezuela
       'VEN': 'VES', 'VZLA': 'VES', 'VENEZUELA': 'VES', 'VENEZ': 'VES', 'VZL': 'VES',
-      'BOLIVAR': 'VES', 'BOLÍVAR': 'VES', 'VES$': 'VES',
+      'BOLIVAR': 'VES', 'BOLÍVAR': 'VES', 'VES$': 'VES', 'VES': 'VES',
       // Chile
-      'CHILE': 'CLP', 'CHL': 'CLP', 'PESO CHILENO': 'CLP', 'CLP$': 'CLP', 'CHI': 'CLP',
+      'CHILE': 'CLP', 'CHL': 'CLP', 'PESO CHILENO': 'CLP', 'CLP$': 'CLP', 'CHI': 'CLP', 'CLP': 'CLP',
       // Estados Unidos
-      'USA': 'USD', 'US': 'USD', 'ESTADOS UNIDOS': 'USD', 'DOLLAR': 'USD', 'DÓLAR': 'USD', 'USD$': 'USD',
+      'USA': 'USD', 'US': 'USD', 'ESTADOS UNIDOS': 'USD', 'DOLLAR': 'USD', 'DÓLAR': 'USD', 'USD$': 'USD', 'USD': 'USD',
       // México
-      'MEX': 'MXN', 'MÉXICO': 'MXN', 'MEXICO': 'MXN', 'PESO MEX': 'MXN', 'PESO MEXICANO': 'MXN', 'MX$': 'MXN',
+      'MEX': 'MXN', 'MÉXICO': 'MXN', 'MEXICO': 'MXN', 'PESO MEX': 'MXN', 'PESO MEXICANO': 'MXN', 'MX$': 'MXN', 'MXN': 'MXN',
       // Perú
-      'PERU': 'PEN', 'PERÚ': 'PEN', 'PER': 'PEN', 'SOLES': 'PEN', 'PEN$': 'PEN',
+      'PERU': 'PEN', 'PERÚ': 'PEN', 'PER': 'PEN', 'SOL': 'PEN', 'SOLES': 'PEN', 'PEN$': 'PEN', 'PEN': 'PEN',
       // Colombia
-      'COP': 'COP', 'COL': 'COP', 'COLOMBIA': 'COP', 'PESO COL': 'COP', 'PESO COLOMBIANO': 'COP', 'COL$': 'COP',
+      'COP': 'COP', 'COL': 'COP', 'COLOMBIA': 'COP', 'PESO COL': 'COP', 'PESO COLOMBIANO': 'COP', 'COL$': 'COP', 'COP': 'COP',
       // Eurozona
       'EUR': 'EUR', 'EURO': 'EUR', 'EUROPA': 'EUR', 'EUROZONA': 'EUR', '€': 'EUR', 'ESP': 'EUR', 'ESPAÑA': 'EUR',
       // Brasil
-      'BRA': 'BRL', 'BRASIL': 'BRL', 'BR': 'BRL', 'REAL': 'BRL', 'REALES': 'BRL', 'BRL$': 'BRL',
+      'BRA': 'BRL', 'BRASIL': 'BRL', 'BR': 'BRL', 'REAL': 'BRL', 'REALES': 'BRL', 'BRL$': 'BRL', 'BRL': 'BRL',
       // Uruguay
-      'UYU': 'UYU', 'URU': 'UYU', 'URUGUAY': 'UYU', 'PESO URU': 'UYU', 'PESO URUGUAYO': 'UYU', 'UY$': 'UYU',
+      'UYU': 'UYU', 'URU': 'UYU', 'URUGUAY': 'UYU', 'PESO URU': 'UYU', 'PESO URUGUAYO': 'UYU', 'UY$': 'UYU', 'UYU': 'UYU',
       // Ecuador
-      'ECU': 'ECU', 'ECUADOR': 'ECU', 'EC': 'ECU', 'DÓLAR ECU': 'ECU', 'USD ECU': 'ECU'
+      'ECU': 'ECU', 'ECUADOR': 'ECU', 'EC': 'ECU', 'DÓLAR ECU': 'ECU', 'USD ECU': 'ECU', 'ECU': 'ECU'
     };
 
     // URL del CSV
@@ -664,7 +664,6 @@
               const exchangeRates = {};
               results.data.forEach((row, index) => {
                 try {
-                  // Identificar filas de nombres de pares (BCD4, BCD13, BCD22, ...)
                   if ((index - 3) % 9 === 0 && index >= 3) {
                     const b = row[1] ? String(row[1]).trim() : '';
                     const c = row[2] ? String(row[2]).trim() : '';
@@ -673,28 +672,24 @@
                     const cleanCombined = combined.replace(/[\u{1F300}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
                     console.log(`Fila ${index+1} (BCD): "${cleanCombined}"`);
                     
-                    // Extraer el par (ej. "ARG-VEN" de "COTIZACION MESA ARG-VEN")
                     const pairText = cleanCombined.replace('COTIZACION MESA ', '').trim();
                     const parts = pairText.split('-').map(s => s.trim().toUpperCase()).filter(Boolean);
                     
                     if (parts.length >= 2) {
                       let origin = parts[0];
                       let dest = parts[1];
-                      // Manejar casos especiales (ej. "USA-VZLA" → "USD-VES")
                       origin = origin === 'USA' ? 'USD' : origin;
                       dest = dest === 'VZLA' ? 'VES' : dest;
                       dest = dest === 'MEXICO' ? 'MXN' : dest;
                       dest = dest === 'PERU' ? 'PEN' : dest;
 
-                      // Mapear a códigos de moneda
                       const originCurrency = countryCodeToCurrency[origin] || countryCodeToCurrency[origin.replace(/\W/g, '')] || origin;
                       const destCurrency = countryCodeToCurrency[dest] || countryCodeToCurrency[dest.replace(/\W/g, '')] || dest;
                       const pairKey = `${originCurrency}/${destCurrency}`;
                       
-                      // Buscar la tasa en la fila correspondiente (index + 3, columnas F o G)
                       const rateRow = results.data[index + 3];
                       if (rateRow) {
-                        const rawRate = rateRow[5] || rateRow[6] || ''; // Columna F o G
+                        const rawRate = rateRow[5] || rateRow[6] || ''; 
                         const parsedRate = cleanRate(rawRate);
                         if (parsedRate !== null) {
                           exchangeRates[pairKey] = parsedRate;
@@ -925,7 +920,7 @@
                   rel="noopener noreferrer"
                   className="telegram-button mt-1.5"
                 >
-                  <i className="fab fa-telegram-plane"></i>
+                  <i class="fab fa-telegram-plane"></i>
                   ¡Envía tu remesa por Telegram!
                 </a>
               </div>
