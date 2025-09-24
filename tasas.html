@@ -92,6 +92,9 @@
       width: 100%;
       transition: transform 0.3s ease;
       font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .rate-box:hover { transform: scale(1.02); }
     .rate-label {
@@ -103,16 +106,20 @@
       justify-content: center;
       align-items: center;
       gap: 4px;
+      max-width: 100%;
+      word-wrap: break-word;
     }
     .rate-value {
       background: #009977;
       color: #0a0a0a;
       font-weight: bold;
-      padding: 4px 8px;
+      padding: 2px 6px;
       border-radius: 8px;
       display: inline-block;
       font-size: 1.2rem;
       text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
+      max-width: 70%; /* Reducido para evitar choque */
+      margin-top: 4px; /* Espacio adicional */
     }
     .download-button {
       display: none;
@@ -162,7 +169,6 @@
 
     const formatNumber = (number) => {
       if (number === null || isNaN(number)) return 'N/A';
-      // Lógica para controlar decimales: 2 si el número es > 10, 4 si es <= 10
       const absNumber = Math.abs(number);
       const decimalPlaces = absNumber > 10 ? 2 : 4;
       return number.toLocaleString('es-CL', {
