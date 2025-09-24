@@ -44,11 +44,37 @@
       position: relative;
       overflow-y: auto;
     }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
     .header h1 {
       font-size: 2rem;
       color: #00cc99;
       text-shadow: 0 0 10px rgba(0, 204, 153, 0.7);
-      margin: 5px 0;
+      margin: 0;
+    }
+    .header .download-btn {
+      background: #009977;
+      color: #e6e6e6;
+      padding: 5px 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .header .download-btn:hover {
+      background: #00cc99;
+      color: #0a0a0a;
+      box-shadow: 0 0 5px rgba(0, 255, 204, 0.7);
+    }
+    .header .logo {
+      width: 50px;
+      height: auto;
     }
     #tabla-container {
       display: grid;
@@ -89,25 +115,7 @@
       text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
     }
     .download-button {
-      background: #009977;
-      color: #e6e6e6;
-      padding: 10px 20px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: all 0.3s ease;
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    .download-button:hover {
-      background: #00cc99;
-      color: #0a0a0a;
-      box-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
+      display: none; /* Ocultamos el botón inferior ya que usamos el de la header */
     }
     .error {
       color: #ff4444;
@@ -134,13 +142,16 @@
     @media (max-width: 1080px) {
       .container { width: 100%; height: auto; min-height: 1920px; }
       #tabla-container { grid-template-columns: 1fr 1fr; }
+      .header .logo { width: 40px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
+      <img src="https://raw.githubusercontent.com/alinstainer-creator/remesas-blackbird/main/logo-blackbird.png" alt="Blackbird Logo" class="logo">
       <h1>TASA DEL DÍA</h1>
+      <button class="download-btn" onclick="descargarTabla()">Descargar</button>
     </div>
     <div id="tabla-container"></div>
     <button class="download-button" onclick="descargarTabla()">Descargar Imagen</button>
@@ -183,7 +194,7 @@
       { origin: 'España', dest: 'Venezuela', originCur: 'EUR', destCur: 'VES' },
       { origin: 'Chile', dest: 'España', originCur: 'CLP', destCur: 'EUR' },
       { origin: 'Chile', dest: 'Ecuador', originCur: 'CLP', destCur: 'ECU' },
-      { origin: '', dest: '', originCur: '', destCur: '' }, // Rellenos para completar 18
+      { origin: '', dest: '', originCur: '', destCur: '' },
       { origin: '', dest: '', originCur: '', destCur: '' }
     ];
 
@@ -212,7 +223,7 @@
                 const exchangeRates = {};
                 results.data.forEach((row, index) => {
                   if ((index - 3) % 9 === 0 && index >= 3) {
-                    const b = row[1] ? String(row[1]).trim() : '';
+                    const b = row[1] ? String(row[1].trim()) : '';
                     const c = row[2] ? String(row[2].trim()) : '';
                     const d = row[3] ? String(row[3].trim()) : '';
                     const combined = `${b} ${c} ${d}`.replace(/\u00A0/g, ' ').trim();
