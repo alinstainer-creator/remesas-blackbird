@@ -8,45 +8,96 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     body {
-      background: #0a0a0a;
-      color: #e6e6e6;
+      background: #006400; /* Verde oscuro como en la referencia */
+      color: white;
       font-family: 'Exo 2', sans-serif;
       margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-size: 1rem;
     }
     .container {
-      max-width: 96%;
-      margin: 1rem auto;
+      max-width: 100%;
+      width: 100%;
       padding: 1rem;
+      text-align: center;
     }
     .header h1 {
-      text-align: center;
-      color: #00cc99;
+      font-size: 2rem;
+      color: white;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    #tabla-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      max-width: 800px;
+      margin: 0 auto;
     }
     .rate-box {
       display: flex;
-      justify-content: space-between;
-      margin: 0.5rem 0;
-      padding: 0.5rem;
-      background: rgba(0, 100, 0, 0.7);
-      border: 2px solid #ffd700;
-      border-radius: 10px;
+      flex-direction: column;
+      align-items: center;
+      margin: 0.5rem;
     }
-    .rate-box span {
-      flex: 1;
+    .rate-label {
+      font-size: 1.2rem;
+      color: white;
+      margin-bottom: 0.5rem;
       text-align: center;
     }
-    .rate-box .rate {
+    .rate-value {
+      background: #ffd700; /* Amarillo como en la referencia */
+      color: black;
       font-weight: bold;
-      color: #ffd700;
+      padding: 0.5rem 1rem;
+      border-radius: 50px; /* Óvalo */
+      text-align: center;
+      width: 80%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .download-button {
+      background: #00cc99;
+      color: black;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 2rem;
+      transition: all 0.3s ease;
+    }
+    .download-button:hover {
+      background: #00ffcc;
+      transform: translateY(-3px);
     }
     .error {
       color: red;
       text-align: center;
+      margin-top: 1rem;
+    }
+    @media (max-width: 600px) {
+      #tabla-container {
+        grid-template-columns: 1fr; /* Una columna en móviles para historias verticales */
+      }
+      .rate-label {
+        font-size: 1rem;
+      }
+      .rate-value {
+        font-size: 1rem;
+        padding: 0.4rem 0.8rem;
+      }
     }
   </style>
 </head>
@@ -55,28 +106,45 @@
     <div class="header">
       <h1>TASA DEL DÍA</h1>
     </div>
-    <div id="root"></div>
+    <div id="tabla-container"></div>
+    <button class="download-button" onclick="descargarTabla()">Descargar como Imagen</button>
+    <div id="error-message" class="error"></div>
   </div>
   <script type="text/babel">
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Teo-_5ka3LKx7FXL3x3yV3uf4KhoI61ewnVJyJ90XRnksoObf4CDn-lJvrFKiQ/pub?gid=983978085&single=true&output=csv';
 
-    async function loadFileData() {
-      try {
-        const response = await fetch(CSV_URL, { method: 'GET', headers: { 'Accept': 'text/csv' } });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return await response.text();
-      } catch (error) {
-        console.error('Error al cargar el CSV:', error);
-        return null;
-      }
-    }
+    // Función para formatear números con 4 decimales
+    const formatNumber = (number) => {
+      return number.toLocaleString('es-CL', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+    };
 
+    // Función para limpiar valores de tasa
     const cleanRate = (raw) => {
       if (!raw || typeof raw !== 'string') return null;
-      let cleaned = raw.replace(/[$BsCOPARSCLPMXN€S\/.]/g, '').replace(/\s/g, '').trim().replace(/,/g, '.');
+      let cleaned = raw.replace(/[$BsCOPARSCLPMXN€S\/.]/g, '').replace(/\s/g, '').trim();
+      cleaned = cleaned.replace(/,/g, '.');
       const parsed = parseFloat(cleaned);
       return isNaN(parsed) ? null : parsed;
     };
+
+    // Función para cargar el CSV
+    async function loadFileData() {
+      try {
+        const response = await fetch(CSV_URL, {
+          method: 'GET',
+          headers: { 'Accept': 'text/csv' }
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.text();
+        console.log('CSV cargado (primeros 200 caracteres):', data.substring(0, 200));
+        return data;
+      } catch (error) {
+        console.error('Error al cargar el CSV:', error);
+        throw error;
+      }
+    }
 
     function ExchangeRateTable() {
       const [rates, setRates] = React.useState([]);
@@ -84,92 +152,148 @@
 
       React.useEffect(() => {
         loadFileData().then(csv => {
-          if (csv) {
-            Papa.parse(csv, {
-              skipEmptyLines: true,
-              transform: (value) => value.trim().replace(/^"|"$/g, ''),
-              complete: (results) => {
-                const exchangeRates = {};
-                results.data.forEach((row, index) => {
+          Papa.parse(csv, {
+            skipEmptyLines: true,
+            transform: (value) => value.trim().replace(/^"|"$/g, ''),
+            complete: (results) => {
+              const exchangeRates = {};
+              results.data.forEach((row, index) => {
+                try {
                   if ((index - 3) % 9 === 0 && index >= 3) {
                     const b = row[1] ? String(row[1]).trim() : '';
                     const c = row[2] ? String(row[2]).trim() : '';
                     const d = row[3] ? String(row[3]).trim() : '';
                     const combined = `${b} ${c} ${d}`.replace(/\u00A0/g, ' ').trim();
                     const cleanCombined = combined.replace(/[\u{1F300}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
+                    console.log(`Fila ${index+1} (BCD): "${cleanCombined}"`);
+                    
                     const pairText = cleanCombined.replace('COTIZACION MESA ', '').trim();
                     const parts = pairText.split('-').map(s => s.trim().toUpperCase()).filter(Boolean);
-
+                    
                     if (parts.length >= 2) {
                       let origin = parts[0];
                       let dest = parts[1];
-                      origin = countryCodeToCurrency[origin] || origin;
-                      dest = countryCodeToCurrency[dest] || dest;
-                      const pairKey = `${origin}/${dest}`;
+                      origin = origin === 'USA' ? 'USD' : origin;
+                      dest = dest === 'VZLA' ? 'VES' : dest;
+                      dest = dest === 'MEXICO' ? 'MXN' : dest;
+                      dest = dest === 'PERU' ? 'PEN' : dest;
+
+                      const originCurrency = countryCodeToCurrency[origin] || countryCodeToCurrency[origin.replace(/\W/g, '')] || origin;
+                      const destCurrency = countryCodeToCurrency[dest] || countryCodeToCurrency[dest.replace(/\W/g, '')] || dest;
+                      const pairKey = `${originCurrency}/${destCurrency}`;
+                      
                       const rateRow = results.data[index + 3];
                       if (rateRow) {
-                        const rawRate = rateRow[5] || rateRow[6] || '';
+                        const rawRate = rateRow[5] || rateRow[6] || ''; 
                         const parsedRate = cleanRate(rawRate);
                         if (parsedRate !== null) {
                           exchangeRates[pairKey] = parsedRate;
+                          console.log(`Fila tasa ${index+4}: Asignado ${pairKey} = ${parsedRate}`);
+                        } else {
+                          console.warn(`Fila tasa ${index+4}: Valor no numérico o vacío '${rawRate}' para par ${pairKey}`);
                         }
+                      } else {
+                        console.warn(`No existe fila de tasa en index ${index+3} para par ${pairKey}`);
                       }
+                    } else {
+                      console.warn(`Fila ${index+1}: No se pudo extraer par válido de "${cleanCombined}"`);
                     }
                   }
-                });
+                } catch (e) {
+                  console.error(`Error parseando fila ${index+1}:`, e);
+                }
+              });
+              console.log('Pares de monedas extraídos:', exchangeRates);
+              if (Object.keys(exchangeRates).length === 0) {
+                setError('No se encontraron pares de monedas válidos en el CSV.');
+              } else {
                 const rateList = Object.entries(exchangeRates).map(([pair, rate]) => {
                   const [origin, dest] = pair.split('/');
-                  return { origin: currencyToCountry[origin] || origin, dest: currencyToCountry[dest] || dest, rate };
+                  return {
+                    origin: currencyToCountry[origin] || origin,
+                    dest: currencyToCountry[dest] || dest,
+                    rate: formatNumber(rate)
+                  };
                 });
                 setRates(rateList);
-              },
-              error: (err) => setError('Error al parsear el CSV: ' + err.message),
-            });
-          } else {
-            setError('Error al cargar el CSV.');
-          }
+              }
+            },
+            error: (err) => {
+              setError('Error al parsear el CSV: ' + err.message);
+              console.error('Error al parsear el CSV:', err);
+            }
+          });
+        }).catch(err => {
+          setError('Error al cargar el archivo CSV: ' + err.message);
+          console.error('Error al cargar el CSV:', err);
         });
       }, []);
 
-      if (error) return <div className="error">{error}</div>;
-      if (rates.length === 0) return <div className="text-center">Cargando tasas...</div>;
+      React.useEffect(() => {
+        if (error) {
+          document.getElementById('error-message').innerText = error;
+        }
+      }, [error]);
 
       return (
-        <div>
+        <React.Fragment>
           {rates.map((rate, index) => (
             <div key={index} className="rate-box">
-              <span>{rate.origin} - {rate.dest}</span>
-              <span className="rate">{rate.rate.toFixed(4)}</span>
-              <span>{rate.dest} - {rate.origin}</span>
-              <span className="rate">{(1 / rate.rate).toFixed(4)}</span>
+              <div className="rate-label">{rate.origin} - {rate.dest}</div>
+              <div className="rate-value">{rate.rate}</div>
             </div>
           ))}
-        </div>
+        </React.Fragment>
       );
     }
 
     const currencyToCountry = {
-      ARS: 'Argentina', VES: 'Venezuela', CLP: 'Chile', USD: 'USA',
-      MXN: 'México', PEN: 'Perú', COP: 'Colombia', EUR: 'España',
-      BRL: 'Brasil', UYU: 'Uruguay', ECU: 'Ecuador'
+      ARS: 'Argentina',
+      VES: 'Venezuela',
+      CLP: 'Chile',
+      USD: 'USA',
+      MXN: 'México',
+      PEN: 'Perú',
+      COP: 'Colombia',
+      EUR: 'España',
+      BRL: 'Brasil',
+      UYU: 'Uruguay',
+      ECU: 'Ecuador'
     };
 
     const countryCodeToCurrency = {
-      'ARG': 'ARS', 'AR': 'ARS', 'ARGENTINA': 'ARS',
-      'VEN': 'VES', 'VZLA': 'VES', 'VENEZUELA': 'VES',
-      'CHILE': 'CLP', 'CHL': 'CLP',
-      'USA': 'USD', 'US': 'USD', 'ESTADOS UNIDOS': 'USD',
-      'MEX': 'MXN', 'MÉXICO': 'MXN', 'MEXICO': 'MXN',
-      'PERU': 'PEN', 'PERÚ': 'PEN',
-      'COL': 'COP', 'COLOMBIA': 'COP',
-      'ESP': 'EUR', 'ESPAÑA': 'EUR', 'EURO': 'EUR',
-      'BRA': 'BRL', 'BRASIL': 'BRL',
-      'URU': 'UYU', 'URUGUAY': 'UYU',
-      'ECU': 'ECU', 'ECUADOR': 'ECU'
+      'ARG': 'ARS', 'AR': 'ARS', 'ARGENTINA': 'ARS', 'ARGEN': 'ARS', 'ARGNT': 'ARS',
+      'PESO ARG': 'ARS', 'PESO ARGENTINO': 'ARS', 'ARG$': 'ARS', 'ARS': 'ARS',
+      'VEN': 'VES', 'VZLA': 'VES', 'VENEZUELA': 'VES', 'VENEZ': 'VES', 'VZL': 'VES',
+      'BOLIVAR': 'VES', 'BOLÍVAR': 'VES', 'VES$': 'VES', 'VES': 'VES',
+      'CHILE': 'CLP', 'CHL': 'CLP', 'PESO CHILENO': 'CLP', 'CLP$': 'CLP', 'CHI': 'CLP', 'CLP': 'CLP',
+      'USA': 'USD', 'US': 'USD', 'ESTADOS UNIDOS': 'USD', 'DOLLAR': 'USD', 'DÓLAR': 'USD', 'USD$': 'USD', 'USD': 'USD',
+      'MEX': 'MXN', 'MÉXICO': 'MXN', 'MEXICO': 'MXN', 'PESO MEX': 'MXN', 'PESO MEXICANO': 'MXN', 'MX$': 'MXN', 'MXN': 'MXN',
+      'PERU': 'PEN', 'PERÚ': 'PEN', 'PER': 'PEN', 'SOL': 'PEN', 'SOLES': 'PEN', 'PEN$': 'PEN', 'PEN': 'PEN',
+      'COP': 'COP', 'COL': 'COP', 'COLOMBIA': 'COP', 'PESO COL': 'COP', 'PESO COLOMBIANO': 'COP', 'COL$': 'COP', 'COP': 'COP',
+      'EUR': 'EUR', 'EURO': 'EUR', 'EUROPA': 'EUR', 'EUROZONA': 'EUR', '€': 'EUR', 'ESP': 'EUR', 'ESPAÑA': 'EUR',
+      'BRA': 'BRL', 'BRASIL': 'BRL', 'BR': 'BRL', 'REAL': 'BRL', 'REALES': 'BRL', 'BRL$': 'BRL', 'BRL': 'BRL',
+      'UYU': 'UYU', 'URU': 'UYU', 'URUGUAY': 'UYU', 'PESO URU': 'UYU', 'PESO URUGUAYO': 'UYU', 'UY$': 'UYU', 'UYU': 'UYU',
+      'ECU': 'ECU', 'ECUADOR': 'ECU', 'EC': 'ECU', 'DÓLAR ECU': 'ECU', 'USD ECU': 'ECU', 'ECU': 'ECU'
     };
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
+    const root = ReactDOM.createRoot(document.getElementById('tabla-container'));
     root.render(<ExchangeRateTable />);
+
+    function descargarTabla() {
+      html2canvas(document.querySelector('.container'), {
+        backgroundColor: '#006400',
+        scale: 2 // Para mejor resolución
+      }).then(canvas => {
+        let link = document.createElement('a');
+        link.download = 'tasa_del_dia.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }).catch(err => {
+        console.error('Error al generar la imagen:', err);
+        document.getElementById('error-message').innerText = 'Error al descargar la imagen. Intenta de nuevo.';
+      });
+    }
   </script>
 </body>
 </html>
