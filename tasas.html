@@ -30,16 +30,8 @@
       background-size: 200% 200%;
       animation: bgShift 30s linear infinite;
     }
-    @keyframes bgShift {
-      0% { background-position: 0% 0%, 100% 100%; }
-      50% { background-position: 50% 50%, 50% 0%; }
-      100% { background-position: 100% 100%, 0% 50%; }
-    }
-    @keyframes backgroundPulse {
-      0% { background-color: #0a0a0a; }
-      50% { background-color: #0f1a1a; }
-      100% { background-color: #0a0a0a; }
-    }
+    @keyframes bgShift { 0% { background-position: 0% 0%, 100% 100%; } 50% { background-position: 50% 50%, 50% 0%; } 100% { background-position: 100% 100%, 0% 50%; } }
+    @keyframes backgroundPulse { 0% { background-color: #0a0a0a; } 50% { background-color: #0f1a1a; } 100% { background-color: #0a0a0a; } }
     .container {
       width: 1080px;
       height: 1920px;
@@ -60,7 +52,7 @@
     }
     #tabla-container {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr 1fr;
       gap: 5px;
       padding: 5px;
       max-height: 1700px;
@@ -75,9 +67,7 @@
       transition: transform 0.3s ease;
       font-size: 0.9rem;
     }
-    .rate-box:hover {
-      transform: scale(1.02);
-    }
+    .rate-box:hover { transform: scale(1.02); }
     .rate-label {
       color: #e6e6e6;
       margin-bottom: 2px;
@@ -140,20 +130,10 @@
       border-radius: 50%;
       animation: pulseStar 2s infinite;
     }
-    @keyframes pulseStar {
-      0% { opacity: 0.3; }
-      50% { opacity: 0.7; }
-      100% { opacity: 0.3; }
-    }
+    @keyframes pulseStar { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
     @media (max-width: 1080px) {
-      .container {
-        width: 100%;
-        height: auto;
-        min-height: 1920px;
-      }
-      #tabla-container {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .container { width: 100%; height: auto; min-height: 1920px; }
+      #tabla-container { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -162,7 +142,9 @@
     <div class="header">
       <h1>TASA DEL DÍA</h1>
     </div>
-    <div="error-message" class="error"></div>
+    <div id="tabla-container"></div>
+    <button class="download-button" onclick="descargarTabla()">Descargar Imagen</button>
+    <div id="error-message" class="error"></div>
   </div>
   <div class="stars" id="stars"></div>
   <script type="text/babel">
@@ -177,6 +159,11 @@
       let cleaned = raw.replace(/[$BsCOPARSCLPMXN€S\/.]/g, '').replace(/\s/g, '').trim().replace(/,/g, '.');
       const parsed = parseFloat(cleaned);
       return isNaN(parsed) ? null : parsed;
+    };
+
+    const currencyToFlag = {
+      ARS: '🇦🇷', VES: '🇻🇪', CLP: '🇨🇱', USD: '🇺🇸', MXN: '🇲🇽', PEN: '🇵🇪',
+      COP: '🇨🇴', EUR: '🇪🇸', BRL: '🇧🇷', UYU: '🇺🇾', ECU: '🇪🇨'
     };
 
     async function loadFileData() {
@@ -286,17 +273,8 @@
     }
 
     const currencyToCountry = {
-      ARS: 'Argentina',
-      VES: 'Venezuela',
-      CLP: 'Chile',
-      USD: 'USA',
-      MXN: 'México',
-      PEN: 'Perú',
-      COP: 'Colombia',
-      EUR: 'España',
-      BRL: 'Brasil',
-      UYU: 'Uruguay',
-      ECU: 'Ecuador'
+      ARS: 'Argentina', VES: 'Venezuela', CLP: 'Chile', USD: 'USA', MXN: 'México',
+      PEN: 'Perú', COP: 'Colombia', EUR: 'España', BRL: 'Brasil', UYU: 'Uruguay', ECU: 'Ecuador'
     };
 
     const countryCodeToCurrency = {
