@@ -108,11 +108,11 @@
       background: #009977;
       color: #0a0a0a;
       font-weight: bold;
-      padding: 2px 5px;
+      padding: 4px 8px;
       border-radius: 8px;
       display: inline-block;
-      font-size: 0.8rem;
-      text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
+      font-size: 1.2rem;
+      text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
     }
     .download-button {
       display: none;
@@ -161,7 +161,14 @@
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Teo-_5ka3LKx7FXL3x3yV3uf4KhoI61ewnVJyJ90XRnksoObf4CDn-lJvrFKiQ/pub?gid=983978085&single=true&output=csv';
 
     const formatNumber = (number) => {
-      return number.toLocaleString('es-CL', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+      if (number === null || isNaN(number)) return 'N/A';
+      // Lógica para controlar decimales: 2 si el número es > 10, 4 si es <= 10
+      const absNumber = Math.abs(number);
+      const decimalPlaces = absNumber > 10 ? 2 : 4;
+      return number.toLocaleString('es-CL', {
+        minimumFractionDigits: decimalPlaces,
+        maximumFractionDigits: decimalPlaces
+      });
     };
 
     const cleanRate = (raw) => {
@@ -327,7 +334,6 @@
 
     function descargarTabla() {
       const container = document.querySelector('.container');
-      // Ocultamos el botón antes de capturar
       const downloadBtn = document.querySelector('.download-btn');
       downloadBtn.style.display = 'none';
       html2canvas(container, {
