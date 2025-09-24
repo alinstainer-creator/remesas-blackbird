@@ -163,8 +163,29 @@
 
     const currencyToFlag = {
       ARS: '🇦🇷', VES: '🇻🇪', CLP: '🇨🇱', USD: '🇺🇸', MXN: '🇲🇽', PEN: '🇵🇪',
-      COP: '🇨🇴', EUR: '🇪🇸', BRL: '🇧🇷', UYU: '🇺🇾', ECU: '🇪🇨'
+      COP: '🇨🇴', EUR: '🇪🇸', ECU: '🇪🇨'
     };
+
+    const desiredPairs = [
+      { origin: 'Chile', dest: 'Venezuela', originCur: 'CLP', destCur: 'VES' },
+      { origin: 'USA', dest: 'Venezuela', originCur: 'USD', destCur: 'VES' },
+      { origin: 'USA', dest: 'Chile', originCur: 'USD', destCur: 'CLP' },
+      { origin: 'Chile', dest: 'USA', originCur: 'CLP', destCur: 'USD' },
+      { origin: 'Chile', dest: 'Colombia', originCur: 'CLP', destCur: 'COP' },
+      { origin: 'Colombia', dest: 'Chile', originCur: 'COP', destCur: 'CLP' },
+      { origin: 'Perú', dest: 'Venezuela', originCur: 'PEN', destCur: 'VES' },
+      { origin: 'Chile', dest: 'Perú', originCur: 'CLP', destCur: 'PEN' },
+      { origin: 'Argentina', dest: 'Venezuela', originCur: 'ARS', destCur: 'VES' },
+      { origin: 'Chile', dest: 'Argentina', originCur: 'CLP', destCur: 'ARS' },
+      { origin: 'México', dest: 'Venezuela', originCur: 'MXN', destCur: 'VES' },
+      { origin: 'Chile', dest: 'México', originCur: 'CLP', destCur: 'MXN' },
+      { origin: 'Colombia', dest: 'Venezuela', originCur: 'COP', destCur: 'VES' },
+      { origin: 'España', dest: 'Venezuela', originCur: 'EUR', destCur: 'VES' },
+      { origin: 'Chile', dest: 'España', originCur: 'CLP', destCur: 'EUR' },
+      { origin: 'Chile', dest: 'Ecuador', originCur: 'CLP', destCur: 'ECU' },
+      { origin: '', dest: '', originCur: '', destCur: '' }, // Rellenos para completar 18
+      { origin: '', dest: '', originCur: '', destCur: '' }
+    ];
 
     async function loadFileData() {
       try {
@@ -222,14 +243,16 @@
                     }
                   }
                 });
-                const rateList = Object.entries(exchangeRates).map(([pair, rate]) => {
-                  const [origin, dest] = pair.split('/');
+
+                const rateList = desiredPairs.map(pair => {
+                  const pairKey = `${pair.originCur}/${pair.destCur}`;
+                  const rate = exchangeRates[pairKey] || null;
                   return {
-                    origin: currencyToCountry[origin] || origin,
-                    dest: currencyToCountry[dest] || dest,
-                    rate: formatNumber(rate),
-                    originFlag: currencyToFlag[origin] || '',
-                    destFlag: currencyToFlag[dest] || ''
+                    origin: pair.origin || '',
+                    dest: pair.dest || '',
+                    rate: rate ? formatNumber(rate) : 'N/A',
+                    originFlag: currencyToFlag[pair.originCur] || '',
+                    destFlag: currencyToFlag[pair.destCur] || ''
                   };
                 });
                 setRates(rateList);
@@ -274,7 +297,7 @@
 
     const currencyToCountry = {
       ARS: 'Argentina', VES: 'Venezuela', CLP: 'Chile', USD: 'USA', MXN: 'México',
-      PEN: 'Perú', COP: 'Colombia', EUR: 'España', BRL: 'Brasil', UYU: 'Uruguay', ECU: 'Ecuador'
+      PEN: 'Perú', COP: 'Colombia', EUR: 'España', ECU: 'Ecuador'
     };
 
     const countryCodeToCurrency = {
@@ -288,8 +311,6 @@
       'PERU': 'PEN', 'PERÚ': 'PEN', 'PER': 'PEN', 'SOL': 'PEN', 'SOLES': 'PEN', 'PEN$': 'PEN', 'PEN': 'PEN',
       'COP': 'COP', 'COL': 'COP', 'COLOMBIA': 'COP', 'PESO COL': 'COP', 'PESO COLOMBIANO': 'COP', 'COL$': 'COP', 'COP': 'COP',
       'EUR': 'EUR', 'EURO': 'EUR', 'EUROPA': 'EUR', 'EUROZONA': 'EUR', '€': 'EUR', 'ESP': 'EUR', 'ESPAÑA': 'EUR',
-      'BRA': 'BRL', 'BRASIL': 'BRL', 'BR': 'BRL', 'REAL': 'BRL', 'REALES': 'BRL', 'BRL$': 'BRL', 'BRL': 'BRL',
-      'UYU': 'UYU', 'URU': 'UYU', 'URUGUAY': 'UYU', 'PESO URU': 'UYU', 'PESO URUGUAYO': 'UYU', 'UY$': 'UYU', 'UYU': 'UYU',
       'ECU': 'ECU', 'ECUADOR': 'ECU', 'EC': 'ECU', 'DÓLAR ECU': 'ECU', 'USD ECU': 'ECU', 'ECU': 'ECU'
     };
 
