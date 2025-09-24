@@ -14,8 +14,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     body {
-      background: #006400; /* Verde oscuro como en la referencia */
-      color: white;
+      background: #0a0a0a;
+      color: #e6e6e6;
       font-family: 'Exo 2', sans-serif;
       margin: 0;
       padding: 0;
@@ -23,80 +23,137 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      font-size: 1rem;
+      overflow: hidden;
+      animation: backgroundPulse 10s infinite ease-in-out;
+      background-image: radial-gradient(circle at 30% 10%, rgba(0, 153, 119, 0.02), transparent 15%),
+                        radial-gradient(circle at 80% 70%, rgba(0, 153, 119, 0.015), transparent 20%);
+      background-size: 200% 200%;
+      animation: bgShift 30s linear infinite;
+    }
+    @keyframes bgShift {
+      0% { background-position: 0% 0%, 100% 100%; }
+      50% { background-position: 50% 50%, 50% 0%; }
+      100% { background-position: 100% 100%, 0% 50%; }
+    }
+    @keyframes backgroundPulse {
+      0% { background-color: #0a0a0a; }
+      50% { background-color: #0f1a1a; }
+      100% { background-color: #0a0a0a; }
     }
     .container {
-      max-width: 100%;
-      width: 100%;
-      padding: 1rem;
+      width: 1080px;
+      height: 1920px;
+      background: rgba(10, 10, 10, 0.98);
+      border: 2px solid #009977;
+      box-shadow: 0 0 10px rgba(0, 153, 119, 0.5);
+      border-radius: 10px;
+      padding: 20px;
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
     .header h1 {
-      font-size: 2rem;
-      color: white;
-      margin-bottom: 1rem;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      font-size: 2.5rem;
+      color: #00cc99;
+      text-shadow: 0 0 15px rgba(0, 204, 153, 0.7);
+      margin-bottom: 20px;
     }
     #tabla-container {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      max-width: 800px;
-      margin: 0 auto;
+      gap: 10px;
+      max-height: 1500px;
+      overflow-y: auto;
+      padding: 10px;
     }
     .rate-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 0.5rem;
+      background: rgba(0, 153, 119, 0.2);
+      border: 1px solid #009977;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 5px 0;
+      transition: transform 0.3s ease;
+    }
+    .rate-box:hover {
+      transform: scale(1.05);
     }
     .rate-label {
-      font-size: 1.2rem;
-      color: white;
-      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+      color: #e6e6e6;
+      margin-bottom: 5px;
       text-align: center;
     }
     .rate-value {
-      background: #ffd700; /* Amarillo como en la referencia */
-      color: black;
+      background: #009977;
+      color: #0a0a0a;
       font-weight: bold;
-      padding: 0.5rem 1rem;
-      border-radius: 50px; /* Óvalo */
-      text-align: center;
-      width: 80%;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      padding: 8px 15px;
+      border-radius: 20px;
+      display: inline-block;
+      font-size: 1.2rem;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
     }
     .download-button {
-      background: #00cc99;
-      color: black;
-      padding: 1rem;
-      font-size: 1rem;
-      font-weight: bold;
+      background: #009977;
+      color: #e6e6e6;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-weight: 600;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      margin-top: 2rem;
+      margin-top: 20px;
       transition: all 0.3s ease;
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
     }
     .download-button:hover {
-      background: #00ffcc;
-      transform: translateY(-3px);
+      background: #00cc99;
+      color: #0a0a0a;
+      box-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
     }
     .error {
-      color: red;
+      color: #ff4444;
       text-align: center;
-      margin-top: 1rem;
+      margin-top: 10px;
+      font-size: 1.1rem;
     }
-    @media (max-width: 600px) {
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .star {
+      position: absolute;
+      background: #e6e6e6;
+      border-radius: 50%;
+      animation: pulseStar 2s infinite;
+    }
+    @keyframes pulseStar {
+      0% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+      100% { opacity: 0.3; }
+    }
+    @media (max-width: 1080px) {
+      .container {
+        width: 100%;
+        height: auto;
+        min-height: 1920px;
+      }
       #tabla-container {
-        grid-template-columns: 1fr; /* Una columna en móviles para historias verticales */
+        grid-template-columns: 1fr;
       }
       .rate-label {
         font-size: 1rem;
       }
       .rate-value {
         font-size: 1rem;
-        padding: 0.4rem 0.8rem;
       }
     }
   </style>
@@ -107,42 +164,32 @@
       <h1>TASA DEL DÍA</h1>
     </div>
     <div id="tabla-container"></div>
-    <button class="download-button" onclick="descargarTabla()">Descargar como Imagen</button>
+    <button class="download-button" onclick="descargarTabla()">Descargar Imagen</button>
     <div id="error-message" class="error"></div>
   </div>
+  <div class="stars" id="stars"></div>
   <script type="text/babel">
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Teo-_5ka3LKx7FXL3x3yV3uf4KhoI61ewnVJyJ90XRnksoObf4CDn-lJvrFKiQ/pub?gid=983978085&single=true&output=csv';
 
-    // Función para formatear números con 4 decimales
     const formatNumber = (number) => {
       return number.toLocaleString('es-CL', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
     };
 
-    // Función para limpiar valores de tasa
     const cleanRate = (raw) => {
       if (!raw || typeof raw !== 'string') return null;
-      let cleaned = raw.replace(/[$BsCOPARSCLPMXN€S\/.]/g, '').replace(/\s/g, '').trim();
-      cleaned = cleaned.replace(/,/g, '.');
+      let cleaned = raw.replace(/[$BsCOPARSCLPMXN€S\/.]/g, '').replace(/\s/g, '').trim().replace(/,/g, '.');
       const parsed = parseFloat(cleaned);
       return isNaN(parsed) ? null : parsed;
     };
 
-    // Función para cargar el CSV
     async function loadFileData() {
       try {
-        const response = await fetch(CSV_URL, {
-          method: 'GET',
-          headers: { 'Accept': 'text/csv' }
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.text();
-        console.log('CSV cargado (primeros 200 caracteres):', data.substring(0, 200));
-        return data;
+        const response = await fetch(CSV_URL, { method: 'GET', headers: { 'Accept': 'text/csv' } });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return await response.text();
       } catch (error) {
         console.error('Error al cargar el CSV:', error);
-        throw error;
+        return null;
       }
     }
 
@@ -152,24 +199,22 @@
 
       React.useEffect(() => {
         loadFileData().then(csv => {
-          Papa.parse(csv, {
-            skipEmptyLines: true,
-            transform: (value) => value.trim().replace(/^"|"$/g, ''),
-            complete: (results) => {
-              const exchangeRates = {};
-              results.data.forEach((row, index) => {
-                try {
+          if (csv) {
+            Papa.parse(csv, {
+              skipEmptyLines: true,
+              transform: (value) => value.trim().replace(/^"|"$/g, ''),
+              complete: (results) => {
+                const exchangeRates = {};
+                results.data.forEach((row, index) => {
                   if ((index - 3) % 9 === 0 && index >= 3) {
                     const b = row[1] ? String(row[1]).trim() : '';
                     const c = row[2] ? String(row[2]).trim() : '';
                     const d = row[3] ? String(row[3]).trim() : '';
                     const combined = `${b} ${c} ${d}`.replace(/\u00A0/g, ' ').trim();
                     const cleanCombined = combined.replace(/[\u{1F300}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
-                    console.log(`Fila ${index+1} (BCD): "${cleanCombined}"`);
-                    
                     const pairText = cleanCombined.replace('COTIZACION MESA ', '').trim();
                     const parts = pairText.split('-').map(s => s.trim().toUpperCase()).filter(Boolean);
-                    
+
                     if (parts.length >= 2) {
                       let origin = parts[0];
                       let dest = parts[1];
@@ -188,25 +233,11 @@
                         const parsedRate = cleanRate(rawRate);
                         if (parsedRate !== null) {
                           exchangeRates[pairKey] = parsedRate;
-                          console.log(`Fila tasa ${index+4}: Asignado ${pairKey} = ${parsedRate}`);
-                        } else {
-                          console.warn(`Fila tasa ${index+4}: Valor no numérico o vacío '${rawRate}' para par ${pairKey}`);
                         }
-                      } else {
-                        console.warn(`No existe fila de tasa en index ${index+3} para par ${pairKey}`);
                       }
-                    } else {
-                      console.warn(`Fila ${index+1}: No se pudo extraer par válido de "${cleanCombined}"`);
                     }
                   }
-                } catch (e) {
-                  console.error(`Error parseando fila ${index+1}:`, e);
-                }
-              });
-              console.log('Pares de monedas extraídos:', exchangeRates);
-              if (Object.keys(exchangeRates).length === 0) {
-                setError('No se encontraron pares de monedas válidos en el CSV.');
-              } else {
+                });
                 const rateList = Object.entries(exchangeRates).map(([pair, rate]) => {
                   const [origin, dest] = pair.split('/');
                   return {
@@ -214,24 +245,31 @@
                     dest: currencyToCountry[dest] || dest,
                     rate: formatNumber(rate)
                   };
-                });
+                }).slice(0, 8); // Limitar a 8 tasas para encajar en el tamaño
                 setRates(rateList);
-              }
-            },
-            error: (err) => {
-              setError('Error al parsear el CSV: ' + err.message);
-              console.error('Error al parsear el CSV:', err);
-            }
-          });
-        }).catch(err => {
-          setError('Error al cargar el archivo CSV: ' + err.message);
-          console.error('Error al cargar el CSV:', err);
+              },
+              error: (err) => setError('Error al parsear el CSV: ' + err.message),
+            });
+          } else {
+            setError('Error al cargar el CSV.');
+          }
         });
       }, []);
 
       React.useEffect(() => {
         if (error) {
           document.getElementById('error-message').innerText = error;
+        }
+        // Generar estrellas
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 50; i++) {
+          const star = document.createElement('div');
+          star.className = 'star';
+          star.style.left = `${Math.random() * 100}%`;
+          star.style.top = `${Math.random() * 100}%`;
+          star.style.width = `${Math.random() * 2 + 1}px`;
+          star.style.height = `${Math.random() * 2 + 1}px`;
+          starsContainer.appendChild(star);
         }
       }, [error]);
 
@@ -282,10 +320,12 @@
 
     function descargarTabla() {
       html2canvas(document.querySelector('.container'), {
-        backgroundColor: '#006400',
-        scale: 2 // Para mejor resolución
+        backgroundColor: '#0a0a0a',
+        width: 1080,
+        height: 1920,
+        scale: 2
       }).then(canvas => {
-        let link = document.createElement('a');
+        const link = document.createElement('a');
         link.download = 'tasa_del_dia.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
