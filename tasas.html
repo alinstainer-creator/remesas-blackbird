@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blackbird Tasas del Día</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body {
+      background: #0a0a0a;
+      color: #e6e6e6;
+      font-family: 'Exo 2', sans-serif;
+      overflow: hidden;
+      position: relative;
+      margin: 0;
+      animation: backgroundPulse 10s infinite ease-in-out;
+      background-image: radial-gradient(circle at 30% 10%, rgba(0,153,119,0.02), transparent 15%),
+                        radial-gradient(circle at 80% 70%, rgba(0,153,119,0.015), transparent 20%);
+      background-size: 200% 200%;
+      animation: bgShift 30s linear infinite;
+    }
+    @keyframes bgShift {
+      0% { background-position: 0% 0%, 100% 100%; }
+      50% { background-position: 50% 50%, 50% 0%; }
+      100% { background-position: 100% 100%, 0% 50%; }
+    }
+    .container {
+      background: rgba(10, 10, 10, 0.98);
+      border: 1px solid #009977;
+      box-shadow: 0 0 6px rgba(0, 153, 119, 0.3);
+      border-radius: 6px;
+      padding: 1rem;
+      max-width: 96%;
+      width: 96%;
+      margin: 1rem auto;
+      animation: fadeIn 1s ease-out;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .header h1 {
+      font-size: 1.5rem;
+      color: #00cc99;
+      text-shadow: 0 0 10px rgba(0, 204, 153, 0.7);
+    }
+    .rate-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      background: rgba(0, 100, 0, 0.7);
+      border: 2px solid #ffd700;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+    .rate-box span {
+      flex: 1;
+      text-align: center;
+    }
+    .rate-box .rate {
+      font-weight: bold;
+      color: #ffd700;
+    }
+    .clouds-layer1 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(0, 153, 119, 0.06), transparent);
+      will-change: transform;
+      animation: supersonicClouds 15s linear infinite;
+      z-index: -2;
+    }
+    .clouds-layer2 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(0, 153, 119, 0.04), transparent);
+      will-change: transform;
+      animation: supersonicClouds 15s linear infinite reverse;
+      z-index: -2;
+    }
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+    }
+    .star {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      background: #e6e6e6;
+      opacity: 0.3;
+      animation: pulseStar calc(1s + var(--delay) * 1s) infinite;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes backgroundPulse {
+      0% { background-color: #0a0a0a; }
+      50% { background-color: #0f1a1a; }
+      100% { background-color: #0a0a0a; }
+    }
+    @keyframes supersonicClouds {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes pulseStar {
+      0% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+      100% { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+  <div class="background">
+    <div class="clouds-layer1"></div>
+    <div class="clouds-layer2"></div>
+    <div class="stars" id="stars"></div>
+  </div>
+  <div class="container">
+    <div class="header">
+      <h1>TASA DEL DÍA</h1>
+    </div>
+    <div id="root"></div>
+  </div>
+  <script type="text/babel">
+    // Mapeo de códigos de moneda a nombres de países
+    const currencyToCountry = {
+      ARS: 'Argentina',
+      VES: 'Venezuela',
+      CLP: 'Chile',
+      USD: 'USA',
+      MXN: 'México',
+      PEN: 'Perú',
+      COP: 'Colombia',
+      EUR: 'España',
+      BRL: 'Brasil',
+      UYU: 'Uruguay',
+      ECU: 'Ecuador'
+    };
+
+    const countryCodeToCurrency = {
+      'ARG': 'ARS', 'AR': 'ARS', 'ARGENTINA': 'ARS',
+      'VEN': 'VES', 'VZLA': 'VES', 'VENEZUELA': 'VES',
+      'CHILE': 'CLP', 'CHL': 'CLP',
+      'USA': 'USD', 'US': 'USD', 'ESTADOS UNIDOS': 'USD',
+      'MEX': 'MXN', 'MÉXICO': 'MXN', 'MEXICO': 'MXN',
+      'PERU': 'PEN', 'PERÚ': 'PEN',
+      'COL': 'COP', 'COLOMBIA': 'COP',
+      'ESP': 'EUR', 'ESPAÑA': 'EUR', 'EURO': 'EUR',
+      'BRA': 'BRL', 'BRASIL': 'BRL',
+      'URU': 'UYU', 'URUGUAY': 'UYU',
+      'ECU': 'ECU', 'ECUADOR': 'ECU'
+    };
+
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Teo-_5ka3LKx7FXL3x3yV3uf4KhoI61ewnVJyJ90XRnksoObf4CDn-lJvrFKiQ/pub?gid=983978085&single=true&output=csv';
+
+    // Función para formatear números con 4 decimales
+    const formatNumber = (number) => {
+      return number.toLocaleString('es-CL', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+    };
+
+    // Función para limpiar valores de tasa
+    const cleanRate = (raw) => {
+      if (!raw || typeof raw !== 'string') return null;
+      let cleaned = raw.replace(/[$BsCOPARSCLPMXN€S\/.]/g, '').replace(/\s/g, '').trim().replace(/,/g, '.');
+      const parsed = parseFloat(cleaned);
+      return isNaN(parsed) ? null : parsed;
+    };
+
+    // Función para cargar el CSV
+    async function loadFileData() {
+      try {
+        const response = await fetch(CSV_URL, { method: 'GET', headers: { 'Accept': 'text/csv' } });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return await response.text();
+      } catch (error) {
+        console.error('Error al cargar el CSV:', error);
+        return null;
+      }
+    }
+
+    function ExchangeRateTable() {
+      const [rates, setRates] = React.useState([]);
+      const [error, setError] = React.useState('');
+
+      React.useEffect(() => {
+        loadFileData().then(csv => {
+          if (csv) {
+            Papa.parse(csv, {
+              skipEmptyLines: true,
+              transform: (value) => value.trim().replace(/^"|"$/g, ''),
+              complete: (results) => {
+                const exchangeRates = {};
+                results.data.forEach((row, index) => {
+                  if ((index - 3) % 9 === 0 && index >= 3) {
+                    const b = row[1] ? String(row[1]).trim() : '';
+                    const c = row[2] ? String(row[2]).trim() : '';
+                    const d = row[3] ? String(row[3]).trim() : '';
+                    const combined = `${b} ${c} ${d}`.replace(/\u00A0/g, ' ').trim();
+                    const cleanCombined = combined.replace(/[\u{1F300}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
+                    const pairText = cleanCombined.replace('COTIZACION MESA ', '').trim();
+                    const parts = pairText.split('-').map(s => s.trim().toUpperCase()).filter(Boolean);
+
+                    if (parts.length >= 2) {
+                      let origin = parts[0];
+                      let dest = parts[1];
+                      origin = countryCodeToCurrency[origin] || origin;
+                      dest = countryCodeToCurrency[dest] || dest;
+                      const pairKey = `${origin}/${dest}`;
+                      const rateRow = results.data[index + 3];
+                      if (rateRow) {
+                        const rawRate = rateRow[5] || rateRow[6] || '';
+                        const parsedRate = cleanRate(rawRate);
+                        if (parsedRate !== null) {
+                          exchangeRates[pairKey] = parsedRate;
+                        }
+                      }
+                    }
+                  }
+                });
+                const rateList = Object.entries(exchangeRates).map(([pair, rate]) => {
+                  const [origin, dest] = pair.split('/');
+                  return { origin: currencyToCountry[origin] || origin, dest: currencyToCountry[dest] || dest, rate };
+                });
+                setRates(rateList);
+              },
+              error: (err) => {
+                setError('Error al parsear el CSV: ' + err.message);
+                console.error('Error al parsear el CSV:', err);
+              },
+            });
+          } else {
+            setError('Error al cargar el archivo CSV.');
+          }
+        });
+      }, []);
+
+      if (error) {
+        return <div className="text-center text-red-300">{error}</div>;
+      }
+      if (rates.length === 0) {
+        return <div className="text-center text-gray-300 animate-pulse">Cargando tasas de cambio...</div>;
+      }
+
+      return (
+        <div>
+          {rates.map((rate, index) => (
+            <div key={index} className="rate-box">
+              <span>{rate.origin} - {rate.dest}</span>
+              <span className="rate">{formatNumber(rate.rate)}</span>
+              <span>{rate.dest} - {rate.origin}</span>
+              <span className="rate">{formatNumber(1 / rate.rate)}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Generar estrellas
+    React.useEffect(() => {
+      const starsContainer = document.getElementById('stars');
+      for (let i = 0; i < 150; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.width = `${Math.random() * 1 + 0.5}px`;
+        star.style.height = `${Math.random() * 1 + 0.5}px`;
+        star.style.setProperty('--delay', Math.random() * 1);
+        starsContainer.appendChild(star);
+      }
+    }, []);
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<ExchangeRateTable />);
+  </script>
+</body>
+</html>
