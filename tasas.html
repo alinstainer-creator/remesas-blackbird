@@ -60,7 +60,7 @@
     }
     #tabla-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 5px;
       padding: 5px;
       max-height: 1700px;
@@ -145,6 +145,16 @@
       50% { opacity: 0.7; }
       100% { opacity: 0.3; }
     }
+    @media (max-width: 1080px) {
+      .container {
+        width: 100%;
+        height: auto;
+        min-height: 1920px;
+      }
+      #tabla-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
   </style>
 </head>
 <body>
@@ -152,9 +162,7 @@
     <div class="header">
       <h1>TASA DEL DÍA</h1>
     </div>
-    <div id="tabla-container"></div>
-    <button class="download-button" onclick="descargarTabla()">Descargar Imagen</button>
-    <div id="error-message" class="error"></div>
+    <div="error-message" class="error"></div>
   </div>
   <div class="stars" id="stars"></div>
   <script type="text/babel">
@@ -169,21 +177,6 @@
       let cleaned = raw.replace(/[$BsCOPARSCLPMXN€S\/.]/g, '').replace(/\s/g, '').trim().replace(/,/g, '.');
       const parsed = parseFloat(cleaned);
       return isNaN(parsed) ? null : parsed;
-    };
-
-    // Mapeo de monedas a emojis de banderas
-    const currencyToFlag = {
-      ARS: '🇦🇷',
-      VES: '🇻🇪',
-      CLP: '🇨🇱',
-      USD: '🇺🇸',
-      MXN: '🇲🇽',
-      PEN: '🇵🇪',
-      COP: '🇨🇴',
-      EUR: '🇪🇸',
-      BRL: '🇧🇷',
-      UYU: '🇺🇾',
-      ECU: '🇪🇨'
     };
 
     async function loadFileData() {
