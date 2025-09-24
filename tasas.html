@@ -108,14 +108,14 @@
       background: #009977;
       color: #0a0a0a;
       font-weight: bold;
-      padding: 2px 5px; /* Reducido para evitar choque */
+      padding: 2px 5px;
       border-radius: 8px;
       display: inline-block;
-      font-size: 0.8rem; /* Tamaño de fuente más pequeño */
+      font-size: 0.8rem;
       text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
     }
     .download-button {
-      display: none; /* Ocultamos el botón inferior */
+      display: none;
     }
     .error {
       color: #ff4444;
@@ -149,7 +149,7 @@
 <body>
   <div class="container">
     <div class="header">
-      <img src="./logo-blackbird.png" alt="Blackbird Logo" class="logo">
+      <img src="./logo blackbird.png" alt="Blackbird Logo" class="logo">
       <h1>TASA DEL DÍA</h1>
       <button class="download-btn" onclick="descargarTabla()">Descargar</button>
     </div>
@@ -334,16 +334,16 @@
         backgroundColor: '#0a0a0a',
         width: 1080,
         height: 1920,
-        scale: 3, // Aumentamos la escala para mejor resolución
-        useCORS: true // Para manejar imágenes locales o externas
+        scale: 3,
+        useCORS: true
       }).then(canvas => {
-        downloadBtn.style.display = ''; // Restauramos el botón
+        downloadBtn.style.display = '';
         const link = document.createElement('a');
         link.download = 'tasa_del_dia.png';
-        link.href = canvas.toDataURL('image/png', 1.0); // Calidad máxima
+        link.href = canvas.toDataURL('image/png', 1.0);
         link.click();
       }).catch(err => {
-        downloadBtn.style.display = ''; // Restauramos el botón en caso de error
+        downloadBtn.style.display = '';
         console.error('Error al generar la imagen:', err);
         document.getElementById('error-message').innerText = 'Error al descargar la imagen. Intenta de nuevo.';
       });
