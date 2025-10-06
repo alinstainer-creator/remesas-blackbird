@@ -27,11 +27,11 @@
     .container {
       width: 1080px;
       height: 1920px;
-      background: #f8f9fa; /* Fondo más suave, no blanco puro */
+      background: #f8f9fa; /* Fondo suave, no blanco puro */
       border: 1px solid #cbd5e0;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
       border-radius: 20px;
-      padding: 20px;
+      padding: 15px; /* Reducido para más espacio */
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -40,14 +40,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      padding: 15px;
+      margin-bottom: 15px; /* Reducido margen */
+      padding: 10px;
       background: #edf2f7;
-      border-radius: 15px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
     .header h1 {
-      font-size: 2.5rem;
+      font-size: 2.2rem; /* Ligeramente más pequeño */
       color: #1a202c;
       font-weight: 700;
       margin: 0;
@@ -55,11 +55,11 @@
     .header .download-btn {
       background: #3182ce;
       color: #ffffff;
-      padding: 10px 20px;
-      font-size: 1rem;
+      padding: 8px 16px; /* Más pequeño */
+      font-size: 0.9rem;
       font-weight: 500;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
       transition: background 0.3s ease;
     }
@@ -67,72 +67,72 @@
       background: #2b6cb0;
     }
     .header .logo {
-      width: 70px;
+      width: 60px; /* Ligeramente más pequeño */
       height: auto;
     }
     #tabla-container {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px; /* Reducido gap para más espacio vertical */
-      padding: 10px;
-      height: 1600px; /* Ajustado para que quepan todas sin desbordar */
+      gap: 8px; /* Reducido para compactar */
+      padding: 8px;
+      height: 1400px; /* Ajustado para 8 filas */
     }
     .rate-box {
       background: #f7fafc;
       border: 1px solid #e2e8f0;
-      border-radius: 15px;
-      padding: 10px; /* Reducido padding para compactar */
+      border-radius: 12px;
+      padding: 8px; /* Reducido para compactar */
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       font-size: 1rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
       transition: transform 0.2s ease;
     }
     .rate-box:hover {
-      transform: translateY(-3px);
+      transform: translateY(-2px);
     }
     .rate-label {
       color: #4a5568;
-      font-size: 1.2rem; /* Aumentado para legibilidad */
+      font-size: 1rem; /* Más pequeño para compactar */
       font-weight: 400;
-      margin-bottom: 6px; /* Reducido margen */
+      margin-bottom: 4px; /* Reducido margen */
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       text-align: center;
     }
     .rate-value {
-      font-size: 2rem; /* Aumentado para que las tasas sean grandes y visibles */
+      font-size: 1.5rem; /* Grande y visible */
       font-weight: 700;
       color: #3182ce;
       background: #ebf8ff;
-      padding: 6px 12px; /* Ajustado para no ocupar mucho espacio */
-      border-radius: 10px;
+      padding: 5px 10px; /* Más pequeño */
+      border-radius: 8px;
     }
     .cta {
       position: absolute;
-      bottom: 30px;
+      bottom: 20px; /* Más cerca del borde */
       left: 50%;
       transform: translateX(-50%);
-      font-size: 1.2rem;
-      color: #4a5568;
-      font-weight: 500;
+      font-size: 1.1rem;
+      color: #2b6cb0;
+      font-weight: 600;
     }
     .error {
       color: #e53e3e;
       text-align: center;
-      margin: 20px 0;
-      font-size: 1.1rem;
+      margin: 10px 0;
+      font-size: 1rem;
     }
     @media (max-width: 1080px) {
       .container { width: 100%; height: 1920px; }
-      .header h1 { font-size: 2rem; }
-      .header .logo { width: 60px; }
-      #tabla-container { gap: 8px; height: 1700px; }
-      .rate-label { font-size: 1.1rem; }
-      .rate-value { font-size: 1.8rem; }
+      .header h1 { font-size: 1.8rem; }
+      .header .logo { width: 50px; }
+      #tabla-container { gap: 6px; height: 1450px; }
+      .rate-label { font-size: 0.9rem; }
+      .rate-value { font-size: 1.4rem; }
       .cta { font-size: 1rem; }
     }
   </style>
@@ -146,7 +146,7 @@
     </div>
     <div id="tabla-container"></div>
     <div id="error-message" class="error"></div>
-    <div class="cta">¡Contáctanos para tu remesa!</div>
+    <div class="cta">¡Contáctanos por WhatsApp!</div>
   </div>
   <script type="text/babel">
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Teo-_5ka3LKx7FXL3x3yV3uf4KhoI61ewnVJyJ90XRnksoObf4CDn-lJvrFKiQ/pub?gid=983978085&single=true&output=csv';
