@@ -1,194 +1,296 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blackbird Tasas del Día</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Blackbird - Tasas del Día (Historia)</title>
+
+  <!-- Dependencias -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Tipografía -->
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <style>
-    body {
-      background: #0a0a0a;
-      color: #e6e6e6;
-      font-family: 'Exo 2', sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      overflow: hidden;
-      animation: backgroundPulse 10s infinite ease-in-out;
-      background-image: radial-gradient(circle at 30% 10%, rgba(0, 153, 119, 0.02), transparent 15%),
-                        radial-gradient(circle at 80% 70%, rgba(0, 153, 119, 0.015), transparent 20%);
-      background-size: 200% 200%;
-      animation: bgShift 30s linear infinite;
+    :root{
+      --bg-1: #071726;   /* deep navy */
+      --bg-2: #0b2a3a;   /* gradient secondary */
+      --card: rgba(255,255,255,0.04);
+      --accent-teal: #00bfa6; /* trust / modern */
+      --accent-gold: #e6b96b; /* premium spark */
+      --muted: rgba(255,255,255,0.75);
+      --glass: rgba(255,255,255,0.03);
+      --shadow: 0 10px 30px rgba(2,18,30,0.6);
     }
-    @keyframes bgShift { 0% { background-position: 0% 0%, 100% 100%; } 50% { background-position: 50% 50%, 50% 0%; } 100% { background-position: 100% 100%, 0% 50%; } }
-    @keyframes backgroundPulse { 0% { background-color: #0a0a0a; } 50% { background-color: #0f1a1a; } 100% { background-color: #0a0a0a; } }
-    .container {
-      width: 1080px;
-      height: 1920px;
-      background: rgba(10, 10, 10, 0.95);
-      border: 2px solid #009977;
-      box-shadow: 0 0 10px rgba(0, 153, 119, 0.5);
-      border-radius: 10px;
-      padding: 10px;
-      text-align: center;
-      position: relative;
-      overflow-y: auto;
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: 'Exo 2', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      background: linear-gradient(180deg,var(--bg-1), var(--bg-2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
+
+    /* Canvas size tailored for IG/WA story 1080x1920 */
+    .page {
+      width:1080px;
+      height:1920px;
+      position:relative;
+      box-sizing:border-box;
+      padding:40px;
+      border-radius:18px;
+      overflow:hidden;
+      background:
+        radial-gradient(1000px 600px at 10% 10%, rgba(0,191,166,0.04), transparent 15%),
+        radial-gradient(1200px 800px at 90% 85%, rgba(230,185,107,0.02), transparent 20%),
+        linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0));
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.03);
     }
-    .header h1 {
-      font-size: 2rem;
-      color: #00cc99;
-      text-shadow: 0 0 10px rgba(0, 204, 153, 0.7);
-      margin: 0;
+
+    /* Header */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
     }
-    .header .download-btn {
-      background: #009977;
-      color: #e6e6e6;
-      padding: 5px 10px;
-      font-size: 0.9rem;
-      font-weight: 600;
+    .brand{
+      display:flex;
+      gap:14px;
+      align-items:center;
+    }
+    .brand .logo {
+      width:84px;
+      height:84px;
+      object-fit:contain;
+      border-radius:12px;
+      background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(255,255,255,0.02));
+      padding:8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .brand h1{
+      margin:0;
+      color:var(--muted);
+      font-size:34px;
+      letter-spacing:1px;
+      line-height:1;
+      font-weight:700;
+    }
+    .brand p{
+      margin:0;
+      color:rgba(255,255,255,0.55);
+      font-size:14px;
+      margin-top:4px;
+    }
+
+    /* Main card holding all rates */
+    .main-card{
+      margin-top:28px;
+      width:100%;
+      border-radius:16px;
+      padding:28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(0,0,0,0.15);
+      box-shadow: 0 20px 40px rgba(3,15,22,0.6);
+      display:flex;
+      gap:24px;
+      align-items:flex-start;
+    }
+
+    /* left: hero rate */
+    .hero{
+      width:44%;
+      min-height:420px;
+      background: linear-gradient(135deg, rgba(0,191,166,0.06), rgba(230,185,107,0.02));
+      border-radius:12px;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid rgba(0,191,166,0.12);
+      position:relative;
+    }
+    .hero .label{
+      color:var(--muted);
+      font-size:18px;
+      font-weight:600;
+      letter-spacing:0.6px;
+      margin-bottom:8px;
+    }
+    .hero .big-rate{
+      font-size:84px;
+      font-weight:800;
+      color: #ffffff;
+      text-shadow: 0 6px 30px rgba(0,0,0,0.6);
+      line-height:1;
+    }
+    .hero .sub{
+      margin-top:10px;
+      color: rgba(255,255,255,0.75);
+      font-weight:600;
+    }
+    .hero .badge{
+      position:absolute;
+      top:18px;
+      right:18px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02));
+      padding:8px 12px;
+      border-radius:10px;
+      color:var(--muted);
+      font-weight:600;
+      font-size:13px;
+      border: 1px solid rgba(255,255,255,0.035);
+    }
+
+    /* right: grid of pairs */
+    .grid{
+      width:56%;
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:14px;
+    }
+    .pair-card{
+      background: var(--glass);
+      border-radius:12px;
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      border: 1px solid rgba(255,255,255,0.02);
+      min-height:110px;
+      justify-content:center;
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+    .pair-card:hover{
+      transform: translateY(-6px);
+      box-shadow: 0 18px 40px rgba(2,16,24,0.6);
+    }
+    .pair-title{
+      font-weight:700;
+      font-size:15px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .pair-rate{
+      font-weight:800;
+      font-size:24px;
+      color:#fff;
+      margin-top:4px;
+    }
+    .pair-sub{
+      font-size:12px;
+      color: rgba(255,255,255,0.65);
+    }
+
+    /* Footer area inside page for CTA & timestamp */
+    .page-footer{
+      margin-top:22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 6px 0 6px;
+      color: rgba(255,255,255,0.65);
+      font-size:13px;
+    }
+    .cta{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .btn-cta{
+      background: linear-gradient(90deg, var(--accent-teal), var(--accent-gold));
+      color:#072023;
+      padding:10px 16px;
+      border-radius:10px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
       border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.3s ease;
     }
-    .header .download-btn:hover {
-      background: #00cc99;
-      color: #0a0a0a;
-      box-shadow: 0 0 5px rgba(0, 255, 204, 0.7);
+    .download-btn{
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.06);
+      color:var(--muted);
+      padding:8px 12px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
     }
-    .header .logo {
-      width: 50px;
-      height: auto;
-    }
-    #tabla-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5px;
-      padding: 5px;
-      max-height: 1700px;
-    }
-    .rate-box {
-      background: rgba(0, 153, 119, 0.2);
-      border: 1px solid #009977;
-      border-radius: 5px;
-      padding: 5px;
-      margin: 2px 0;
-      width: 100%;
-      transition: transform 0.3s ease;
-      font-size: 0.9rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .rate-box:hover { transform: scale(1.02); }
-    .rate-label {
-      color: #e6e6e6;
-      margin-bottom: 2px;
-      text-align: center;
-      font-weight: 400;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 4px;
-      max-width: 100%;
-      word-wrap: break-word;
-    }
-    .rate-value {
-      background: #009977;
-      color: #0a0a0a;
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 8px;
-      display: inline-block;
-      font-size: 1.2rem;
-      text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
-      max-width: 70%; /* Reducido para evitar choque */
-      margin-top: 4px; /* Espacio adicional */
-    }
-    .download-button {
-      display: none;
-    }
+
+    /* Error text */
     .error {
-      color: #ff4444;
-      text-align: center;
-      margin: 10px 0;
-      font-size: 1rem;
+      color:#ff6666;
+      font-weight:700;
+      margin-top:12px;
+      text-align:center;
     }
-    .stars {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: -1;
-    }
-    .star {
-      position: absolute;
-      background: #e6e6e6;
-      border-radius: 50%;
-      animation: pulseStar 2s infinite;
-    }
-    @keyframes pulseStar { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
-    @media (max-width: 1080px) {
-      .container { width: 100%; height: auto; min-height: 1920px; }
-      #tabla-container { grid-template-columns: 1fr 1fr; }
-      .header .logo { width: 40px; }
+
+    /* Small devices fallback */
+    @media (max-width:1200px){
+      .page { transform: scale(0.85); transform-origin:center; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <img src="./logo blackbird.png" alt="Blackbird Logo" class="logo">
-      <h1>TASA DEL DÍA</h1>
-      <button class="download-btn" onclick="descargarTabla()">Descargar</button>
+  <div class="page" id="export-area">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">
+          <!-- si tu logo está disponible en la ruta, se mostrará. Si no, se muestra texto -->
+          <img src="./logo blackbird.png" alt="Blackbird" style="width:100%;height:100%;object-fit:contain;border-radius:8px;" onerror="this.style.display='none'" />
+        </div>
+        <div>
+          <h1>Blackbird</h1>
+          <p>Tasas del día • Transparencia y rapidez</p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="download-btn" id="downloadBtn" onclick="descargarImagen()">Descargar imagen</button>
+        <button class="download-btn" id="refreshBtn" onclick="window.location.reload()">Recargar</button>
+      </div>
     </div>
-    <div id="tabla-container"></div>
-    <div id="error-message" class="error"></div>
+
+    <div id="main-root" style="margin-top:18px;"></div>
+
+    <div class="page-footer">
+      <div style="display:flex;flex-direction:column;">
+        <div style="font-weight:700;color:rgba(255,255,255,0.9)">Tasas actualizadas</div>
+        <div id="timestamp" style="font-size:12px;color:rgba(255,255,255,0.6)">Cargando...</div>
+      </div>
+
+      <div class="cta">
+        <!-- CTA visible (personaliza número/WhatsApp si quieres) -->
+        <button class="btn-cta" onclick="openWhatsApp()">Enviar remesa • Contactar</button>
+      </div>
+    </div>
+
+    <div id="error" class="error" style="display:none;"></div>
   </div>
-  <div class="stars" id="stars"></div>
+
   <script type="text/babel">
+    // ---------- CONFIG ----------
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Teo-_5ka3LKx7FXL3x3yV3uf4KhoI61ewnVJyJ90XRnksoObf4CDn-lJvrFKiQ/pub?gid=983978085&single=true&output=csv';
+    // Si quieres que la imagen se descargue automáticamente cuando carguen las tasas, cambia a true:
+    const AUTO_DOWNLOAD_ON_LOAD = false;
 
-    const formatNumber = (number) => {
-      if (number === null || isNaN(number)) return 'N/A';
-      const absNumber = Math.abs(number);
-      const decimalPlaces = absNumber > 10 ? 2 : 4;
-      return number.toLocaleString('es-CL', {
-        minimumFractionDigits: decimalPlaces,
-        maximumFractionDigits: decimalPlaces
-      });
-    };
-
-    const cleanRate = (raw) => {
-      if (!raw || typeof raw !== 'string') return null;
-      let cleaned = raw.replace(/[$BsCOPARSCLPMXN€S\/.]/g, '').replace(/\s/g, '').trim().replace(/,/g, '.');
-      const parsed = parseFloat(cleaned);
-      return isNaN(parsed) ? null : parsed;
-    };
-
-    const currencyToFlag = {
-      ARS: '🇦🇷', VES: '🇻🇪', CLP: '🇨🇱', USD: '🇺🇸', MXN: '🇲🇽', PEN: '🇵🇪',
-      COP: '🇨🇴', EUR: '🇪🇸', ECU: '🇪🇨'
-    };
-
+    // Mapas de banderas y nombres
+    const currencyToFlag = { ARS: '🇦🇷', VES: '🇻🇪', CLP: '🇨🇱', USD: '🇺🇸', MXN: '🇲🇽', PEN: '🇵🇪', COP: '🇨🇴', EUR: '🇪🇺', ECU: '🇪🇨' };
     const desiredPairs = [
       { origin: 'Chile', dest: 'Venezuela', originCur: 'CLP', destCur: 'VES' },
       { origin: 'USA', dest: 'Venezuela', originCur: 'USD', destCur: 'VES' },
@@ -208,158 +310,214 @@
       { origin: 'Chile', dest: 'Ecuador', originCur: 'CLP', destCur: 'ECU' }
     ];
 
-    async function loadFileData() {
+    // ---------- UTILIDADES ----------
+    const cleanRate = (raw) => {
+      if (!raw && raw !== 0) return null;
       try {
-        const response = await fetch(CSV_URL, { method: 'GET', headers: { 'Accept': 'text/csv' } });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return await response.text();
-      } catch (error) {
-        console.error('Error al cargar el CSV:', error);
+        let s = String(raw);
+        s = s.replace(/[^\d\-,.]/g, ''); // quita símbolos
+        s = s.replace(/\s/g, '').replace(/,/g, '.');
+        // si tiene dos puntos, tomar hasta el último
+        const lastDot = s.lastIndexOf('.');
+        if (lastDot !== -1 && s.indexOf('.') !== lastDot) {
+          // elimina puntos anteriores
+          s = s.slice(0, lastDot).replace(/\./g, '') + s.slice(lastDot);
+        }
+        const n = parseFloat(s);
+        return isNaN(n) ? null : n;
+      } catch(e){
         return null;
+      }
+    };
+
+    const formatNumber = (num) => {
+      if (num === null || num === undefined) return 'N/A';
+      const decimals = Math.abs(num) > 10 ? 2 : 4;
+      return Number(num).toLocaleString('es-CL', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    };
+
+    // ---------- FETCH CSV ----------
+    async function fetchCSVText(){
+      try {
+        const res = await fetch(CSV_URL, { cache: 'no-cache' });
+        if(!res.ok) throw new Error('HTTP ' + res.status);
+        return await res.text();
+      } catch (err) {
+        console.error('Error fetch CSV:', err);
+        throw err;
       }
     }
 
-    function ExchangeRateTable() {
-      const [rates, setRates] = React.useState([]);
-      const [error, setError] = React.useState('');
-
-      React.useEffect(() => {
-        loadFileData().then(csv => {
-          if (csv) {
-            Papa.parse(csv, {
-              skipEmptyLines: true,
-              transform: (value) => value.trim().replace(/^"|"$/g, ''),
-              complete: (results) => {
-                const exchangeRates = {};
-                results.data.forEach((row, index) => {
-                  if ((index - 3) % 9 === 0 && index >= 3) {
-                    const b = row[1] ? String(row[1].trim()) : '';
-                    const c = row[2] ? String(row[2].trim()) : '';
-                    const d = row[3] ? String(row[3].trim()) : '';
-                    const combined = `${b} ${c} ${d}`.replace(/\u00A0/g, ' ').trim();
-                    const cleanCombined = combined.replace(/[\u{1F300}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
-                    const pairText = cleanCombined.replace('COTIZACION MESA ', '').trim();
-                    const parts = pairText.split('-').map(s => s.trim().toUpperCase()).filter(Boolean);
-
-                    if (parts.length >= 2) {
-                      let origin = parts[0];
-                      let dest = parts[1];
-                      origin = origin === 'USA' ? 'USD' : origin;
-                      dest = dest === 'VZLA' ? 'VES' : dest;
-                      dest = dest === 'MEXICO' ? 'MXN' : dest;
-                      dest = dest === 'PERU' ? 'PEN' : dest;
-
-                      const originCurrency = countryCodeToCurrency[origin] || countryCodeToCurrency[origin.replace(/\W/g, '')] || origin;
-                      const destCurrency = countryCodeToCurrency[dest] || countryCodeToCurrency[dest.replace(/\W/g, '')] || dest;
-                      const pairKey = `${originCurrency}/${destCurrency}`;
-                      
-                      const rateRow = results.data[index + 3];
-                      if (rateRow) {
-                        const rawRate = rateRow[5] || rateRow[6] || ''; 
-                        const parsedRate = cleanRate(rawRate);
-                        if (parsedRate !== null) {
-                          exchangeRates[pairKey] = parsedRate;
-                        }
-                      }
+    // ---------- PARSE Y EXTRACCION ----------
+    async function extractRatesFromCSV(csvText){
+      return new Promise((resolve, reject) => {
+        Papa.parse(csvText, {
+          skipEmptyLines: true,
+          complete: (p) => {
+            try {
+              const data = p.data;
+              const exchangeMap = {};
+              // Heurística: busca filas que contengan "COTIZACION" o "MESA" o patrón "ARG - VEN" en celdas.
+              for(let i=0;i<data.length;i++){
+                const row = data[i].map(c => c ? String(c).toUpperCase().trim() : '');
+                const combined = row.join(' ');
+                if(/COTIZACION|COTIZACIÓN|MESA|COTIZA/.test(combined) && /[-–—]/.test(combined)){
+                  // intenta obtener par
+                  const match = combined.match(/([A-ZÁÉÍÓÚÑ ]{2,30})\s*[-–—]\s*([A-ZÁÉÍÓÚÑ ]{2,30})/);
+                  if(match){
+                    let a = match[1].trim();
+                    let b = match[2].trim();
+                    // normalize abbreviations
+                    a = a.replace(/\bUSA\b/,'USD').replace(/\bVZLA\b/,'VES');
+                    b = b.replace(/\bUSA\b/,'USD').replace(/\bVZLA\b/,'VES');
+                    // buscar tasa en filas adelante
+                    const candidateRow = data[i+3] || data[i+2] || data[i+4] || null;
+                    let rawRate = null;
+                    if(candidateRow){
+                      rawRate = candidateRow[5] || candidateRow[6] || candidateRow[4] || candidateRow[3] || '';
                     }
+                    const cleaned = cleanRate(rawRate);
+                    const key = `${a.replace(/\s/g,'')}/${b.replace(/\s/g,'')}`;
+                    if(cleaned !== null) exchangeMap[key] = cleaned;
                   }
-                });
+                }
+              }
 
-                const rateList = desiredPairs.map(pair => {
-                  const pairKey = `${pair.originCur}/${pair.destCur}`;
-                  const rate = exchangeRates[pairKey] || null;
-                  return {
-                    origin: pair.origin || '',
-                    dest: pair.dest || '',
-                    rate: rate ? formatNumber(rate) : 'N/A',
-                    originFlag: currencyToFlag[pair.originCur] || '',
-                    destFlag: currencyToFlag[pair.destCur] || ''
-                  };
-                });
-                setRates(rateList);
-              },
-              error: (err) => setError('Error al parsear el CSV: ' + err.message),
-            });
-          } else {
-            setError('Error al cargar el CSV.');
-          }
+              // ahora formamos la lista final a partir de desiredPairs
+              const results = desiredPairs.map(p => {
+                const k1 = `${p.originCur}/${p.destCur}`;
+                const k2 = `${p.originCur}/${p.destCur}`.replace(/\s/g,''); // redundante pero seguro
+                const found = exchangeMap[k1] ?? exchangeMap[k2] ?? null;
+                return {
+                  origin: p.origin,
+                  dest: p.dest,
+                  originCur: p.originCur,
+                  destCur: p.destCur,
+                  rateRaw: found,
+                  rate: found !== null ? formatNumber(found) : 'N/A',
+                  flagOrigin: currencyToFlag[p.originCur] || '',
+                  flagDest: currencyToFlag[p.destCur] || ''
+                };
+              });
+
+              resolve(results);
+            } catch (err){
+              reject(err);
+            }
+          },
+          error: (err) => reject(err)
         });
-      }, []);
+      });
+    }
 
-      React.useEffect(() => {
-        if (error) {
-          document.getElementById('error-message').innerText = error;
-        }
-        const starsContainer = document.getElementById('stars');
-        for (let i = 0; i < 50; i++) {
-          const star = document.createElement('div');
-          star.className = 'star';
-          star.style.left = `${Math.random() * 100}%`;
-          star.style.top = `${Math.random() * 100}%`;
-          star.style.width = `${Math.random() * 2 + 1}px`;
-          star.style.height = `${Math.random() * 2 + 1}px`;
-          starsContainer.appendChild(star);
-        }
-      }, [error]);
+    // ---------- RENDER REACT ----------
+    function RatesView({ rates }){
+      // Escoge la "hero" rate: la primera disponible con rate != null
+      const hero = rates.find(r => r.rateRaw !== null) || rates[0] || {origin:'',dest:'',rate:'N/A',flagOrigin:'',flagDest:''};
+      const others = rates.filter(r => r !== hero);
 
       return (
-        <React.Fragment>
-          {rates.map((rate, index) => (
-            <div key={index} className="rate-box">
-              <div className="rate-label">
-                {rate.originFlag} {rate.origin} - {rate.destFlag} {rate.dest}
+        <div className="main-card">
+          <div className="hero" role="region" aria-label="Tasa principal">
+            <div className="badge">Blackbird • Confianza</div>
+            <div className="label">Más consultada</div>
+            <div className="big-rate">{hero.flagOrigin} {hero.originCur} → {hero.destCur} <div style={{fontSize:32, marginTop:6}}>{hero.flagDest}</div></div>
+            <div style={{height:10}}></div>
+            <div style={{fontSize:20, fontWeight:700, color:'rgba(255,255,255,0.95)'}}>{hero.rate}</div>
+            <div className="sub">Cambio referencial • Sujeto a variación</div>
+          </div>
+
+          <div className="grid" role="list" aria-label="Otras tasas">
+            {others.map((r, idx) => (
+              <div key={idx} className="pair-card" role="listitem">
+                <div className="pair-title">{r.flagOrigin} {r.origin} — {r.flagDest} {r.dest}</div>
+                <div className="pair-rate">{r.rate}</div>
+                <div className="pair-sub">{r.originCur} → {r.destCur} • {r.rateRaw !== null ? 'Fuente: Mesa' : 'N/D'}</div>
               </div>
-              <div className="rate-value">{rate.rate}</div>
-            </div>
-          ))}
-        </React.Fragment>
+            ))}
+          </div>
+        </div>
       );
     }
 
-    const currencyToCountry = {
-      ARS: 'Argentina', VES: 'Venezuela', CLP: 'Chile', USD: 'USA', MXN: 'México',
-      PEN: 'Perú', COP: 'Colombia', EUR: 'España', ECU: 'Ecuador'
-    };
+    // ---------- PRINCIPAL ----------
+    (async function main(){
+      try {
+        const raw = await fetchCSVText();
+        const rates = await extractRatesFromCSV(raw);
+        // timestamp
+        const ts = new Date();
+        document.getElementById('timestamp').innerText = ts.toLocaleString('es-CL', { dateStyle:'medium', timeStyle:'short' });
+        // render
+        const root = ReactDOM.createRoot(document.getElementById('main-root'));
+        root.render(<RatesView rates={rates} />);
 
-    const countryCodeToCurrency = {
-      'ARG': 'ARS', 'AR': 'ARS', 'ARGENTINA': 'ARS', 'ARGEN': 'ARS', 'ARGNT': 'ARS',
-      'PESO ARG': 'ARS', 'PESO ARGENTINO': 'ARS', 'ARG$': 'ARS', 'ARS': 'ARS',
-      'VEN': 'VES', 'VZLA': 'VES', 'VENEZUELA': 'VES', 'VENEZ': 'VES', 'VZL': 'VES',
-      'BOLIVAR': 'VES', 'BOLÍVAR': 'VES', 'VES$': 'VES', 'VES': 'VES',
-      'CHILE': 'CLP', 'CHL': 'CLP', 'PESO CHILENO': 'CLP', 'CLP$': 'CLP', 'CHI': 'CLP', 'CLP': 'CLP',
-      'USA': 'USD', 'US': 'USD', 'ESTADOS UNIDOS': 'USD', 'DOLLAR': 'USD', 'DÓLAR': 'USD', 'USD$': 'USD', 'USD': 'USD',
-      'MEX': 'MXN', 'MÉXICO': 'MXN', 'MEXICO': 'MXN', 'PESO MEX': 'MXN', 'PESO MEXICANO': 'MXN', 'MX$': 'MXN', 'MXN': 'MXN',
-      'PERU': 'PEN', 'PERÚ': 'PEN', 'PER': 'PEN', 'SOL': 'PEN', 'SOLES': 'PEN', 'PEN$': 'PEN', 'PEN': 'PEN',
-      'COP': 'COP', 'COL': 'COP', 'COLOMBIA': 'COP', 'PESO COL': 'COP', 'PESO COLOMBIANO': 'COP', 'COL$': 'COP', 'COP': 'COP',
-      'EUR': 'EUR', 'EURO': 'EUR', 'EUROPA': 'EUR', 'EUROZONA': 'EUR', '€': 'EUR', 'ESP': 'EUR', 'ESPAÑA': 'EUR',
-      'ECU': 'ECU', 'ECUADOR': 'ECU', 'EC': 'ECU', 'DÓLAR ECU': 'ECU', 'USD ECU': 'ECU', 'ECU': 'ECU'
-    };
+        // auto-download si configurado
+        if(AUTO_DOWNLOAD_ON_LOAD){
+          setTimeout(()=> descargarImagen(), 900); // espera un poco a que todo pinte
+        }
+      } catch (err){
+        console.error(err);
+        const e = document.getElementById('error');
+        e.style.display = 'block';
+        e.innerText = 'No se pudo cargar la tasa. Revisa la URL del CSV o intenta recargar.';
+        document.getElementById('timestamp').innerText = 'Error al actualizar';
+      }
+    })();
 
-    const root = ReactDOM.createRoot(document.getElementById('tabla-container'));
-    root.render(<ExchangeRateTable />);
+    // ---------- Descarga en alta resolución ----------
+    async function descargarImagen(){
+      const downloadBtn = document.getElementById('downloadBtn');
+      downloadBtn.disabled = true;
+      downloadBtn.innerText = 'Generando...';
 
-    function descargarTabla() {
-      const container = document.querySelector('.container');
-      const downloadBtn = document.querySelector('.download-btn');
-      downloadBtn.style.display = 'none';
-      html2canvas(container, {
-        backgroundColor: '#0a0a0a',
-        width: 1080,
-        height: 1920,
-        scale: 3,
-        useCORS: true
-      }).then(canvas => {
-        downloadBtn.style.display = '';
-        const link = document.createElement('a');
-        link.download = 'tasa_del_dia.png';
-        link.href = canvas.toDataURL('image/png', 1.0);
-        link.click();
-      }).catch(err => {
-        downloadBtn.style.display = '';
-        console.error('Error al generar la imagen:', err);
-        document.getElementById('error-message').innerText = 'Error al descargar la imagen. Intenta de nuevo.';
-      });
+      const exportArea = document.getElementById('export-area');
+
+      // html2canvas con scale alto para lograr alta resolución
+      try {
+        await html2canvas(exportArea, {
+          backgroundColor: null,
+          width: 1080,
+          height: 1920,
+          scale: 4, // 4x: produce 4320x7680 => alta resolución para stories
+          useCORS: true,
+          allowTaint: true,
+          logging: false
+        }).then(canvas => {
+          // crear enlace y descargar
+          const link = document.createElement('a');
+          link.download = `blackbird_tasa_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.png`;
+          link.href = canvas.toDataURL('image/png', 1.0);
+          link.click();
+        });
+      } catch (err){
+        console.error('Error export:', err);
+        alert('Error al generar la imagen. Intenta recargar y volver a descargar.');
+      } finally {
+        downloadBtn.disabled = false;
+        downloadBtn.innerText = 'Descargar imagen';
+      }
     }
+
+    // ---------- CTA WhatsApp ----------
+    function openWhatsApp(){
+      // Cambia el número por tu teléfono si quieres
+      const phone = ''; // ejemplo '56912345678' (sin + ni espacios). Si está vacío abre whatsapp web sin número.
+      const text = encodeURIComponent('Hola, quiero hacer una remesa usando Blackbird. ¿Me puedes ayudar?');
+      if(phone){
+        window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+      } else {
+        window.open(`https://web.whatsapp.com/`, '_blank');
+      }
+    }
+
+    // utilidad: en caso de que quieras activar descarga con atajo (tecla D)
+    document.addEventListener('keydown', (e) => {
+      if(e.key.toLowerCase() === 'd' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        descargarImagen();
+      }
+    });
   </script>
 </body>
 </html>
